@@ -1,27 +1,35 @@
 {
   "name": "aura-wellness",
-  "version": "1.2.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "buyer:dev": "cross-env TEMPLATE=buyer next dev --turbo",
+    "admin:dev": "cross-env TEMPLATE=admin next dev --turbo",
+    "seller:dev": "cross-env TEMPLATE=seller next dev --turbo",
+    "buyer:build": "cross-env TEMPLATE=buyer next build",
+    "admin:build": "cross-env TEMPLATE=admin next build",
+    "seller:build": "cross-env TEMPLATE=seller next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "apexcharts": "^4.5.0",
+    "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
     "next": "15.1.6",
+    "next-auth": "^4.24.11",
     "next-themes": "^0.4.4",
     "nextjs-toploader": "^3.7.15",
     "react": "19.0.0",
     "react-apexcharts": "^1.7.0",
     "react-dom": "19.0.0",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/node": "^22",
