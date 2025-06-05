@@ -1,3 +1,113 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "prettier"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "prefer-arrow",
+    "prettier",
+    "import",
+    "json"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "rules": {
+    "camelcase": [
+      "error",
+      {
+        "properties": "never"
+      }
+    ],
+    "spaced-comment": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "rules": {
+        "quotes": [
+          "error",
+          "single"
+        ],
+        "@typescript-eslint/consistent-type-imports": "error",
+        "@typescript-eslint/no-explicit-any": "warn", // * Do not use `any` type
+        "@typescript-eslint/no-shadow": "error",
+        "@typescript-eslint/no-unused-vars": "warn", // * Unused variables
+        
+        "eqeqeq": [
+          "error",
+          "always"
+        ], 
+        "eol-last": [
+          "error",
+          "always"
+        ],
+        "import/no-duplicates": "error", // * Do not import duplicates
+        "import/order": [
+          "error",
+          {
+            "warnOnUnassignedImports": true,
+            "alphabetize": { "order": "asc" }, // * Alphabetize imports
+            "newlines-between": "always", // * always add a blank line between imports
+            "pathGroups": [
+              {
+                "pattern": "react",
+                "group": "builtin",
+                "position": "before"
+              }
+            ],
+            "pathGroupsExcludedImportTypes": ["react"],
+            "groups": [
+              "type", // * import type
+              "builtin", // * import react
+              "external", // * import from node_modules
+              "internal", // * import from src
+              "parent", // * import from parent folder
+              "sibling", // * import from sibling folder
+              "index", // * import from index
+              "object", // * import from object
+              "unknown"
+            ]
+          }
+        ],
+        "max-len": [
+          "error",
+          {
+            "code": 120,
+            "ignoreComments": true,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true,
+            "ignoreRegExpLiterals": true
+          }
+        ],
+        "no-else-return": "error",
+        "no-return-await": "error",
+        "object-curly-spacing": [
+          "error",
+          "always"
+        ],
+        "react-hooks/exhaustive-deps": "off",
+        "semi": [
+          "error",
+          "never"
+        ]
+      }
+    }
+  ]
 }
