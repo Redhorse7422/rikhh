@@ -3,7 +3,7 @@ import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function SignIn() {
+export default function AdminLogin() {
   return (
     <>
       <Breadcrumb pageName='Sign In' />
