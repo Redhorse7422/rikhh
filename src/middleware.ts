@@ -8,25 +8,16 @@ export const middleware = async (request: NextRequest) => {
   const isAdmin = template === 'admin'
 
   const { pathname } = request.nextUrl
-  const isPathBuyer = pathname.startsWith('/buyer')
-  const isPathSeller = pathname.startsWith('/seller')
-  const isPathAdmin = pathname.startsWith('/admin')
-  console.log('Template ==>', pathname)
-  console.log('PathName ==>', pathname)
-  console.log('isBuyer', isBuyer)
-  console.log('isAdmin', isAdmin)
 
   try {
-    if (isBuyer && (isPathSeller || isPathAdmin)) return new Response('Not Found', { status: 404 })
-    if (isSeller && (isPathBuyer || isPathAdmin)) return new Response('Not Found', { status: 404 })
-    if (isAdmin && (isPathBuyer || isPathSeller)) return new Response('Not Found', { status: 404 })
-
     const url = request.nextUrl.clone()
     const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
     // NOTE: For admin and seller, check if user is authenticated
     if (isAdmin || isSeller) {
       const allowNoSession = ['/login', '/forgot-password', '/invite-callback']
+
+      console.log(token)
 
       // NOTE: Redirect to login page if not authenticated
       if (!token) {
@@ -50,10 +41,8 @@ export const middleware = async (request: NextRequest) => {
         // Note: redirect to homepage
         if (!token) {
           url.pathname = '/'
-
           return NextResponse.redirect(url)
         }
-        // if (!token) return new Response('Unauthorized', { status: 401 })
       }
     }
 
@@ -66,5 +55,4 @@ export const middleware = async (request: NextRequest) => {
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|image).*)'],
-  // matcher: [`/login`, '/', '/seller/:path*'],
 }

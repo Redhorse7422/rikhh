@@ -4,6 +4,22 @@ const nextConfig = {
   env: {
     TEMPLATE: process.env.TEMPLATE,
   },
+  rewrites: async () => {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `/api/:path*`,
+      },
+      {
+        source: '/:path*',
+        destination: `/${process.env.TEMPLATE}/:path*`,
+      },
+    ]
+  },
+  output: 'standalone',
+  ...(process.env.SEPARATE_BUILD === 'true' && process.env.TEMPLATE !== ''
+    ? { distDir: `.next-${process.env.TEMPLATE}` }
+    : {}),
   images: {
     remotePatterns: [
       {
