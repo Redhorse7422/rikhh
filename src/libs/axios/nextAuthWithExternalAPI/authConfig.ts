@@ -14,7 +14,7 @@ export const authConfig: AuthOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email: { label: 'Username', type: 'text' },
+        email: { label: 'email', type: 'text' },
         password: { label: 'Password', type: 'password' },
         userType: { label: 'User Type', type: 'text' },
       },
@@ -32,8 +32,10 @@ export const authConfig: AuthOptions = {
               password: credentials.password,
               ...(credentials?.userType && { userType: credentials.userType }),
             })
-            
-            if (result.data.code !== 200) {
+
+            console.log('Logged in with credentials  ====> ', result)
+
+            if (result.status !== 200) {
               logger.error('Failed to login with credentials')
               return null
             }
