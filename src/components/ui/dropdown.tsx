@@ -1,7 +1,7 @@
 "use client";
 
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { SetStateActionType } from "@/types/set-state-action-type";
 import {
   createContext,

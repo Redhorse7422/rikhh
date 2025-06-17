@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default function AdminLogin() {
   return (
-    <>
+    <div className='px-10 py-10'>
       <Breadcrumb pageName='Sign In' />
 
       <div className='rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card'>
@@ -43,6 +43,6 @@ export default function AdminLogin() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

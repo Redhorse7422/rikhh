@@ -1,6 +1,6 @@
 "use client";
 
-import { compactFormat } from "@/lib/format-number";
+import { compactFormat } from "@/libs/format-number";
 import type { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 

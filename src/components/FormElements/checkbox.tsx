@@ -1,5 +1,5 @@
 import { CheckIcon, XIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { useId } from "react";
 
 type PropsType = {

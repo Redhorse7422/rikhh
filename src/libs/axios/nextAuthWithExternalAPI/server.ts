@@ -7,8 +7,8 @@ import { cookies, headers } from 'next/headers'
 import { getServerSession, type Session } from 'next-auth'
 import { encode, getToken } from 'next-auth/jwt'
 
-import { authConfig } from '@/lib/axios/nextAuthWithExternalAPI/authConfig'
-import { logger } from '@/lib/logger'
+import { authConfig } from '@/libs/axios/nextAuthWithExternalAPI/authConfig'
+import { logger } from '@/libs/logger'
 import { textTimeToTimestamp } from '@/utils/textTimeToTimestamp'
 
 import { server } from '../server'
@@ -30,6 +30,7 @@ type ServerFetchProps = {
 
 const getRequestConfig = (opt: ServerFetchProps) => {
   logger.debug(`Get the request config: ${JSON.stringify(opt)}`)
+   logger.debug(`Get the request config1: ${JSON.stringify(opt.headers)}`)
   return {
     headers: {
       ...opt.headers,

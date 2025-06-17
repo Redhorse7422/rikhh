@@ -2,8 +2,8 @@ import type { AuthOptions } from 'next-auth'
 
 import CredentialsProvider from 'next-auth/providers/credentials'
 
-import { server } from '@/lib/axios'
-import { logger } from '@/lib/logger'
+import { server } from '@/libs/axios'
+import { logger } from '@/libs/logger'
 import { textTimeToTimestamp } from '@/utils/textTimeToTimestamp'
 
 export const authConfig: AuthOptions = {
@@ -14,7 +14,7 @@ export const authConfig: AuthOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        username: { label: 'Username', type: 'text' },
+        email: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
         userType: { label: 'User Type', type: 'text' },
       },
@@ -27,13 +27,13 @@ export const authConfig: AuthOptions = {
         if (credentials) {
           try {
             logger.info('Logging in with credentials...')
-            const result = await server.post('/v1/auth/login', {
-              username: credentials.username,
+            const result = await server.post('/auth/login', {
+              email: credentials.email,
               password: credentials.password,
               ...(credentials?.userType && { userType: credentials.userType }),
             })
-
-            if (result.status !== 200) {
+            
+            if (result.data.code !== 200) {
               logger.error('Failed to login with credentials')
               return null
             }

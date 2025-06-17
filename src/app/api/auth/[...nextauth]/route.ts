@@ -3,7 +3,7 @@
 
 import nextAuth from 'next-auth'
 
-import { authConfig } from '@/lib/axios/nextAuthWithExternalAPI/authConfig'
+import { authConfig } from '@/libs/axios/nextAuthWithExternalAPI/authConfig'
 
 const handleRequest = nextAuth(authConfig)
 

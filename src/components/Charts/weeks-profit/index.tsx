@@ -1,5 +1,5 @@
 import { PeriodPicker } from "@/components/period-picker";
-import { cn } from "@/lib/utils";
+import { cn } from "@/libs/utils";
 import { getWeeksProfitData } from "@/services/charts.services";
 import { WeeksProfitChart } from "./chart";
 
