@@ -29,7 +29,6 @@ export const useApi = () => {
             ...props.query,
             whereJson: undefined,
             ...(props.query?.sort && handleSort(props.query.sort)),
-            // ...(props.query?.filters && handleFilters(props.query.filters, props?.criteriaOpts)),
             ...(props.query?.whereJson && {
               whereJson: `${encodeURIComponent(JSON.stringify(props.query.whereJson))}`,
             }),

@@ -1,9 +1,16 @@
 'use client'
 
+import { CategoryFilterProvider } from './CategoryFilterContext'
+import { SectionFilter } from './SectionFilter'
+import { SectionCategories } from './sectionCategories'
+
 export const AdminCategoryPage = () => {
   return (
-    <h2 className='pb-2 text-2xl font-bold' style={{ marginTop: -12 }}>
-      Categories
-    </h2>
+    <CategoryFilterProvider>
+      <div className='flex flex-col gap-y-6'>
+        <SectionFilter />
+        <SectionCategories />
+      </div>
+    </CategoryFilterProvider>
   )
 }

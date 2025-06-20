@@ -7,14 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { LogOutIcon, SettingsIcon, UserIcon } from './icons'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false)
+  const { data: session } = useSession()
 
   const USER = {
-    name: 'John Smith',
-    email: 'johnson@nextadmin.com',
+    name: session ? `${session?.user.firstName} ${session?.user.lastName}` : 'John Smith',
+    email: session ? session?.user.email : 'johnson@nextadmin.com',
     img: '/images/user/user-03.png',
   }
 

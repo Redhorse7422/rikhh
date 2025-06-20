@@ -5,9 +5,9 @@ import { useApi } from '@/hooks/useApi'
 export const AdminUsersPage = () => {
   const { getDataSource } = useApi()
   const { data } = getDataSource({
-    path: '/users',
+    path: '/v1/users',
     query: {
-      sort: '-updatedAt',
+      // sort: '-updatedAt',
     },
   })
   console.log('Users ===> ', data)
