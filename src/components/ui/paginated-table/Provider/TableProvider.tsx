@@ -70,5 +70,10 @@ export const TableProvider = ({ children, ...props }: TableProviderProps) => {
   useEffect(() => setFilterOpts(props?.filterOpts || []), [props?.filterOpts])
   useEffect(() => setSortOpts(props?.sortOpts || []), [props?.sortOpts])
 
+  // Reset page to 1 when filters, search, or sort change
+  useEffect(() => {
+    setPage(1)
+  }, [filters, search, sort])
+
   return <TableContext.Provider value={value}>{children(value)}</TableContext.Provider>
 }

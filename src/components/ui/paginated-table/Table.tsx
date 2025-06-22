@@ -18,8 +18,9 @@ export function CustomTable<T>({
   total,
   totalPages,
 }: DesktopTableProps) {
-  const { setPage } = React.useContext(TableContext)
+  const { setPage, setLimit } = React.useContext(TableContext)
   const [sortField, setSortField] = React.useState(sort ?? 'name')
+  const [inputPage, setInputPage] = React.useState(page.toString())
 
   const [sortFieldName, sortDirection] = sortField.startsWith('-') ? [sortField.slice(1), 'desc'] : [sortField, 'asc']
 
@@ -118,15 +119,59 @@ export function CustomTable<T>({
         >
           <ChevronRight />
         </button>
+
+        {/* Page size selector */}
+        <select
+          value={limit}
+          onChange={e => setLimit(Number(e.target.value))}
+          className='ml-2 border rounded px-2 py-1 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+        >
+          {[10, 20, 50, 100].map(size => (
+            <option key={size} value={size}>{size} / page</option>
+          ))}
+        </select>
+
+        {/* Direct page input */}
+        <input
+          type='number'
+          min={1}
+          max={totalPages}
+          value={inputPage}
+          onChange={e => {
+            const val = e.target.value
+            if (val === '') {
+              setInputPage('')
+            } else {
+              const num = Number(val)
+              if (!isNaN(num) && num >= 1 && num <= totalPages) {
+                setInputPage(val)
+              }
+            }
+          }}
+          onBlur={() => {
+            const num = Number(inputPage)
+            if (inputPage !== '' && num !== page) {
+              paginate(num)
+            } else {
+              setInputPage(page.toString())
+            }
+          }}
+          onKeyDown={e => {
+            const num = Number(inputPage)
+            if (e.key === 'Enter' && inputPage !== '' && num !== page) {
+              paginate(num)
+            }
+          }}
+          className='w-16 border rounded px-2 py-1 ml-2 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+        />
+        <span className='ml-1 text-xs text-neutral-500'>/ {totalPages}</span>
       </div>
     </div>
   )
 
-  // React.useEffect(() => {
-  //   setPage(page || 1)
-  //   setLimit(limit || 10)
-  //   setTotal(total || 0)
-  // }, [isLoading, total, page, limit])
+  React.useEffect(() => {
+    setInputPage(page.toString())
+  }, [page])
 
   return (
     <div className='overflow-hidden rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card'>

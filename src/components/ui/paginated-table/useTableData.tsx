@@ -18,19 +18,24 @@ export const useQueryWithoutQs = (props: UseQueryWithoutQsProps) => {
   const page = _isFirstLoaded ? 1 : Number(currentQuery?.page || 1)
   const limit = Number(currentQuery?.limit) || 10
   const sort = currentQuery?.sort
+  const filters = currentQuery?.filters
+  const search = 'search' in (currentQuery || {}) ? (currentQuery as any).search : undefined
 
   const { getDataSource } = useApi()
 
+  // Always create a new query object with all dependencies
+  const query = {
+    ...(initialQuery as object),
+    page,
+    limit,
+    ...(sort && { sort }),
+    ...(filters && { filters }),
+    ...(search && { search }),
+  }
+
   const { data, isLoading, isFetching, refetch, isFetched } = getDataSource({
     path,
-    query: {
-      limit: 10,
-      page: 1,
-      ...(initialQuery as object),
-      ...(page && { page }),
-      ...(limit && { limit }),
-      ...(sort && { sort }),
-    },
+    query,
     enabled: !!path || (_isFirstLoaded && Number(currentQuery?.page) === 1),
   })
 
@@ -40,6 +45,14 @@ export const useQueryWithoutQs = (props: UseQueryWithoutQsProps) => {
     if (isFetched) setIsFirstLoaded(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetched])
+
+  // Refetch data when page changes (especially when reset to 1)
+  useEffect(() => {
+    if (!isFirstLoaded) {
+      refetch()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page])
 
   let dataSource: any[] = data?.data || []
 
