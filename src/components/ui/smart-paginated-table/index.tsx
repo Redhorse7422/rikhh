@@ -12,6 +12,7 @@ export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
   sort: initialSort = '',
   pageSizeOptions = [10, 20, 50, 100],
   initialPageSize = 10,
+  refetchOnWindowFocus = false,
 }) => {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(initialPageSize)
@@ -47,6 +48,7 @@ export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
   const { data = { data: [], meta: { total: 0, totalPages: 1 } }, isLoading, isFetching, refetch, isFetched } = getDataSource<SmartTableResponse>({
     path,
     query: queryParams,
+    refetchOnWindowFocus,
   })
 
   // Extract data

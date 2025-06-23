@@ -53,3 +53,5 @@ export function TextAreaGroup({
     </div>
   );
 }
+
+export type TextAreaGroupProps = PropsType;

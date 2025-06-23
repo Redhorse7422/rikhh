@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Control, UseControllerProps } from 'react-hook-form'
 
-import React from 'react'
-
 import { Controller as RhfController } from 'react-hook-form'
 
 export type ControllerProps = {

@@ -14,6 +14,7 @@ export interface SmartPaginatedTableProps {
   sort?: string
   pageSizeOptions?: number[]
   initialPageSize?: number
+  refetchOnWindowFocus?: boolean
 }
 
 export interface SmartTableMeta {

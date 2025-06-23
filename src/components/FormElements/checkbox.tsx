@@ -12,6 +12,8 @@ type PropsType = {
   radius?: "default" | "md";
 };
 
+export type CheckboxProps = PropsType;
+
 export function Checkbox({
   withIcon,
   label,
