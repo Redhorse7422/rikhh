@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { SectionCategoryDetail } from './SectionCategoryDetail'
 import { SectionAction } from './SectionAction'
+import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
+import useToast from '@/hooks/useToast'
 
 const defaultValues = {
   isActive: true,
@@ -23,17 +25,29 @@ export const AdminAddCategoryPage = () => {
   })
 
   const router = useRouter()
+  const { showToast } = useToast()
   const { createDataSource } = useApi()
-
+  const fullLoading = useFullScreenLoading()
   const handleOnSubmit = async (data: NewCategoryForm) => {
     try {
+      fullLoading.open()
       await createDataSource.mutateAsync({
-        path: '/v1/category',
-        body: {},
+        path: '/v1/categories/store',
+        body: {
+          name: data.name,
+          slug: data.slug,
+          isActive: data.isActive,
+          parentId: data.parentId,
+          isFeatured: data.isFeatured,
+        },
       })
-
+      showToast('Category Created successful!', 'success')
       router.push('/categories')
-    } catch (error) {}
+    } catch (error) {
+      showToast('An error occurred!', 'error')
+    } finally {
+      fullLoading.close()
+    }
   }
 
   return (

@@ -30,8 +30,8 @@ export const FormFIlter = () => {
 
   return (
     <form onSubmit={handleSubmit(handleOnSubmit)}>
-      <Grid col={{ default: 1, lg: 2 }} rowGap={4} colGap={4}>
-        <GridItem colStart={{ default: 1, lg: 2 }}>
+      <Grid col={{ default: 1, lg: 1 }} rowGap={4} colGap={4}>
+        <GridItem colStart={{ default: 1, lg: 1 }}>
           <TextField control={control} name='search' label='Search' />
           <div className='mt-3 flex w-full items-center justify-end gap-3'>
             <Button label='Reset' onClick={handleReset} />

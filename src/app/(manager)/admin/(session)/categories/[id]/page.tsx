@@ -1,13 +1,13 @@
 'use client'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import { AdminAddCategoryPage } from '@/components/Pages/Admin/category/AdminAddCategoryPage'
+import { AdminEditCategoryPage } from '@/components/Pages/Admin/category/AdminEditCategoryPage'
 
 export default function Page() {
   return (
     <>
       <Breadcrumb pageName='New Category' />
-      <AdminAddCategoryPage />
+      <AdminEditCategoryPage />
     </>
   )
 }

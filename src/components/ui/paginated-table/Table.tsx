@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from '@/components/Layouts/sidebar/icons'
 import { ArrowUpIcon } from '@/assets/icons'
 import { ColumnOptions, DesktopTableProps } from './type'
 import { TableContext } from './Provider'
-import { Loader } from '@/components/common/Loader'
+import { Loader } from '@/components/common/Loading/Loader'
 
 export function CustomTable<T>({
   dataSource,

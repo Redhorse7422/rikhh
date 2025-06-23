@@ -7,6 +7,7 @@ import clsx from 'clsx'
 // import { Icon } from '@/components/Common/Icon'
 
 import { InputWrapper, type InputWrapperProps } from '../InputWrapper'
+import { Icon, IconAllowed } from '@/components/common/icon'
 
 export type TextInputProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -39,8 +40,8 @@ export type TextInputProps = Pick<
   > & {
     refInput?: React.RefObject<HTMLInputElement>
     label?: string
-    // iconPrefix?: IconAllowed
-    // iconSuffix?: IconAllowed
+    prefixIcon?: IconAllowed
+    suffixIcon?: IconAllowed
     onChange?: (value?: string) => void
     onEnter?: (value?: string) => void
     className?: string
@@ -62,8 +63,8 @@ export const TextInput: React.FC<TextInputProps> = (props) => {
     labelWidth,
     size = 'middle',
     helperText,
-    // iconPrefix,
-    // iconSuffix,
+    prefixIcon,
+    suffixIcon,
     onChange,
     onBlur,
     onEnter,
@@ -103,11 +104,11 @@ export const TextInput: React.FC<TextInputProps> = (props) => {
       helperText={helperText}
     >
       <div className='relative w-full'>
-        {/* {iconPrefix && (
+        {prefixIcon && (
           <span className='pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
-            <Icon name={iconPrefix} />
+            <Icon name={prefixIcon} />
           </span>
-        )} */}
+        )}
 
         <input
           ref={refInput}
@@ -124,11 +125,11 @@ export const TextInput: React.FC<TextInputProps> = (props) => {
           {...inputProps}
         />
 
-        {/* {iconSuffix && (
+        {suffixIcon && (
           <span className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400'>
-            <Icon name={iconSuffix} />
+            <Icon name={suffixIcon} />
           </span>
-        )} */}
+        )}
       </div>
     </InputWrapper>
   )

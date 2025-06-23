@@ -84,7 +84,7 @@ export const InputWrapper: React.FC<InputWrapperProps> = ({
   }, [isHorizontal, isVertical, labelWidth])
 
   return (
-    <Flex vertical className='w-full'>
+    <Flex vertical className='mb-2 w-full'>
       <Flex
         vertical={isVertical}
         align={getAlignLabel()}
@@ -101,8 +101,8 @@ export const InputWrapper: React.FC<InputWrapperProps> = ({
             className={clsx(isVertical && 'mb-1', isHorizontal && 'text-end', classNames?.label)}
             {...(isHorizontal && labelWidth && { style: { minWidth: labelWidth } })}
           >
-            {required && isHorizontal && <Text color='danger'>*</Text>} {label}{' '}
-            {required && isVertical && <Text color='danger'>*</Text>}
+            {required && isHorizontal && <Text color='text-red-500'>*</Text>} {label}{' '}
+            {required && isVertical && <Text color='text-red-500'>*</Text>}
           </Text>
         )}
 

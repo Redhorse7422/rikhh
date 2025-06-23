@@ -1,3 +1,4 @@
+import { Icon } from '@/components/common/icon'
 import React from 'react'
 
 interface PaginationControlsProps {
@@ -32,7 +33,13 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   }
   return (
     <div className='flex items-center space-x-1'>
-      <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1 || isLoading} className='rounded-md p-1.5'>{'<'}</button>
+      <button
+        onClick={() => setPage(Math.max(1, page - 1))}
+        disabled={page === 1 || isLoading}
+        className='rounded-md p-1.5'
+      >
+        <Icon name='AiOutlineLeft' color={page === 1 || isLoading ? 'info' : 'black'} />
+      </button>
       {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
         let pageNum = totalPages <= 5 || page <= 3 ? i + 1 : page >= totalPages - 2 ? totalPages - 4 + i : page - 2 + i
         return (
@@ -58,15 +65,23 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
           </button>
         </>
       )}
-      <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages || isLoading || totalPages === 0} className='rounded-md p-1.5'>{'>'}</button>
+      <button
+        onClick={() => setPage(Math.min(totalPages, page + 1))}
+        disabled={page === totalPages || isLoading || totalPages === 0}
+        className='rounded-md p-1.5'
+      >
+        <Icon name='AiOutlineRight' color={page === totalPages || isLoading || totalPages === 0 ? 'info' : 'black'} />
+      </button>
       {/* Page size selector */}
       <select
         value={pageSize}
-        onChange={e => setPageSize(Number(e.target.value))}
-        className='ml-2 border rounded px-2 py-1 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+        onChange={(e) => setPageSize(Number(e.target.value))}
+        className='ml-2 rounded border bg-white px-2 py-1 text-sm dark:bg-dark-2 dark:text-neutral-200'
       >
-        {pageSizeOptions.map(size => (
-          <option key={size} value={size}>{size} / page</option>
+        {pageSizeOptions.map((size) => (
+          <option key={size} value={size}>
+            {size} / page
+          </option>
         ))}
       </select>
       {/* Direct page input */}
@@ -75,14 +90,14 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
         min={1}
         max={totalPages}
         value={inputPage}
-        onChange={e => setInputPage(e.target.value)}
+        onChange={(e) => setInputPage(e.target.value)}
         onBlur={() => handlePageInput(inputPage)}
-        onKeyDown={e => {
+        onKeyDown={(e) => {
           if (e.key === 'Enter') handlePageInput(inputPage)
         }}
-        className='w-16 border rounded px-2 py-1 ml-2 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+        className='ml-2 w-16 rounded border bg-white px-2 py-1 text-sm dark:bg-dark-2 dark:text-neutral-200'
       />
       <span className='ml-1 text-xs text-neutral-500'>/ {totalPages}</span>
     </div>
   )
-} 
+}

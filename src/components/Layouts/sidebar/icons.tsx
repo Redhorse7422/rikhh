@@ -114,6 +114,14 @@ export function CategoriesIcon(props: React.SVGProps<SVGSVGElement>) {
   )
 }
 
+export function ProductsIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns='http://www.w3.org/2000/svg' width={24} height={24} viewBox='0 0 24 24' fill='currentColor' {...props}>
+      <path d='M3 3h8v8H3V3zm10 0h8v5h-8V3zM3 13h5v8H3v-8zm7 0h5v5h-5v-5zm7 3h4v5h-4v-5z' />
+    </svg>
+  )
+}
+
 export function PieChart(props: PropsType) {
   return (
     <svg width={24} height={24} viewBox='0 0 24 24' fill='none' {...props}>

@@ -1,19 +1,27 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
 import { SmartPaginatedTableProps, SmartTableResponse } from './types'
 import { TableHeader } from './TableHeader'
 import { TableBody } from './TableBody'
 import { PaginationControls } from './PaginationControls'
 import { useApi } from '@/hooks/useApi'
+import { Loader } from '@/components/common/Loading/Loader'
 
-export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
-  path,
-  columns,
-  initialQuery = {},
-  sort: initialSort = '',
-  pageSizeOptions = [10, 20, 50, 100],
-  initialPageSize = 10,
-  refetchOnWindowFocus = false,
-}) => {
+export type SmartTableRef = {
+  refetch: () => void
+}
+
+export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTableProps>(function SmartPaginatedTable(
+  {
+    path,
+    columns,
+    initialQuery = {},
+    sort: initialSort = '',
+    pageSizeOptions = [10, 20, 50, 100],
+    initialPageSize = 10,
+    refetchOnWindowFocus = false,
+  },
+  ref,
+) {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(initialPageSize)
   const [sort, setSort] = useState(initialSort)
@@ -45,11 +53,28 @@ export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
   }, [page, pageSize, internalFilters, sort])
 
   // Fetch data using getDataSource
-  const { data = { data: [], meta: { total: 0, totalPages: 1 } }, isLoading, isFetching, refetch, isFetched } = getDataSource<SmartTableResponse>({
+  const {
+    data = { data: [], meta: { total: 0, totalPages: 1 } },
+    isLoading,
+    isFetching,
+    refetch,
+    isFetched,
+  } = getDataSource<SmartTableResponse>({
     path,
     query: queryParams,
     refetchOnWindowFocus,
   })
+
+  // Expose refetch function via ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      refetch: () => {
+        refetch()
+      },
+    }),
+    [refetch],
+  )
 
   // Extract data
   const rows = data.data || []
@@ -71,17 +96,17 @@ export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
   }
 
   useEffect(() => {
-    setInternalFilters(initialQuery);
-    setPage(1);
-    setInputPage('1');
-  }, [initialQuery]);
+    setInternalFilters(initialQuery)
+    setPage(1)
+    setInputPage('1')
+  }, [initialQuery])
 
   return (
     <div className='overflow-hidden rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card'>
       <div className='relative min-h-[300px] overflow-x-auto'>
         {(isLoading || isFetching) && (
-          <div className='absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-dark/80 z-10'>
-            <span>Loading...</span>
+          <div className='absolute inset-0 z-10 flex items-center justify-center bg-white/80 dark:bg-gray-dark/80'>
+            <Loader size={50} />
           </div>
         )}
         <table className='w-full caption-bottom text-sm'>
@@ -109,4 +134,4 @@ export const SmartPaginatedTable: React.FC<SmartPaginatedTableProps> = ({
       </div>
     </div>
   )
-} 
+})

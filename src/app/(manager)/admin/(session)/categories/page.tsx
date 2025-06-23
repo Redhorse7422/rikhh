@@ -1,7 +1,7 @@
 'use client'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import { AdminCategoryPage } from '@/components/Pages/Admin/AdminCategoryPage'
+import { AdminCategoryPage } from '@/components/Pages/Admin/category/AdminCategoryPage'
 
 export default function Page() {
   return (

@@ -4,8 +4,13 @@ import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
 import { Flex } from '@/components/common/Flex'
 import { useRouter } from 'next/navigation'
+import { FC } from 'react'
 
-export const SectionAction = () => {
+type SectionActionProps = {
+  updating?: boolean | false
+}
+
+export const SectionAction: FC<SectionActionProps> = ({ updating }) => {
   const router = useRouter()
 
   const handleBack = () => {
@@ -17,7 +22,7 @@ export const SectionAction = () => {
       <Flex justify='space-between'>
         <Button label='Back' type='button' onClick={handleBack} />
 
-        <Button type='submit' label='Submit' />
+        <Button type='submit' label={updating ? 'Update' : 'Submit'} />
       </Flex>
     </Card>
   )
