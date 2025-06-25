@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 
 import { NextResponse } from 'next/server'
 
-import { logger } from '@/libs/logger'
+import { logger } from '@/libs/logger.server'
 
 import { requestNewToken } from './server'
 

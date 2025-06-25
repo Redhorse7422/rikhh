@@ -1,26 +1,12 @@
 'use client'
 
 import React, { useId } from 'react'
-import clsx from 'clsx'
-import { Text } from '@/components/common/Text'
-import { InputWrapper, type InputWrapperProps } from '../InputWrapper'
 
-// export type CheckboxInputProps = {
-//   name?: string
-//   id?: string
-//   value?: boolean
-//   defaultChecked?: boolean
-//   disabled?: boolean
-//   indeterminate?: boolean
-//   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-//   label?: string
-//   required?: boolean
-//   classNames?: {
-//     root?: string
-//     checkbox?: string
-//     label?: string
-//   }
-// } & Pick<InputWrapperProps, 'freezeErrorSpace' | 'errorMsg' | 'isError'>
+import clsx from 'clsx'
+
+import { Text } from '@/components/common/Text'
+
+import { InputWrapper, type InputWrapperProps } from '../InputWrapper'
 
 export type CheckboxInputProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -81,7 +67,8 @@ export const CheckboxInput: React.FC<CheckboxInputProps> = ({
   name,
   ...leftProps
 }) => {
-  const inputId = id || useId()
+  const generatedId = useId()
+  const inputId = id || generatedId
 
   return (
     <InputWrapper

@@ -1,12 +1,14 @@
 'use client'
 
-import { useApi } from '@/hooks/useApi'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { SectionProductDetail } from './SectionProductsDetail'
-import { SectionAction } from './SectionAction'
-import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
+
+import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
+import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
+
+import { SectionAction } from './SectionAction'
+import { SectionProductDetail } from './SectionProductsDetail'
 
 const defaultValues = {
   isActive: true,

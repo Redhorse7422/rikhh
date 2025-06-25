@@ -3,6 +3,7 @@
 import type { TableContextType, TableProviderProps } from '../type'
 
 import React, { useEffect, useMemo, useState } from 'react'
+
 import { TableContext } from './TableContext'
 
 export const TableProvider = ({ children, ...props }: TableProviderProps) => {

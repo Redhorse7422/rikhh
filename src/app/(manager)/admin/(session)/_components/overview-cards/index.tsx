@@ -1,15 +1,17 @@
-import { compactFormat } from "@/libs/format-number";
-import { getOverviewData } from "../../fetch";
-import { OverviewCard } from "./card";
-import * as icons from "./icons";
+import { compactFormat } from '@/libs/format-number'
+
+import { getOverviewData } from '../../fetch'
+
+import { OverviewCard } from './card'
+import * as icons from './icons'
 
 export async function OverviewCardsGroup() {
-  const { views, profit, products, users } = await getOverviewData();
+  const { views, profit, products, users } = await getOverviewData()
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+    <div className='grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5'>
       <OverviewCard
-        label="Total Views"
+        label='Total Views'
         data={{
           ...views,
           value: compactFormat(views.value),
@@ -18,16 +20,16 @@ export async function OverviewCardsGroup() {
       />
 
       <OverviewCard
-        label="Total Profit"
+        label='Total Profit'
         data={{
           ...profit,
-          value: "$" + compactFormat(profit.value),
+          value: '$' + compactFormat(profit.value),
         }}
         Icon={icons.Profit}
       />
 
       <OverviewCard
-        label="Total Products"
+        label='Total Products'
         data={{
           ...products,
           value: compactFormat(products.value),
@@ -36,7 +38,7 @@ export async function OverviewCardsGroup() {
       />
 
       <OverviewCard
-        label="Total Users"
+        label='Total Users'
         data={{
           ...users,
           value: compactFormat(users.value),
@@ -44,5 +46,5 @@ export async function OverviewCardsGroup() {
         Icon={icons.Users}
       />
     </div>
-  );
+  )
 }

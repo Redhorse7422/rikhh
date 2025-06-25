@@ -1,8 +1,13 @@
-import { cva, type VariantProps } from 'class-variance-authority'
+import type { IconAllowed } from './icon'
+import type { TwColorSemantic } from '@/libs/pureTailwind'
+
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
+
+import { cva, type VariantProps } from 'class-variance-authority'
 import clsx from 'clsx'
-import { Icon, IconAllowed } from './icon'
-import { TwColorSemantic } from '@/libs/pureTailwind'
+
+import { Icon } from './icon'
+
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center gap-2 text-center font-medium hover:bg-opacity-90 transition focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed',

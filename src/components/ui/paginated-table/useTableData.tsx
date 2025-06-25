@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { useApi } from '@/hooks/useApi'
 import { useNavigate } from '@/hooks/useNavigate'
+
 import { TableContext } from './Provider'
 // import { jsonToQueryString } from '@/utils/queryString'
 
@@ -62,13 +63,13 @@ export const useQueryWithoutQs = (props: UseQueryWithoutQsProps) => {
 
   return {
     dataSource,
-    total: data?.meta?.total || 0,
+    total: (data as any)?.meta?.total || 0,
     isLoading,
     isFetching,
     refetch,
-    page: data?.meta?.page || 1,
+    page: (data as any)?.meta?.page || 1,
     limit,
-    totalPages: data?.meta?.totalPages || 1,
+    totalPages: (data as any)?.meta?.totalPages || 1,
     sort,
   }
 }

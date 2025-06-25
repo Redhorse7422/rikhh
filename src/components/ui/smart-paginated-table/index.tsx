@@ -1,10 +1,14 @@
+import type { SmartPaginatedTableProps, SmartTableResponse, SmartColumn } from './types'
+
 import React, { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
-import { SmartPaginatedTableProps, SmartTableResponse } from './types'
-import { TableHeader } from './TableHeader'
-import { TableBody } from './TableBody'
-import { PaginationControls } from './PaginationControls'
-import { useApi } from '@/hooks/useApi'
+
 import { Loader } from '@/components/common/Loading/Loader'
+import { useApi } from '@/hooks/useApi'
+
+import { PaginationControls } from './PaginationControls'
+import { TableBody } from './TableBody'
+import { TableHeader } from './TableHeader'
+
 
 export type SmartTableRef = {
   refetch: () => void
@@ -43,7 +47,7 @@ export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTable
 
   // Build query params
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page,
       limit: pageSize,
       ...internalFilters,
@@ -54,7 +58,7 @@ export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTable
 
   // Fetch data using getDataSource
   const {
-    data = { data: [], meta: { total: 0, totalPages: 1 } },
+    data = { data: [], meta: { total: 0, totalPages: 1, currentPage: 1, limit: pageSize } },
     isLoading,
     isFetching,
     refetch,
@@ -86,7 +90,7 @@ export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTable
   const endItem = Math.min(page * pageSize, total)
 
   // Sorting handler
-  const handleSort = (col: any) => {
+  const handleSort = (col: SmartColumn) => {
     if (!col.isSort) return
     setSort((prev) => {
       if (prev === col.key) return `-${col.key}`

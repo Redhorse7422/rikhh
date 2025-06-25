@@ -1,11 +1,14 @@
 'use client'
 
+import { useState } from 'react'
+
+import { dehydrate, HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
-import ToastProvider from './ToastProvider'
-import { dehydrate, HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
+
 import { FullScreenLoadingProvider } from './FullScreenLoadingProvider'
+import ToastProvider from './ToastProvider'
+
 
 export function MainProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())

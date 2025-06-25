@@ -1,23 +1,39 @@
 'use client'
 
-import { useApi } from '@/hooks/useApi'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { SectionCategoryDetail } from './SectionCategoryDetail'
-import { SectionAction } from './SectionAction'
-import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
-import useToast from '@/hooks/useToast'
 
-const defaultValues = {
+import { useApi } from '@/hooks/useApi'
+import useToast from '@/hooks/useToast'
+import { logger } from '@/libs/logger.client'
+import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
+
+import { SectionAction } from './SectionAction'
+import { SectionCategoryDetail } from './SectionCategoryDetail'
+
+
+
+export type NewCategoryForm = {
+  isActive: boolean
+  name: string
+  slug: string
+  parentId: string
+  isFeatured: boolean
+  description: string
+  thumbnail: FileWithPreview[]
+}
+
+const defaultValues: NewCategoryForm = {
   isActive: true,
   name: '',
   slug: '',
   parentId: '',
   isFeatured: false,
   description: '',
+  thumbnail: [],
 }
-
-export type NewCategoryForm = typeof defaultValues
 
 export const AdminAddCategoryPage = () => {
   const { control, handleSubmit } = useForm<NewCategoryForm>({
@@ -28,23 +44,38 @@ export const AdminAddCategoryPage = () => {
   const { showToast } = useToast()
   const { createDataSource } = useApi()
   const fullLoading = useFullScreenLoading()
+
   const handleOnSubmit = async (data: NewCategoryForm) => {
     try {
       fullLoading.open()
+
+      const formData = new FormData()
+      formData.append('name', data.name.trim())
+      formData.append('slug', data.slug.trim())
+      formData.append('isActive', String(data.isActive))
+
+      if (data.parentId?.trim()) {
+        formData.append('parentId', data.parentId.trim())
+      }
+
+      formData.append('isFeatured', String(data.isFeatured))
+      formData.append('description', data.description.trim())
+
+      // Append thumbnail file if available
+      if (data.thumbnail.length > 0 && data.thumbnail[0].file) {
+        formData.append('image', data.thumbnail[0].file)
+      }
+
       await createDataSource.mutateAsync({
         path: '/v1/categories/store',
-        body: {
-          name: data.name,
-          slug: data.slug,
-          isActive: data.isActive,
-          parentId: data.parentId,
-          isFeatured: data.isFeatured,
-        },
+        body: formData,
       })
-      showToast('Category Created successful!', 'success')
+
+      showToast('Category created successfully!', 'success')
       router.push('/categories')
     } catch (error) {
-      showToast('An error occurred!', 'error')
+      logger.error('Failed to create category:', error)
+      showToast('Failed to create category. Please try again.', 'error')
     } finally {
       fullLoading.close()
     }

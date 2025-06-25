@@ -11,12 +11,18 @@ export type ApiQueryParamsProps = {
 
 export type ApiDefaultQueryProps = {
   path: string
-  query?: ApiQueryParamsProps
-  enabled?: boolean
   subPath?: string
-  lastPath?: string
+  query?: {
+    page?: number
+    limit?: number
+    sort?: string
+    order?: 'asc' | 'desc'
+    filters?: Record<string, unknown>
+    whereJson?: string
+    [key: string]: unknown
+  }
+  enabled?: boolean
   refetchOnWindowFocus?: boolean
-  noCache?: boolean
 }
 
 export type ApiDefaultQueryWithApiHookProps = Omit<ApiDefaultQueryProps, 'query'> & {
@@ -26,37 +32,40 @@ export type ApiDefaultQueryWithApiHookProps = Omit<ApiDefaultQueryProps, 'query'
 }
 
 export type ApiCreateProps = {
-  body?: any
+  body?: Record<string, unknown> | FormData
 } & Omit<ApiDefaultQueryProps, 'query'>
 
 export type ApiGetProps = {
   method?: 'patch' | 'put' | 'delete' | 'post' | 'get'
-  body?: any
+  body?: Record<string, unknown> | FormData
   fileTypes?: ('pdf' | 'xlsx' | 'csv' | 'png' | 'jpg' | 'jpeg' | 'webp' | 'gif')[]
 } & ApiDefaultQueryProps
 
-export type ApiGetWithApiHookProps = {
-  method?: 'patch' | 'put' | 'delete' | 'post' | 'get'
-  body?: any
-} & ApiDefaultQueryWithApiHookProps
+export type ApiGetWithApiHookProps = ApiGetProps & {
+  criteriaOpts?: { type?: ApiFieldType; name: string; options?: unknown[]; apiValue?: unknown }[]
+}
 
 export type ApiGetByIdProps = {
-  id?: string
-} & ApiDefaultQueryProps
+  path: string
+  id: string
+  query?: Record<string, unknown>
+  enabled?: boolean
+  refetchOnWindowFocus?: boolean
+}
 
 export type ApiRemoveProps = {
   id: string
-  body?: any
-} & Omit<ApiDefaultQueryProps, 'query' | 'refetchOnWindowFocus'>
+} & Omit<ApiDefaultQueryProps, 'query'>
 
 export type ApiUpdateProps = {
-  id?: string
-  body?: any
-} & Omit<ApiDefaultQueryProps, 'query' | 'refetchOnWindowFocus'>
+  body?: Record<string, unknown> | FormData
+} & Omit<ApiDefaultQueryProps, 'query'>
 
-export type ApiPatchProps = ApiUpdateProps
+export type ApiPatchProps = {
+  body?: Record<string, unknown> | FormData
+} & Omit<ApiDefaultQueryProps, 'query'>
 
-export type ApiGetTemplateResponse<T = any> = {
+export type ApiGetTemplateResponse<T = Record<string, unknown>> = {
   data: T[]
   limit: number
   offset: number
@@ -65,7 +74,7 @@ export type ApiGetTemplateResponse<T = any> = {
   totally: number
   totalPage: number
 } & {
-  additionalData?: Record<string, any>
-} & Record<string, any>
+  additionalData?: Record<string, unknown>
+} & Record<string, unknown>
 
 export type ApiFieldType = 'select' | 'multi-select' | 'date' | 'date-range' | 'text' | 'like'

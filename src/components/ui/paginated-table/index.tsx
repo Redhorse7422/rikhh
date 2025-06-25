@@ -1,6 +1,7 @@
 'use client'
 
 import type { TableProps } from './type'
+
 import { TableProvider } from './Provider'
 import { TableWithQs } from './TableQuery'
 

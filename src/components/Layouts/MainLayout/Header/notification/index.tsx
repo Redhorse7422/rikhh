@@ -1,11 +1,15 @@
 'use client'
 
+import { useState } from 'react'
+
+import Image from 'next/image'
+import Link from 'next/link'
+
 import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/dropdown'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/libs/utils'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
+
+
 import { BellIcon } from './icons'
 
 const notificationList = [

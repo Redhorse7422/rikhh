@@ -1,6 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
+import { logger } from '@/libs/logger.client'
+
+// Constants for better maintainability
+const ALLOWED_NO_SESSION_ROUTES = ['/login', '/forgot-password', '/invite-callback'] as const
+const BUYER_PROTECTED_ROUTES = ['/profile', '/cart', '/checkout', '/order'] as const
+
 export const middleware = async (request: NextRequest) => {
   const template = process.env.TEMPLATE
   const isBuyer = template === 'buyer'
@@ -15,19 +21,15 @@ export const middleware = async (request: NextRequest) => {
 
     // NOTE: For admin and seller, check if user is authenticated
     if (isAdmin || isSeller) {
-      const allowNoSession = ['/login', '/forgot-password', '/invite-callback']
-
-      console.log(token)
-
       // NOTE: Redirect to login page if not authenticated
       if (!token) {
-        if (allowNoSession.includes(pathname)) return NextResponse.next()
+        if (ALLOWED_NO_SESSION_ROUTES.includes(pathname as any)) return NextResponse.next()
         url.pathname = '/login'
         return NextResponse.redirect(url)
       }
 
       // NOTE: Redirect to home page if authenticated and trying to access login page
-      if (allowNoSession.includes(pathname)) {
+      if (ALLOWED_NO_SESSION_ROUTES.includes(pathname as any)) {
         url.pathname = '/'
         return NextResponse.redirect(url)
       }
@@ -35,9 +37,7 @@ export const middleware = async (request: NextRequest) => {
 
     // NOTE: For buyer, check if user is authenticated
     if (isBuyer) {
-      const checkSession = ['/profile', '/cart', '/checkout', '/order']
-
-      if (checkSession.includes(pathname)) {
+      if (BUYER_PROTECTED_ROUTES.includes(pathname as any)) {
         // Note: redirect to homepage
         if (!token) {
           url.pathname = '/'
@@ -48,7 +48,7 @@ export const middleware = async (request: NextRequest) => {
 
     return NextResponse.next()
   } catch (error) {
-    console.error('Error occurred in middleware:', error)
+    logger.error('Error occurred in middleware:', error)
     return new Response('Internal Server Error', { status: 500 })
   }
 }

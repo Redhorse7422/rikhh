@@ -24,6 +24,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'cannbe-files-v1.s3.amazonaws.com',
+        port: '',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.sanity.io',
         port: '',
       },
@@ -40,6 +45,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'pub-b7fd9c30cdbf439183b75041f5f71b92.r2.dev',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
         port: '',
       },
     ],

@@ -1,8 +1,13 @@
+import type { FixWidthInput } from './utils'
+
 import React, { useEffect } from 'react'
+
 import clsx from 'clsx'
+
 import { Flex } from '../common/Flex'
 import { Text } from '../common/Text'
-import { FixWidthInput, getWidth } from './utils'
+
+import { getWidth } from './utils'
 
 export type InputWrapperProps = {
   label?: string

@@ -5,6 +5,8 @@ import type { AxiosError, AxiosResponse } from 'axios'
 
 import axios from 'axios'
 
+import { logger } from '../logger.client'
+
 import { signOutAndReLogin } from './nextAuthWithExternalAPI'
 
 export const client = axios.create({
@@ -25,22 +27,21 @@ client.interceptors.response.use(
     return response.data?.data
   },
   async (error: AxiosError): Promise<IError> => {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    const errorResponse: any = error?.response?.data
+    const errorResponse = error?.response?.data as IError
 
     if (['admin'].includes(process.env.TEMPLATE ?? 'admin')) {
       // NOTE: FOR next-auth, If the token is expired, the user will be signed out and redirected to the login page.
       if (errorResponse?.code === 'TOKEN_EXPIRED') await signOutAndReLogin()
     }
 
-    console.error('Axios server error:', {
+    logger.error('Axios client error:', {
       message: error.message,
       url: error.config?.url,
       method: error.config?.method,
       status: error.response?.status,
       responseData: error.response?.data,
     })
-    console.error(`Axios server error: ${error.message}`)
+
     return Promise.reject(errorResponse)
   },
 )

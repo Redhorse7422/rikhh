@@ -7,13 +7,13 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiCreate, apiGet, apiGetById, apiGetFile, apiPatch, apiRemove, apiUpdate } from './axios'
 
 type ApiGetPropsWithCriteriaOpts = ApiGetWithApiHookProps & {
-  criteriaOpts?: { type?: ApiFieldType; name: string; options?: any[]; apiValue?: any }[]
+  criteriaOpts?: { type?: ApiFieldType; name: string; options?: unknown[]; apiValue?: unknown }[]
 }
 
 const handleSort = (sort?: string) => {
   if (!sort) return { sort: undefined }
-  if (sort.startsWith('-')) return { sort: `${sort.slice(1)}`, order: 'desc' }
-  return { sort, order: 'asc' }
+  if (sort.startsWith('-')) return { sort: `${sort.slice(1)}`, order: 'desc' as const }
+  return { sort, order: 'asc' as const }
 }
 
 export const useApi = () => {
@@ -40,7 +40,7 @@ export const useApi = () => {
     })
   }
 
-  const getDataSourceById = <T = any>(props: ApiGetByIdProps) => {
+  const getDataSourceById = <T = Record<string, unknown>>(props: ApiGetByIdProps) => {
     const { enabled = true } = props
 
     return useQuery<T>({
@@ -67,7 +67,7 @@ export const useApi = () => {
     mutationFn: apiRemove,
   })
 
-  const getFile = <T = any>(props: Omit<ApiGetProps, 'method'>) => {
+  const getFile = <T = unknown>(props: Omit<ApiGetProps, 'method'>) => {
     const { enabled = true } = props
 
     return useQuery<T>({
@@ -79,7 +79,6 @@ export const useApi = () => {
             ...props.query,
             whereJson: undefined,
             ...(props.query?.sort && handleSort(props.query.sort)),
-            // ...(props.query?.filters && handleFilters(props.query.filters, props?.criteriaOpts)),
             ...(props.query?.whereJson && {
               whereJson: `${encodeURIComponent(JSON.stringify(props.query.whereJson))}`,
             }),

@@ -2,8 +2,9 @@
 
 'use client'
 
-import { FullScreenLoading } from '@/components/common/Loading/FullScreenLoading'
 import React, { createContext, useCallback, useEffect, useState } from 'react'
+
+import { FullScreenLoading } from '@/components/common/Loading/FullScreenLoading'
 
 type FullScreenLoadingContextType = {
   isOpen: boolean | null

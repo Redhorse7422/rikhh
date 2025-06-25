@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+
 import { Loader } from './Loader'
 
 export const FullScreenLoading = () => {

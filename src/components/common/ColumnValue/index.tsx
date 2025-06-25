@@ -8,6 +8,8 @@ import clsx from 'clsx'
 
 import { handleTwColor, type TwColorSemantic } from '@/libs/pureTailwind'
 
+import { Icon } from '../icon'
+
 import {
   dateStatus,
   toDateBase,
@@ -21,7 +23,6 @@ import {
   toTimeShortBase,
 } from './DateTime'
 import { NumericText } from './NumericText'
-import { Icon } from '../icon'
 
 export type ValueType =
   | 'text'

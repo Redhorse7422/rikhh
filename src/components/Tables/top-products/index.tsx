@@ -1,4 +1,5 @@
 import Image from 'next/image'
+
 import { PaginatedTable } from '@/components/ui/paginated-table'
 
 export async function TopProducts() {
@@ -50,10 +51,7 @@ export async function TopProducts() {
         <h2 className='text-2xl font-bold text-dark dark:text-white'>Top Products</h2>
       </div>
 
-      <PaginatedTable
-        path='/categories'
-        columns={columns}
-      />
+      <PaginatedTable path='/categories' columns={columns} />
     </div>
   )
 }

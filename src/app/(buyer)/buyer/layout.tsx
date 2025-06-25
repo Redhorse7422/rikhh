@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+
 import { BuyerLayout } from '@/components/Layouts/BuyerLayout'
 
 export default function AppTemplate({ children }: { children: React.ReactNode }) {

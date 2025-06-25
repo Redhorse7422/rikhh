@@ -1,15 +1,18 @@
 'use client'
 
-import { useApi } from '@/hooks/useApi'
+import { useEffect } from 'react'
+
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 
-import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
-import useToast from '@/hooks/useToast'
-import { useEffect } from 'react'
-import { SectionProductDetail } from '../AdminAddProductPage/SectionProductsDetail'
-import { SectionAction } from '../AdminAddProductPage/SectionAction'
 import { Loader } from '@/components/common/Loading/Loader'
+import { useApi } from '@/hooks/useApi'
+import useToast from '@/hooks/useToast'
+import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
+
+import { SectionAction } from '../AdminAddProductPage/SectionAction'
+import { SectionProductDetail } from '../AdminAddProductPage/SectionProductsDetail'
+
 
 const defaultValues = {
   isActive: true,
@@ -44,15 +47,17 @@ export const AdminEditProductPage = () => {
   })
 
   useEffect(() => {
-    if (isLoading && status == 'pending' && !productCategory) {
+    if (isLoading && status === 'pending' && !productCategory) {
       fullLoading.open()
     } else {
       fullLoading.close()
-      setValue('name', productCategory.name ?? '')
-      setValue('slug', productCategory.slug ?? '')
-      setValue('parentId', productCategory?.parent?.id)
-      setValue('isActive', productCategory.isActive ?? false)
-      setValue('isFeatured', productCategory.isFeatured ?? false)
+      if (productCategory && typeof productCategory === 'object') {
+        setValue('name', (productCategory as any).name ?? '')
+        setValue('slug', (productCategory as any).slug ?? '')
+        setValue('parentId', (productCategory as any)?.parent?.id)
+        setValue('isActive', (productCategory as any).isActive ?? false)
+        setValue('isFeatured', (productCategory as any).isFeatured ?? false)
+      }
     }
   }, [productCategory, isLoading, status])
 

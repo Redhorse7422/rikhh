@@ -1,12 +1,29 @@
 // import DeleteConfirmationModal from './DeleteConfirmationModal';
+import type { TableProps } from '@/components/ui/paginated-table/type'
+
+import { useState } from 'react'
+
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+
 import { RenderValue } from '@/components/common/ColumnValue'
-import { Icon } from '@/components/common/icon'
+import { Flex } from '@/components/common/Flex'
 import DeleteConfirmationModal from '@/components/common/Modal/DeleteConfirmationModal'
-import { TableProps } from '@/components/ui/paginated-table/type'
+import { Icon } from '@/components/common/icon'
 import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { logger } from '@/libs/logger.client'
+
+
+
+interface ProductItem {
+  id: string
+  name: string
+  slug: string
+  image?: string
+  isActive: boolean
+  isFeatured: boolean
+}
 
 export const useColumn = (refetch?: () => void) => {
   const router = useRouter()
@@ -14,10 +31,7 @@ export const useColumn = (refetch?: () => void) => {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { showToast } = useToast()
-  const getOption = (status: string) => {
-    if (status) return { value: 'Active', color: 'text-success', dotColor: 'bg-green-500' }
-    return { value: 'InActive', color: 'text-yellow-100', dotColor: 'bg-yellow-300' }
-  }
+
   const openDeleteModal = (id: string) => {
     setSelectedId(id)
     setIsModalOpen(true)
@@ -25,17 +39,18 @@ export const useColumn = (refetch?: () => void) => {
 
   // Handle delete confirmation
   const handleConfirmDelete = async () => {
+    if (!selectedId) return
+
     try {
-      if (selectedId) {
-        await removeDataSource.mutateAsync({
-          path: '/v1/products',
-          id: selectedId,
-        })
-        showToast('Product Deleted successful!', 'success')
-        refetch?.()
-      }
+      await removeDataSource.mutateAsync({
+        path: '/v1/products',
+        id: selectedId,
+      })
+      showToast('Product deleted successfully!', 'success')
+      refetch?.()
     } catch (error) {
-      showToast('Something went Wrong!', 'error')
+      logger.error('Failed to delete product:', error)
+      showToast('Failed to delete product. Please try again.', 'error')
     } finally {
       closeModal()
     }
@@ -51,6 +66,24 @@ export const useColumn = (refetch?: () => void) => {
       header: 'Name',
       key: 'name',
       isSort: true,
+      render: (_: string, item: ProductItem) => {
+        const imageUrl = item?.image?.startsWith('http') ? item.image : '/images/no-image.png'
+
+        return (
+          <Flex align='center' gap='small'>
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                width={64}
+                height={64}
+                alt={item.name || 'Product image'}
+                className='rounded-md object-cover'
+              />
+            )}
+            <span>{item.name}</span>
+          </Flex>
+        )
+      },
     },
     {
       header: 'Slug',
@@ -58,11 +91,9 @@ export const useColumn = (refetch?: () => void) => {
       isSort: true,
     },
     {
-      header: 'isActive',
+      header: 'Active',
       key: 'isActive',
-      render: (status: string) => {
-        const opt = getOption(status)
-        console.log(opt)
+      render: (status: boolean) => {
         return (
           <div className='flex items-center gap-2'>
             <RenderValue value={status} size='xl' type='boolean-icon' />
@@ -73,9 +104,7 @@ export const useColumn = (refetch?: () => void) => {
     {
       header: 'Featured',
       key: 'isFeatured',
-      render: (status: string) => {
-        const opt = getOption(status)
-        console.log(opt)
+      render: (status: boolean) => {
         return (
           <div className='flex items-center gap-2'>
             <RenderValue value={status} size='xl' type='boolean-icon' />
@@ -84,15 +113,23 @@ export const useColumn = (refetch?: () => void) => {
       },
     },
     {
-      header: 'Action',
+      header: 'Actions',
       key: 'action',
       className: 'w-[160px] text-right',
-      render: (_: any, record: any) => (
+      render: (_: unknown, record: ProductItem) => (
         <div className='flex justify-end gap-2'>
-          <button className='px-2 py-2 text-danger' onClick={() => router.push(`/products/${record.id}`)}>
+          <button
+            className='rounded px-2 py-2 text-success hover:bg-gray-100'
+            onClick={() => router.push(`/products/${record.id}`)}
+            aria-label={`View ${record.name}`}
+          >
             <Icon name='AiOutlineEye' color='success' size='lg' />
           </button>
-          <button className='px-2 py-2 text-danger' onClick={() => openDeleteModal(record.id)}>
+          <button
+            className='rounded px-2 py-2 text-danger hover:bg-gray-100'
+            onClick={() => openDeleteModal(record.id)}
+            aria-label={`Delete ${record.name}`}
+          >
             <Icon name='AiOutlineDelete' color='danger' size='lg' />
           </button>
         </div>

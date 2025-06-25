@@ -1,12 +1,13 @@
-import '@/css/satoshi.css'
-import '@/css/style.css'
+/* eslint-disable import/order */
+import type { Metadata } from 'next'
+import type { PropsWithChildren } from 'react'
 
 import 'flatpickr/dist/flatpickr.min.css'
 import 'jsvectormap/dist/jsvectormap.css'
-
-import type { Metadata } from 'next'
 import NextTopLoader from 'nextjs-toploader'
-import type { PropsWithChildren } from 'react'
+
+import '@/css/satoshi.css'
+import '@/css/style.css'
 import { MainProviders } from '@/providers/MainProvider'
 
 export const metadata: Metadata = {

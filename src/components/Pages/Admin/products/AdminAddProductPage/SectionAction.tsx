@@ -1,10 +1,12 @@
 // import { useRouter } from 'next/router'
 
+import type { FC } from 'react'
+
+import { useRouter } from 'next/navigation'
+
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
 import { Flex } from '@/components/common/Flex'
-import { useRouter } from 'next/navigation'
-import { FC } from 'react'
 
 type SectionActionProps = {
   updating?: boolean | false

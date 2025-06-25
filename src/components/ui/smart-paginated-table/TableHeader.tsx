@@ -1,5 +1,7 @@
+import type { SmartColumn } from './types'
+
 import React from 'react'
-import { SmartColumn } from './types'
+
 
 interface TableHeaderProps {
   columns: SmartColumn[]
@@ -18,14 +20,10 @@ export const TableHeader: React.FC<TableHeaderProps> = ({ columns, sort, handleS
         >
           <div className='flex items-center gap-1'>
             {col.header}
-            {col.isSort && (
-              <span>
-                {sort === col.key ? '▲' : sort === `-${col.key}` ? '▼' : ''}
-              </span>
-            )}
+            {col.isSort && <span>{sort === col.key ? '▲' : sort === `-${col.key}` ? '▼' : ''}</span>}
           </div>
         </th>
       ))}
     </tr>
   </thead>
-) 
+)

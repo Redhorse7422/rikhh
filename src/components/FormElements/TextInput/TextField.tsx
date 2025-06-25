@@ -9,7 +9,7 @@ import { Controller } from '../Controller'
 
 import { TextInput } from './TextInput'
 
-type TextFieldProps = Omit<TextInputProps, 'name' | 'type'> &
+type TextFieldProps = Omit<TextInputProps, 'name'> &
   Required<Pick<TextInputProps, 'name'>> &
   Pick<ControllerProps, 'control' | 'rules'>
 

@@ -1,10 +1,11 @@
 import { Card } from '@/components/common/Card'
-import { FormFIlter } from './FormFilter'
+
+import { FormFilter } from './FormFilter'
 
 export const SectionFilter = () => {
   return (
-    <Card className='border shadow-lg'>
-      <FormFIlter />
+    <Card>
+      <FormFilter />
     </Card>
   )
 }

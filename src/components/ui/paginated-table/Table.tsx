@@ -1,12 +1,16 @@
 'use client'
 
+import type { ColumnOptions, DesktopTableProps } from './type'
+
 import * as React from 'react'
-import { cn } from '@/libs/utils'
-import { ChevronLeft, ChevronRight } from '@/components/Layouts/sidebar/icons'
+
 import { ArrowUpIcon } from '@/assets/icons'
-import { ColumnOptions, DesktopTableProps } from './type'
-import { TableContext } from './Provider'
+import { ChevronLeft, ChevronRight } from '@/components/Layouts/sidebar/icons'
 import { Loader } from '@/components/common/Loading/Loader'
+import { cn } from '@/libs/utils'
+
+import { TableContext } from './Provider'
+
 
 export function CustomTable<T>({
   dataSource,
@@ -67,7 +71,7 @@ export function CustomTable<T>({
         </button>
 
         {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-          let pageNum =
+          const pageNum =
             totalPages <= 5 || page <= 3 ? i + 1 : page >= totalPages - 2 ? totalPages - 4 + i : page - 2 + i
 
           return (
@@ -123,11 +127,13 @@ export function CustomTable<T>({
         {/* Page size selector */}
         <select
           value={limit}
-          onChange={e => setLimit(Number(e.target.value))}
-          className='ml-2 border rounded px-2 py-1 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+          onChange={(e) => setLimit(Number(e.target.value))}
+          className='ml-2 rounded border bg-white px-2 py-1 text-sm dark:bg-dark-2 dark:text-neutral-200'
         >
-          {[10, 20, 50, 100].map(size => (
-            <option key={size} value={size}>{size} / page</option>
+          {[10, 20, 50, 100].map((size) => (
+            <option key={size} value={size}>
+              {size} / page
+            </option>
           ))}
         </select>
 
@@ -137,7 +143,7 @@ export function CustomTable<T>({
           min={1}
           max={totalPages}
           value={inputPage}
-          onChange={e => {
+          onChange={(e) => {
             const val = e.target.value
             if (val === '') {
               setInputPage('')
@@ -156,13 +162,13 @@ export function CustomTable<T>({
               setInputPage(page.toString())
             }
           }}
-          onKeyDown={e => {
+          onKeyDown={(e) => {
             const num = Number(inputPage)
             if (e.key === 'Enter' && inputPage !== '' && num !== page) {
               paginate(num)
             }
           }}
-          className='w-16 border rounded px-2 py-1 ml-2 text-sm bg-white dark:bg-dark-2 dark:text-neutral-200'
+          className='ml-2 w-16 rounded border bg-white px-2 py-1 text-sm dark:bg-dark-2 dark:text-neutral-200'
         />
         <span className='ml-1 text-xs text-neutral-500'>/ {totalPages}</span>
       </div>

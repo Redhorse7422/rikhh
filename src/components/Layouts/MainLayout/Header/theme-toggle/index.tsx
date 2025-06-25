@@ -1,6 +1,9 @@
-import { cn } from '@/libs/utils'
-import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+
+import { useTheme } from 'next-themes'
+
+import { cn } from '@/libs/utils'
+
 import { Moon, Sun } from './icons'
 
 const THEMES = [

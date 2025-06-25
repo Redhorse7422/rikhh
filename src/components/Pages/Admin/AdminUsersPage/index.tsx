@@ -1,19 +1,45 @@
 'use client'
 
-import { useApi } from '@/hooks/useApi'
+import React from 'react'
 
-export const AdminUsersPage = () => {
+import { useApi } from '@/hooks/useApi'
+import { logger } from '@/libs/logger.client'
+
+export const AdminUsersPage: React.FC = () => {
   const { getDataSource } = useApi()
-  const { data } = getDataSource({
-    path: '/v1/users',
-    query: {
-      // sort: '-updatedAt',
-    },
+
+  const {
+    data: users,
+    isLoading,
+    error,
+  } = getDataSource({
+    path: '/v1/users/all',
+    query: { limit: 50 },
   })
-  console.log('Users ===> ', data)
+
+  if (isLoading) {
+    return (
+      <div className='rounded-lg bg-white p-6 shadow'>
+        <h2 className='mb-4 text-2xl font-semibold'>Users Management</h2>
+        <p className='text-gray-600'>Loading users...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    logger.error('Failed to fetch users:', error)
+    return (
+      <div className='rounded-lg bg-white p-6 shadow'>
+        <h2 className='mb-4 text-2xl font-semibold'>Users Management</h2>
+        <p className='text-red-600'>Failed to load users. Please try again.</p>
+      </div>
+    )
+  }
+
   return (
-    <h2 className='pb-2 text-2xl font-bold' style={{ marginTop: -12 }}>
-      Users
-    </h2>
+    <div className='rounded-lg bg-white p-6 shadow'>
+      <h2 className='mb-4 text-2xl font-semibold'>Users Management</h2>
+      <p className='text-gray-600'>Manage user accounts and permissions. Total users: {users?.data?.length || 0}</p>
+    </div>
   )
 }

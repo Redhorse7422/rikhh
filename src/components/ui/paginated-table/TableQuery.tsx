@@ -5,8 +5,8 @@ import type { DesktopTableWithoutQsProps } from './type'
 import { useContext } from 'react'
 
 import { TableContext } from './Provider'
-import { useQueryWithoutQs } from './useTableData'
 import { CustomTable } from './Table'
+import { useQueryWithoutQs } from './useTableData'
 
 export const TableWithQs = ({ path, initialQuery, transform, columns }: DesktopTableWithoutQsProps) => {
   const ctx = useContext(TableContext)

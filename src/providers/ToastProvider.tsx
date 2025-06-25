@@ -1,6 +1,8 @@
 'use client'
 
-import { Toaster, ToastOptions } from 'react-hot-toast'
+import type { ToastOptions } from 'react-hot-toast'
+
+import { Toaster } from 'react-hot-toast'
 
 const ToastProvider = () => {
   const toastOptions: ToastOptions = {

@@ -3,12 +3,12 @@ import type { Control } from 'react-hook-form'
 
 import { type FC } from 'react'
 
+import { CheckboxField } from '@/components/FormElements/CheckboxInput'
+import { SelectField } from '@/components/FormElements/SelectInput'
+import { TextField } from '@/components/FormElements/TextInput'
+import { Card } from '@/components/common/Card'
 import { useApi } from '@/hooks/useApi'
 import { Grid } from '@/libs/pureTailwind'
-import { Card } from '@/components/common/Card'
-import { TextField } from '@/components/FormElements/TextInput'
-import { SelectField } from '@/components/FormElements/SelectInput'
-import { CheckboxField } from '@/components/FormElements/CheckboxInput'
 
 type SectionProductDetailProps = {
   control: Control<NewProductForm>

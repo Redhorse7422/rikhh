@@ -1,10 +1,16 @@
 'use client'
 
-import { ChevronUpIcon } from '@/assets/icons'
-import { cn } from '@/libs/utils'
+import type { InputWrapperProps } from '../InputWrapper'
+import type { IconAllowed } from '@/components/common/icon'
+
 import { useId, useState } from 'react'
-import { InputWrapper, InputWrapperProps } from '../InputWrapper'
-import { Icon, IconAllowed } from '@/components/common/icon'
+
+import { ChevronUpIcon } from '@/assets/icons'
+import { Icon } from '@/components/common/icon'
+import { cn } from '@/libs/utils'
+
+import { InputWrapper } from '../InputWrapper'
+
 
 export type SelectInputProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,

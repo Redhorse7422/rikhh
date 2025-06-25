@@ -1,5 +1,6 @@
-import { Icon } from '@/components/common/icon'
 import React from 'react'
+
+import { Icon } from '@/components/common/icon'
 
 interface PaginationControlsProps {
   page: number
@@ -41,7 +42,12 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
         <Icon name='AiOutlineLeft' color={page === 1 || isLoading ? 'info' : 'black'} />
       </button>
       {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-        let pageNum = totalPages <= 5 || page <= 3 ? i + 1 : page >= totalPages - 2 ? totalPages - 4 + i : page - 2 + i
+        const pageNum =
+          totalPages <= 5 || page <= 3
+            ? i + 1
+            : page >= totalPages - 2
+            ? totalPages - 4 + i
+            : page - 2 + i
         return (
           <button
             key={pageNum}

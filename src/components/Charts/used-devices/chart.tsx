@@ -1,55 +1,57 @@
-"use client";
+'use client'
 
-import { compactFormat } from "@/libs/format-number";
-import type { ApexOptions } from "apexcharts";
-import dynamic from "next/dynamic";
+import type { ApexOptions } from 'apexcharts'
+
+import dynamic from 'next/dynamic'
+
+import { compactFormat } from '@/libs/format-number'
 
 type PropsType = {
-  data: { name: string; amount: number }[];
-};
+  data: { name: string; amount: number }[]
+}
 
-const Chart = dynamic(() => import("react-apexcharts"), {
+const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
-});
+})
 
 export function DonutChart({ data }: PropsType) {
   const chartOptions: ApexOptions = {
     chart: {
-      type: "donut",
-      fontFamily: "inherit",
+      type: 'donut',
+      fontFamily: 'inherit',
     },
-    colors: ["#5750F1", "#5475E5", "#8099EC", "#ADBCF2"],
+    colors: ['#5750F1', '#5475E5', '#8099EC', '#ADBCF2'],
     labels: data.map((item) => item.name),
     legend: {
       show: true,
-      position: "bottom",
+      position: 'bottom',
       itemMargin: {
         horizontal: 10,
         vertical: 5,
       },
       formatter: (legendName, opts) => {
-        const { seriesPercent } = opts.w.globals;
-        return `${legendName}: ${seriesPercent[opts.seriesIndex]}%`;
+        const { seriesPercent } = opts.w.globals
+        return `${legendName}: ${seriesPercent[opts.seriesIndex]}%`
       },
     },
     plotOptions: {
       pie: {
         donut: {
-          size: "80%",
-          background: "transparent",
+          size: '80%',
+          background: 'transparent',
           labels: {
             show: true,
             total: {
               show: true,
               showAlways: true,
-              label: "Visitors",
-              fontSize: "16px",
-              fontWeight: "400",
+              label: 'Visitors',
+              fontSize: '16px',
+              fontWeight: '400',
             },
             value: {
               show: true,
-              fontSize: "28px",
-              fontWeight: "bold",
+              fontSize: '28px',
+              fontWeight: 'bold',
               formatter: (val) => compactFormat(+val),
             },
           },
@@ -72,7 +74,7 @@ export function DonutChart({ data }: PropsType) {
         breakpoint: 640,
         options: {
           chart: {
-            width: "100%",
+            width: '100%',
           },
         },
       },
@@ -85,13 +87,7 @@ export function DonutChart({ data }: PropsType) {
         },
       },
     ],
-  };
+  }
 
-  return (
-    <Chart
-      options={chartOptions}
-      series={data.map((item) => item.amount)}
-      type="donut"
-    />
-  );
+  return <Chart options={chartOptions} series={data.map((item) => item.amount)} type='donut' />
 }

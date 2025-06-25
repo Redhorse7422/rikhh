@@ -2,13 +2,13 @@ import type { ProductFilterValues } from './ProductFilterContext'
 
 import { useForm } from 'react-hook-form'
 
+import { TextField } from '@/components/FormElements/TextInput'
+import { Button } from '@/components/common/Button'
 import { Grid, GridItem } from '@/libs/pureTailwind'
 
 import { useProductFilter } from './ProductFilterContext'
-import { Button } from '@/components/common/Button'
-import { TextField } from '@/components/FormElements/TextInput'
 
-export const FormFIlter = () => {
+export const FormFilter = () => {
   const { setFilters } = useProductFilter()
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -18,7 +18,6 @@ export const FormFIlter = () => {
 
   const handleOnSubmit = (data: ProductFilterValues) => {
     setFilters(data)
-    console.log(data)
   }
 
   const handleReset = () => {

@@ -1,13 +1,17 @@
 'use client'
 
+import type { IconAllowed } from '@/components/common/icon'
+
 import React from 'react'
+
 import clsx from 'clsx'
 
 // import type { IconAllowed } from '@/components/Common/Icon'
 // import { Icon } from '@/components/Common/Icon'
 
+import { Icon } from '@/components/common/icon'
+
 import { InputWrapper, type InputWrapperProps } from '../InputWrapper'
-import { Icon, IconAllowed } from '@/components/common/icon'
 
 export type TextInputProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,

@@ -1,13 +1,18 @@
 'use client'
 
+import { useState } from 'react'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { signOut, useSession } from 'next-auth/react'
+
 import { ChevronUpIcon } from '@/assets/icons'
 import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/dropdown'
 import { cn } from '@/libs/utils'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useState } from 'react'
+
+
 import { LogOutIcon, SettingsIcon, UserIcon } from './icons'
-import { signOut, useSession } from 'next-auth/react'
+
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false)

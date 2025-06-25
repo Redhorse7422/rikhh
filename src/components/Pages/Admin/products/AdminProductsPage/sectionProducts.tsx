@@ -1,12 +1,16 @@
 'use client'
 
+import type { SmartColumn } from '@/components/ui/smart-paginated-table/types'
+
 import { useRef } from 'react'
+
+import { useRouter } from 'next/navigation'
+
+import { Button } from '@/components/common/Button'
 import { SmartPaginatedTable } from '@/components/ui/smart-paginated-table'
+
 import { useProductFilter } from './ProductFilterContext'
 import { useColumn } from './useColumn'
-import { SmartColumn } from '@/components/ui/smart-paginated-table/types'
-import { Button } from '@/components/common/Button'
-import { useRouter } from 'next/navigation'
 
 export const SectionProducts = () => {
   const { filters } = useProductFilter()

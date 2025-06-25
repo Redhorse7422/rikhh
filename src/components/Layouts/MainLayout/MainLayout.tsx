@@ -2,10 +2,12 @@
 
 import type { FC, ReactNode } from 'react'
 import React from 'react'
-import { Header } from './Header'
-import { MainLayoutProvider } from './MainLayoutContext'
+
 import { Sidebar } from '../sidebar'
 import { SidebarProvider } from '../sidebar/sidebar-context'
+
+import { Header } from './Header'
+import { MainLayoutProvider } from './MainLayoutContext'
 
 export type MainLayoutBaseProps = {
   children: ReactNode

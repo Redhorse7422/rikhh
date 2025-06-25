@@ -6,7 +6,7 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 import { serverFetchWithNextRequest } from '@/libs/axios'
-import { logger } from '@/libs/logger'
+import { logger } from '@/libs/logger.server'
 
 export const GET = async (req: NextRequest) => {
   try {

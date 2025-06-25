@@ -1,71 +1,118 @@
-import { CheckIcon, XIcon } from "@/assets/icons";
-import { cn } from "@/libs/utils";
-import { useId } from "react";
+'use client'
 
-type PropsType = {
-  withIcon?: "check" | "x";
-  withBg?: boolean;
-  label: string;
-  name?: string;
-  minimal?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  radius?: "default" | "md";
-};
+import React, { useState } from 'react'
 
-export type CheckboxProps = PropsType;
+import clsx from 'clsx'
 
-export function Checkbox({
+export interface CheckboxProps {
+  label?: string
+  withIcon?: 'check' | 'x'
+  minimal?: boolean
+  withBg?: boolean
+  defaultChecked?: boolean
+  onChange?: (checked: boolean) => void
+  className?: string
+  name?: string
+  value?: boolean
+  checked?: boolean
+}
+
+export const Checkbox: React.FC<CheckboxProps> = ({
+  label = 'Checkbox Text',
   withIcon,
-  label,
-  name,
-  withBg,
-  minimal,
+  minimal = false,
+  withBg = false,
+  defaultChecked = false,
   onChange,
-  radius,
-}: PropsType) {
-  const id = useId();
+  className,
+  name,
+  value,
+  checked,
+}) => {
+  const [isChecked, setIsChecked] = useState(defaultChecked)
+
+  // Use controlled state if checked prop is provided
+  const isControlled = checked !== undefined
+  const currentChecked = isControlled ? checked : isChecked
+
+  const handleChange = () => {
+    const newValue = !currentChecked
+    if (!isControlled) {
+      setIsChecked(newValue)
+    }
+    onChange?.(newValue)
+  }
+
+  const getIcon = () => {
+    if (!withIcon) return null
+
+    if (withIcon === 'check') {
+      return (
+        <svg width='11' height='8' viewBox='0 0 11 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <path
+            d='M10.0915 0.951972L10.0867 0.946075L10.0813 0.940568C9.90076 0.753564 9.61034 0.753146 9.42927 0.939309L4.16201 6.22962L1.58507 3.63469C1.40401 3.44841 1.11351 3.44879 0.932892 3.63584C0.755703 3.81933 0.755703 4.10875 0.932892 4.29224L0.932878 4.29225L0.934851 4.29424L3.58046 6.95832C3.73676 7.11955 3.94983 7.2 4.1473 7.2C4.36196 7.2 4.55963 7.11773 4.71406 6.9584L10.0468 1.60234C10.2436 1.4199 10.2421 1.1339 10.0915 0.951972ZM4.2327 6.30081L4.2317 6.2998C4.23206 6.30015 4.23237 6.30049 4.23269 6.30082L4.2327 6.30081Z'
+            fill='currentColor'
+            stroke='currentColor'
+            strokeWidth='0.4'
+          />
+        </svg>
+      )
+    }
+
+    if (withIcon === 'x') {
+      return (
+        <svg width='8' height='8' viewBox='0 0 8 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+          <path
+            d='M1 1L7 7M7 1L1 7'
+            stroke='currentColor'
+            strokeWidth='1.5'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
+      )
+    }
+
+    return null
+  }
 
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className={cn(
-          "flex cursor-pointer select-none items-center",
-          !minimal && "text-body-sm font-medium",
-        )}
-      >
-        <div className="relative">
-          <input
-            type="checkbox"
-            onChange={onChange}
-            name={name}
-            id={id}
-            className="peer sr-only"
-          />
-
+    <div className={clsx('flex items-center', className)}>
+      <label className='flex cursor-pointer select-none items-center text-body-sm font-medium'>
+        <div className='relative'>
+          <input type='checkbox' name={name} className='sr-only' checked={currentChecked} onChange={handleChange} />
           <div
-            className={cn(
-              "mr-2 flex size-5 items-center justify-center rounded border border-dark-5 peer-checked:border-primary dark:border-dark-6 peer-checked:[&>*]:block",
-              withBg
-                ? "peer-checked:bg-primary [&>*]:text-white"
-                : "peer-checked:bg-gray-2 dark:peer-checked:bg-transparent",
-              minimal && "mr-3 border-stroke dark:border-dark-3",
-              radius === "md" && "rounded-md",
-            )}
+            className={clsx('mr-2 flex h-5 w-5 items-center justify-center rounded border transition-colors', {
+              'border-primary bg-primary text-white': currentChecked && !minimal,
+              'border-gray-300 bg-gray-50': !currentChecked && !minimal,
+              'border-gray-300': minimal,
+              'bg-gray-100': withBg && !currentChecked,
+              'bg-primary': withBg && currentChecked,
+            })}
           >
-            {!withIcon && (
-              <span className="hidden size-2.5 rounded-sm bg-primary" />
+            {currentChecked && (
+              <span
+                className={clsx('flex items-center justify-center', {
+                  'text-white': !minimal,
+                  'text-primary': minimal,
+                })}
+              >
+                {getIcon() || (
+                  <svg width='11' height='8' viewBox='0 0 11 8' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path
+                      d='M10.0915 0.951972L10.0867 0.946075L10.0813 0.940568C9.90076 0.753564 9.61034 0.753146 9.42927 0.939309L4.16201 6.22962L1.58507 3.63469C1.40401 3.44841 1.11351 3.44879 0.932892 3.63584C0.755703 3.81933 0.755703 4.10875 0.932892 4.29224L0.932878 4.29225L0.934851 4.29424L3.58046 6.95832C3.73676 7.11955 3.94983 7.2 4.1473 7.2C4.36196 7.2 4.55963 7.11773 4.71406 6.9584L10.0468 1.60234C10.2436 1.4199 10.2421 1.1339 10.0915 0.951972ZM4.2327 6.30081L4.2317 6.2998C4.23206 6.30015 4.23237 6.30049 4.23269 6.30082L4.2327 6.30081Z'
+                      fill='currentColor'
+                      stroke='currentColor'
+                      strokeWidth='0.4'
+                    />
+                  </svg>
+                )}
+              </span>
             )}
-
-            {withIcon === "check" && (
-              <CheckIcon className="hidden text-primary" />
-            )}
-
-            {withIcon === "x" && <XIcon className="hidden text-primary" />}
           </div>
         </div>
-        <span>{label}</span>
+        {label}
       </label>
     </div>
-  );
+  )
 }

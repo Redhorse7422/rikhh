@@ -1,25 +1,26 @@
-"use client";
+'use client'
 
-import type { ApexOptions } from "apexcharts";
-import dynamic from "next/dynamic";
+import type { ApexOptions } from 'apexcharts'
+
+import dynamic from 'next/dynamic'
 
 type PropsType = {
   data: {
-    x: string;
-    y: number;
-  }[];
-};
+    x: string
+    y: number
+  }[]
+}
 
-const Chart = dynamic(() => import("react-apexcharts"), {
+const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
-});
+})
 
 export function CampaignVisitorsChart({ data }: PropsType) {
   const options: ApexOptions = {
-    colors: ["#5750F1"],
+    colors: ['#5750F1'],
     chart: {
-      fontFamily: "Satoshi, sans-serif",
-      type: "bar",
+      fontFamily: 'Satoshi, sans-serif',
+      type: 'bar',
       height: 200,
       toolbar: {
         show: false,
@@ -28,7 +29,7 @@ export function CampaignVisitorsChart({ data }: PropsType) {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "40%",
+        columnWidth: '40%',
         borderRadius: 3,
       },
     },
@@ -38,7 +39,7 @@ export function CampaignVisitorsChart({ data }: PropsType) {
     stroke: {
       show: true,
       width: 4,
-      colors: ["transparent"],
+      colors: ['transparent'],
     },
     xaxis: {
       axisBorder: {
@@ -50,9 +51,9 @@ export function CampaignVisitorsChart({ data }: PropsType) {
     },
     legend: {
       show: true,
-      position: "top",
-      horizontalAlign: "left",
-      fontFamily: "Satoshi",
+      position: 'top',
+      horizontalAlign: 'left',
+      fontFamily: 'Satoshi',
     },
     grid: {
       strokeDashArray: 7,
@@ -70,21 +71,21 @@ export function CampaignVisitorsChart({ data }: PropsType) {
         show: false,
       },
     },
-  };
+  }
 
   return (
-    <div className="-ml-3.5 px-6 pb-1 pt-7.5">
+    <div className='-ml-3.5 px-6 pb-1 pt-7.5'>
       <Chart
         options={options}
         series={[
           {
-            name: "Visitors",
+            name: 'Visitors',
             data,
           },
         ]}
-        type="bar"
+        type='bar'
         height={230}
       />
     </div>
-  );
+  )
 }

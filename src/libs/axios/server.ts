@@ -5,7 +5,7 @@ import type { AxiosError, AxiosResponse } from 'axios'
 
 import axios from 'axios'
 
-import { logger } from '../logger'
+import { logger } from '../logger.server'
 
 export const server = axios.create({
   baseURL: process.env.API_SERVER_BASE_URL,
@@ -22,17 +22,16 @@ server.interceptors.request.use(
 server.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError): Promise<IError> => {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    const errorResponse: any = error?.response?.data
+    const errorResponse = error?.response?.data as IError
 
-    console.error('Axios server error:', {
+    logger.error('Axios server error:', {
       message: error.message,
       url: error.config?.url,
       method: error.config?.method,
       status: error.response?.status,
       responseData: error.response?.data,
     })
-    logger.error(`Axios server error: ${error.message}`)
+
     return Promise.reject({ ...errorResponse, statusCode: error?.response?.status })
   },
 )

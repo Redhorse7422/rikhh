@@ -1,35 +1,37 @@
-"use client";
+'use client'
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import type { ApexOptions } from "apexcharts";
-import dynamic from "next/dynamic";
+import type { ApexOptions } from 'apexcharts'
+
+import dynamic from 'next/dynamic'
+
+import { useIsMobile } from '@/hooks/use-mobile'
 
 type PropsType = {
   data: {
-    received: { x: unknown; y: number }[];
-    due: { x: unknown; y: number }[];
-  };
-};
+    received: { x: unknown; y: number }[]
+    due: { x: unknown; y: number }[]
+  }
+}
 
-const Chart = dynamic(() => import("react-apexcharts"), {
+const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
-});
+})
 
 export function PaymentsOverviewChart({ data }: PropsType) {
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile()
 
   const options: ApexOptions = {
     legend: {
       show: false,
     },
-    colors: ["#5750F1", "#0ABEF9"],
+    colors: ['#5750F1', '#0ABEF9'],
     chart: {
       height: 310,
-      type: "area",
+      type: 'area',
       toolbar: {
         show: false,
       },
-      fontFamily: "inherit",
+      fontFamily: 'inherit',
     },
     fill: {
       gradient: {
@@ -56,7 +58,7 @@ export function PaymentsOverviewChart({ data }: PropsType) {
       },
     ],
     stroke: {
-      curve: "smooth",
+      curve: 'smooth',
       width: isMobile ? 2 : 3,
     },
     grid: {
@@ -83,25 +85,25 @@ export function PaymentsOverviewChart({ data }: PropsType) {
         show: false,
       },
     },
-  };
+  }
 
   return (
-    <div className="-ml-4 -mr-5 h-[310px]">
+    <div className='-ml-4 -mr-5 h-[310px]'>
       <Chart
         options={options}
         series={[
           {
-            name: "Received",
+            name: 'Received',
             data: data.received,
           },
           {
-            name: "Due",
+            name: 'Due',
             data: data.due,
           },
         ]}
-        type="area"
+        type='area'
         height={310}
       />
     </div>
-  );
+  )
 }

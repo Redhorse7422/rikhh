@@ -1,20 +1,25 @@
+import type { SmartColumn } from './types'
+
 import React from 'react'
-import { SmartColumn } from './types'
 
 interface TableBodyProps {
   columns: SmartColumn[]
-  rows: any[]
+  rows: Record<string, unknown>[]
 }
 
 export const TableBody: React.FC<TableBodyProps> = ({ columns, rows }) => {
   return (
     <tbody>
       {rows.length > 0 ? (
-        rows.map((row: any, rowIndex: number) => (
-          <tr key={row.id || rowIndex} className='border-b transition-colors hover:bg-neutral-100/50 dark:hover:bg-dark-2'>
-            {columns.map((col) => (
-              <td key={col.key} className={`p-4 align-middle ${col.className || ''}`}>
-                {col.render ? col.render(row[col.key], row, rowIndex) : row[col.key] ?? '-'}
+        rows.map((row: Record<string, unknown>, rowIndex: number) => (
+          <tr key={rowIndex} className='border-b border-gray-200 dark:border-dark-3'>
+            {columns.map((column, colIndex) => (
+              <td
+                key={colIndex}
+                className={`px-4 py-3 text-sm ${column.className || ''}`}
+                style={{ width: column.width }}
+              >
+                {column.render ? column.render(row[column.key], row, rowIndex) : String(row[column.key] || '')}
               </td>
             ))}
           </tr>
@@ -28,4 +33,4 @@ export const TableBody: React.FC<TableBodyProps> = ({ columns, rows }) => {
       )}
     </tbody>
   )
-} 
+}

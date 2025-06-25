@@ -1,4 +1,6 @@
-import toast, { ToastPosition } from 'react-hot-toast'
+import type { ToastPosition } from 'react-hot-toast'
+
+import toast from 'react-hot-toast'
 
 const useToast = () => {
   const showToast = (
