@@ -14,13 +14,11 @@ import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
 import { logger } from '@/libs/logger.client'
 
-
-
 interface CategoryItem {
   id: string
   name: string
   slug: string
-  image?: string
+  thumbnailImage?: any
   isActive: boolean
   isFeatured: boolean
 }
@@ -71,7 +69,9 @@ export const useColumn = (refetch?: () => void) => {
       // width: '35%',
       isSort: true,
       render: (_: string, item: CategoryItem) => {
-        const imageUrl = item?.image?.startsWith('http') ? item.image : '/images/no-image.png'
+        const imageUrl = item?.thumbnailImage?.url?.startsWith('http')
+          ? item.thumbnailImage.url
+          : '/images/no-image.png'
 
         return (
           <Flex align='center' gap='small'>

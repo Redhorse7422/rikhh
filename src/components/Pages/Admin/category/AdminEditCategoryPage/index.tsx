@@ -14,7 +14,6 @@ import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
 import { SectionAction } from '../AdminAddCategoryPage/SectionAction'
 import { SectionCategoryDetail } from '../AdminAddCategoryPage/SectionCategoryDetail'
 
-
 const defaultValues = {
   isActive: true,
   name: '',
@@ -23,6 +22,7 @@ const defaultValues = {
   isFeatured: false,
   description: '',
   thumbnail: [],
+  coverImage: [],
 }
 
 export const AdminEditCategoryPage = () => {
@@ -56,18 +56,8 @@ export const AdminEditCategoryPage = () => {
         setValue('parentId', (productCategory as any)?.parent?.id)
         setValue('isActive', (productCategory as any).isActive ?? false)
         setValue('isFeatured', (productCategory as any).isFeatured ?? false)
-        if ((productCategory as any).image) {
-          setValue('thumbnail', [
-            {
-              id: 'existing',
-              preview: (productCategory as any).image,
-              name: (productCategory as any).name,
-              size: 0,
-              type: 'image/*',
-              file: null as unknown as File, // Placeholder
-            },
-          ])
-        }
+        setValue('thumbnail', (productCategory as any).thumbnailImage ? [(productCategory as any).thumbnailImage] : [])
+        setValue('coverImage', (productCategory as any).coverImage ? [(productCategory as any).coverImage] : [])
       }
     }
   }, [productCategory, isLoading, status])
@@ -75,26 +65,30 @@ export const AdminEditCategoryPage = () => {
   const handleOnSubmit = async (data: NewCategoryForm) => {
     try {
       fullLoading.open()
-
-      const formData = new FormData()
-      formData.append('name', data.name)
-      formData.append('slug', data.slug)
-      formData.append('isActive', String(data.isActive))
-      if (data.parentId?.trim()) {
-        formData.append('parentId', data.parentId.trim())
-      }
-      formData.append('isFeatured', String(data.isFeatured))
-
-      // ✅ Append thumbnail file if available
-      if (data.thumbnail.length > 0 && data.thumbnail[0].file) {
-        formData.append('image', data.thumbnail[0].file)
-      }
-
-      // await createOrderPayment(formData)
+      console.log(data)
 
       await updateDataSource.mutateAsync({
         path: `/v1/categories/update/${id}`,
-        body: formData,
+        body: {
+          name: data.name.trim(),
+          slug: data.slug.trim(),
+          isActive: data.isActive,
+          ...(data.parentId && { parentId: data.parentId.trim() }),
+          isFeatured: data.isFeatured,
+          description: data.description.trim(),
+          thumbnailImageId:
+            data.thumbnail.length > 0 && data.thumbnail[0].fileId
+              ? data.thumbnail[0].fileId
+              : data.thumbnail[0].id
+                ? data.thumbnail[0].id
+                : null,
+          coverImageId:
+            data.coverImage.length > 0 && data.coverImage[0].fileId
+              ? data.coverImage[0].fileId
+              : data.coverImage[0].id
+                ? data.coverImage[0].id
+                : null,
+        },
       })
       showToast('Category Updated successful!', 'success')
       router.push('/categories')

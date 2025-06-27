@@ -20,7 +20,7 @@ interface ProductItem {
   id: string
   name: string
   slug: string
-  image?: string
+  thumbnailImg?: string
   isActive: boolean
   isFeatured: boolean
 }
@@ -67,7 +67,7 @@ export const useColumn = (refetch?: () => void) => {
       key: 'name',
       isSort: true,
       render: (_: string, item: ProductItem) => {
-        const imageUrl = item?.image?.startsWith('http') ? item.image : '/images/no-image.png'
+        const imageUrl = item?.thumbnailImg?.startsWith('http') ? item.thumbnailImg : '/images/no-image.png'
 
         return (
           <Flex align='center' gap='small'>

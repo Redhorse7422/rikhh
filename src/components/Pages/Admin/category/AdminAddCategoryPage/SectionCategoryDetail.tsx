@@ -6,11 +6,10 @@ import type { FC } from 'react'
 import { CheckboxField } from '@/components/FormElements/CheckboxInput'
 import { SelectField } from '@/components/FormElements/SelectInput'
 import { TextField } from '@/components/FormElements/TextInput'
-import { UploadField } from '@/components/FormElements/UploadInput'
+import { EnhancedUploadField } from '@/components/FormElements/UploadInput/EnhancedUploadField'
 import { Card } from '@/components/common/Card'
 import { useApi } from '@/hooks/useApi'
 import { Grid } from '@/libs/pureTailwind'
-
 interface CategoryOption {
   id: string
   name: string
@@ -36,7 +35,11 @@ export const SectionCategoryDetail: FC<SectionCategoryDetailProps> = ({ control,
   return (
     <Card className='pt-10'>
       <Grid rowGap={4} className='max-w-3xl'>
-        <UploadField
+        <EnhancedUploadField
+          uploadMode='upload'
+          uploadUrl='/api/v1/media/upload'
+          uploadFieldName='file'
+          valueField='full'
           control={control}
           name='thumbnail'
           dragBoxTitle='Category Thumbnail'
@@ -47,6 +50,19 @@ export const SectionCategoryDetail: FC<SectionCategoryDetailProps> = ({ control,
           rules={{
             required: 'Thumbnail is required',
           }}
+        />
+        <EnhancedUploadField
+          uploadMode='upload'
+          uploadUrl='/api/v1/media/upload'
+          uploadFieldName='file'
+          valueField='full'
+          control={control}
+          name='coverImage'
+          dragBoxTitle='Category Cover Image'
+          accept={['.jpeg', '.jpg', '.png', '.webp']}
+          labelAxis='horizontal'
+          labelWidth={160}
+          label='Cover Image'
         />
         <TextField
           control={control}

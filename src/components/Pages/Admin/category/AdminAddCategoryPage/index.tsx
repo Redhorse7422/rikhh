@@ -1,6 +1,6 @@
 'use client'
 
-import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput/EnhancedUploadInput'
 
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -13,8 +13,6 @@ import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
 import { SectionAction } from './SectionAction'
 import { SectionCategoryDetail } from './SectionCategoryDetail'
 
-
-
 export type NewCategoryForm = {
   isActive: boolean
   name: string
@@ -23,6 +21,7 @@ export type NewCategoryForm = {
   isFeatured: boolean
   description: string
   thumbnail: FileWithPreview[]
+  coverImage: FileWithPreview[]
 }
 
 const defaultValues: NewCategoryForm = {
@@ -33,6 +32,7 @@ const defaultValues: NewCategoryForm = {
   isFeatured: false,
   description: '',
   thumbnail: [],
+  coverImage: [],
 }
 
 export const AdminAddCategoryPage = () => {
@@ -48,27 +48,18 @@ export const AdminAddCategoryPage = () => {
   const handleOnSubmit = async (data: NewCategoryForm) => {
     try {
       fullLoading.open()
-
-      const formData = new FormData()
-      formData.append('name', data.name.trim())
-      formData.append('slug', data.slug.trim())
-      formData.append('isActive', String(data.isActive))
-
-      if (data.parentId?.trim()) {
-        formData.append('parentId', data.parentId.trim())
-      }
-
-      formData.append('isFeatured', String(data.isFeatured))
-      formData.append('description', data.description.trim())
-
-      // Append thumbnail file if available
-      if (data.thumbnail.length > 0 && data.thumbnail[0].file) {
-        formData.append('image', data.thumbnail[0].file)
-      }
-
       await createDataSource.mutateAsync({
         path: '/v1/categories/store',
-        body: formData,
+        body: {
+          name: data.name.trim(),
+          slug: data.slug.trim(),
+          isActive: data.isActive,
+          ...(data.parentId && { parentId: data.parentId.trim() }),
+          isFeatured: data.isFeatured,
+          description: data.description.trim(),
+          thumbnailImageId: data.thumbnail.length > 0 && data.thumbnail[0].fileId ? data.thumbnail[0].fileId : null,
+          coverImageId: data.coverImage.length > 0 && data.coverImage[0].fileId ? data.coverImage[0].fileId : null,
+        },
       })
 
       showToast('Category created successfully!', 'success')

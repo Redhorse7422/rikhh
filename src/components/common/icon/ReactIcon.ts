@@ -46,6 +46,11 @@ import {
   // AiOutlineShareAlt,
   // AiOutlineCopy,
   // AiOutlineEnvironment,
+  AiOutlineCloudUpload,
+  AiOutlineReload,
+  AiOutlineLoading,
+  AiOutlineCheckCircle,
+  AiOutlineCloseCircle
 } from 'react-icons/ai'
 // import { BsGeo, BsGeoAlt } from 'react-icons/bs'
 // import {
@@ -82,4 +87,9 @@ export const ReactIcon = {
   AiOutlineFileDone,
   AiOutlineFileText,
   AiOutlineUpload,
+  AiOutlineCloudUpload,
+  AiOutlineReload,
+  AiOutlineLoading,
+  AiOutlineCheckCircle,
+  AiOutlineCloseCircle
 }
