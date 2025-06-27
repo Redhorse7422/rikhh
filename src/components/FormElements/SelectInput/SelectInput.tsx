@@ -106,7 +106,6 @@ export function SelectInput({
           <select
             id={id}
             value={leftProps.value || ''}
-            defaultValue={defaultValue || ''}
             onChange={(e) => {
               setIsOptionSelected(true)
               leftProps.onChange?.(e.target.value)
