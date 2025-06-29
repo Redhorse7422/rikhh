@@ -31,13 +31,11 @@ import {
   AiOutlineRight,
   AiOutlineSearch,
   // AiOutlineSetting,
-  // AiOutlineShopping,
-  // AiOutlineShoppingCart,
   // AiOutlineTag,
   // AiOutlineTeam,
   // AiOutlineUp,
   AiOutlineUpload,
-  // AiOutlineUser,
+  AiOutlineUser,
   // AiOutlineUsergroupAdd,
   // AiOutlineBars,
   AiOutlineFileText,
@@ -50,19 +48,20 @@ import {
   AiOutlineReload,
   AiOutlineLoading,
   AiOutlineCheckCircle,
-  AiOutlineCloseCircle
+  AiOutlineCloseCircle,
+  AiOutlineShopping,
 } from 'react-icons/ai'
 // import { BsGeo, BsGeoAlt } from 'react-icons/bs'
-// import {
-//   FaFacebookF,
-//   FaInstagram,
-//   FaLine,
-//   FaLinkedinIn,
-//   FaRegEdit,
-//   FaRegHeart,
-//   FaTwitter,
-//   FaYoutube,
-// } from 'react-icons/fa'
+import {
+  FaFacebookF,
+  FaInstagram,
+  //   FaLine,
+  //   FaLinkedinIn,
+  //   FaRegEdit,
+  //   FaRegHeart,
+  FaTwitter,
+  FaYoutube,
+} from 'react-icons/fa'
 // import { FiHelpCircle, FiCreditCard } from 'react-icons/fi'
 // import { HiOutlineInboxArrowDown, HiOutlineQuestionMarkCircle } from 'react-icons/hi2'
 // import { ImFileEmpty } from 'react-icons/im'
@@ -91,5 +90,11 @@ export const ReactIcon = {
   AiOutlineReload,
   AiOutlineLoading,
   AiOutlineCheckCircle,
-  AiOutlineCloseCircle
+  AiOutlineCloseCircle,
+  AiOutlineShopping,
+  AiOutlineUser,
+  FaFacebookF,
+  FaYoutube,
+  FaInstagram,
+  FaTwitter,
 }

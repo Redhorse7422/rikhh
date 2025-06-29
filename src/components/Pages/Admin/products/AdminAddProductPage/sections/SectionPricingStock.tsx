@@ -1,11 +1,17 @@
-import React, { FC } from 'react'
-import { Control, useFormContext } from 'react-hook-form'
+import type { NewProductForm } from '..'
+import type { Control } from 'react-hook-form'
+
+import type { FC } from 'react'
+import React from 'react'
+
+import { useFormContext } from 'react-hook-form'
+
+import { CheckboxField } from '@/components/FormElements/CheckboxInput'
+import { SelectField } from '@/components/FormElements/SelectInput'
+import { TextField } from '@/components/FormElements/TextInput'
 import { Card } from '@/components/common/Card'
 import { Grid } from '@/libs/pureTailwind'
-import { TextField } from '@/components/FormElements/TextInput'
-import { SelectField } from '@/components/FormElements/SelectInput'
-import { CheckboxField } from '@/components/FormElements/CheckboxInput'
-import { NewProductForm } from '..'
+
 
 const discountTypeOptions = [
   { value: 'percent', label: 'Percent' },

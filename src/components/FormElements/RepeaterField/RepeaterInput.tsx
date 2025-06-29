@@ -1,8 +1,8 @@
 'use client'
 
 import type { InputWrapperProps } from '../InputWrapper'
-import type { IconAllowed } from '@/components/common/icon'
 import type { FileWithPreview } from '../UploadInput/UploadInput'
+import type { IconAllowed } from '@/components/common/icon'
 import type { UseFormStateReturn } from 'react-hook-form'
 
 import React, { useState, useEffect } from 'react'
@@ -142,10 +142,10 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
             onChange={(e) => updateItem(item.id, field.name, parseFloat(e.target.value) || 0)}
             placeholder={field.placeholder}
             className={clsx(
-              "w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2",
+              'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
               showFieldError 
-                ? "border-red-500 focus:border-red-500" 
-                : "border-stroke focus:border-primary dark:border-dark-3"
+                ? 'border-red-500 focus:border-red-500' 
+                : 'border-stroke focus:border-primary dark:border-dark-3'
             )}
             disabled={disabled}
           />
@@ -176,7 +176,7 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
           )}
         </div>
       )
-    } else {
+    } 
       return (
         <div className="space-y-1">
           <input
@@ -185,10 +185,10 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
             onChange={(e) => updateItem(item.id, field.name, e.target.value)}
             placeholder={field.placeholder}
             className={clsx(
-              "w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2",
+              'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
               showFieldError 
-                ? "border-red-500 focus:border-red-500" 
-                : "border-stroke focus:border-primary dark:border-dark-3"
+                ? 'border-red-500 focus:border-red-500' 
+                : 'border-stroke focus:border-primary dark:border-dark-3'
             )}
             disabled={disabled}
           />
@@ -199,7 +199,7 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
           )}
         </div>
       )
-    }
+    
   }
 
   return (

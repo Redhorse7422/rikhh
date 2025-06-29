@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# CSS files that cause issues
+src/css/satoshi.css
+src/css/style.css
+
+# Font files
+src/fonts/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Logs
+*.log
+
+# Environment files
+.env*
+!.env.example
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db 

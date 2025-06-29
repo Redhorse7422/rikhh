@@ -16,7 +16,9 @@ const nextConfig = {
       },
     ]
   },
-  output: 'standalone',
+  // Only use standalone output for production builds
+  ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
+  outputFileTracingRoot: process.cwd(),
   ...(process.env.SEPARATE_BUILD === 'true' && process.env.TEMPLATE !== ''
     ? { distDir: `.next-${process.env.TEMPLATE}` }
     : {}),
