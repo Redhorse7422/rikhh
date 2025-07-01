@@ -26,7 +26,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   onChange,
   className,
   name,
-  value,
   checked,
 }) => {
   const [isChecked, setIsChecked] = useState(defaultChecked)

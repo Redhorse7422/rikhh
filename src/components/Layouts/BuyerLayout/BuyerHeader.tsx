@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 import { SearchIcon } from '@/assets/icons'
 import LOGO from '@/assets/logos/logo.webp'
+import { CartIcon } from '@/components/common/CartIcon'
 import { Icon } from '@/components/common/icon'
 
 export const BuyerHeader: React.FC = () => {
@@ -39,14 +40,14 @@ export const BuyerHeader: React.FC = () => {
 
           {/* Right Side Actions */}
           <div className='flex items-center space-x-6'>
-            {/* Cart */}
-            <Link href='/cart' className='relative p-2 text-gray-600 transition-colors hover:text-primary'>
-              {/* <ShoppingCartIcon className='h-6 w-6' /> */}
+            {/* <Link href='/cart' className='relative p-2 text-gray-600 transition-colors hover:text-primary'>
               <Icon name='AiOutlineShopping' size='2xl' />
               <span className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white'>
                 2
               </span>
-            </Link>
+            </Link> */}
+
+            <CartIcon />
 
             {/* User Menu */}
             <div className='relative'>

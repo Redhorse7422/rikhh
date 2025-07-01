@@ -6,6 +6,7 @@ import type { IconAllowed } from '@/components/common/icon'
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 
 import clsx from 'clsx'
+import Image from 'next/image'
 
 import { Icon } from '@/components/common/icon'
 
@@ -325,6 +326,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                 return next
               })
             } catch (error) {
+              console.log(error)
               handleUploadError(fileState.id, 'Invalid response format')
             }
           } else {
@@ -642,7 +644,13 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                   >
                     <div className='relative flex aspect-square items-center justify-center bg-gray-50'>
                       {file.preview ? (
-                        <img src={file.preview} alt={file.name} className='h-full w-full object-cover' />
+                        <Image
+                          src={file.preview}
+                          alt={file.name}
+                          width={200}
+                          height={200}
+                          className='h-full w-full object-cover'
+                        />
                       ) : (
                         <div className='flex flex-col items-center p-4 text-center'>
                           <Icon name='AiOutlineFileText' className='text-gray-400' size='xl' />

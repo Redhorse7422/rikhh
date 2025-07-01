@@ -11,7 +11,6 @@ import { cn } from '@/libs/utils'
 
 import { InputWrapper } from '../InputWrapper'
 
-
 export type SelectInputProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,
   | 'placeholder'
@@ -57,7 +56,6 @@ export type SelectProps = SelectInputProps
 export function SelectInput({
   items,
   label,
-  defaultValue,
   placeholder,
   prefixIcon,
   suffixIcon,

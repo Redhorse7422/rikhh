@@ -27,6 +27,7 @@ import {
   // AiOutlineNotification,
   // AiOutlinePhone,
   AiOutlinePlus,
+  AiOutlineMinus,
   // AiOutlinePlusCircle,
   AiOutlineRight,
   AiOutlineSearch,
@@ -75,6 +76,7 @@ export const ReactIcon = {
   // Ant Design Icons
   AiOutlineSearch,
   AiOutlinePlus,
+  AiOutlineMinus,
   AiOutlineCheck,
   AiOutlineClose,
   AiOutlineArrowLeft,

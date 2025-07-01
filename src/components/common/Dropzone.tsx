@@ -1,6 +1,9 @@
 // components/Dropzone.tsx
+
 import type { ChangeEvent, DragEvent } from 'react'
 import React, { useState, useRef, useCallback } from 'react'
+
+import Image from 'next/image'
 
 type FileWithPreview = File & {
   preview: string
@@ -134,7 +137,7 @@ const Dropzone: React.FC = () => {
                 {/* Preview Container */}
                 <div className='relative flex aspect-square items-center justify-center bg-gray-100'>
                   {file.type.startsWith('image/') ? (
-                    <img src={file.preview} alt={file.name} className='h-full w-full object-cover' />
+                    <Image src={file.preview} alt={file.name} className='h-full w-full object-cover' />
                   ) : (
                     <div className='flex flex-col items-center p-4'>
                       <svg

@@ -13,6 +13,17 @@ type SectionVariationsProps = {
 
 const variationFields: RepeaterFieldConfig[] = [
   {
+    name: 'name',
+    label: 'Name',
+    type: 'select',
+    required: true,
+    options: [
+      { value: 'size', label: 'Size' },
+      { value: 'color', label: 'Color' },
+      { value: 'style', label: 'Style' },
+    ],
+  },
+  {
     name: 'variant',
     label: 'Variant Name',
     type: 'text',
@@ -47,6 +58,10 @@ const variationFields: RepeaterFieldConfig[] = [
     accept: ['image/*'],
     multiple: false,
     maxCount: 1,
+    uploadMode: 'upload',
+    uploadUrl: '/api/v1/media/upload',
+    uploadFieldName: 'file',
+    valueField: 'fileId',
   },
 ]
 

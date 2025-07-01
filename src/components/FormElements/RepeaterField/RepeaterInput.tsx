@@ -1,8 +1,7 @@
 'use client'
 
 import type { InputWrapperProps } from '../InputWrapper'
-import type { FileWithPreview } from '../UploadInput/UploadInput'
-import type { IconAllowed } from '@/components/common/icon'
+import type { FileWithPreview } from '../UploadInput/EnhancedUploadInput'
 import type { UseFormStateReturn } from 'react-hook-form'
 
 import React, { useState, useEffect } from 'react'
@@ -12,22 +11,37 @@ import clsx from 'clsx'
 import { Icon } from '@/components/common/icon'
 
 import { InputWrapper } from '../InputWrapper'
-import { UploadInput } from '../UploadInput/UploadInput'
+import { EnhancedUploadInput } from '../UploadInput/EnhancedUploadInput'
+// import { SelectInput } from '../SelectInput/SelectInput'
 
 export type RepeaterItem = {
   id: string
   [key: string]: any
 }
 
+export type SelectOption = {
+  value: string | number
+  label: string
+}
+
 export type RepeaterFieldConfig = {
   name: string
   label: string
-  type: 'text' | 'number' | 'file'
+  type: 'text' | 'number' | 'file' | 'select'
   required?: boolean
   placeholder?: string
   accept?: string[]
   multiple?: boolean
   maxCount?: number
+  // Select field props
+  options?: SelectOption[]
+  items?: SelectOption[] // Alternative prop name for options
+  // Enhanced upload props
+  uploadMode?: 'pick' | 'upload'
+  uploadUrl?: string
+  uploadHeaders?: Record<string, string>
+  uploadFieldName?: string
+  valueField?: 'fileId' | 'url' | 'full'
 }
 
 export type RepeaterInputProps = Pick<
@@ -99,6 +113,8 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
         newItem[field.name] = 0
       } else if (field.type === 'file') {
         newItem[field.name] = []
+      } else if (field.type === 'select') {
+        newItem[field.name] = ''
       } else {
         newItem[field.name] = ''
       }
@@ -120,9 +136,7 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
   const updateItem = (id: string, fieldName: string, fieldValue: any) => {
     if (disabled) return
 
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, [fieldName]: fieldValue } : item
-    )
+    const updatedItems = items.map((item) => (item.id === id ? { ...item, [fieldName]: fieldValue } : item))
     setItems(updatedItems)
     onChange?.(updatedItems)
   }
@@ -135,71 +149,89 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
 
     if (field.type === 'number') {
       return (
-        <div className="space-y-1">
+        <div className='space-y-1'>
           <input
-            type="number"
+            type='number'
             value={fieldValue || ''}
             onChange={(e) => updateItem(item.id, field.name, parseFloat(e.target.value) || 0)}
             placeholder={field.placeholder}
             className={clsx(
               'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
-              showFieldError 
-                ? 'border-red-500 focus:border-red-500' 
-                : 'border-stroke focus:border-primary dark:border-dark-3'
+              showFieldError
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-stroke focus:border-primary dark:border-dark-3',
             )}
             disabled={disabled}
           />
-          {showFieldError && (
-            <div className="text-xs text-red-500">
-              {field.label} is required
-            </div>
-          )}
+          {showFieldError && <div className='text-xs text-red-500'>{field.label} is required</div>}
+        </div>
+      )
+    } else if (field.type === 'select') {
+      const options = field.options || field.items || []
+      return (
+        <div className='space-y-1'>
+          <select
+            value={fieldValue || ''}
+            onChange={(e) => updateItem(item.id, field.name, e.target.value)}
+            className={clsx(
+              'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
+              showFieldError
+                ? 'border-red-500 focus:border-red-500'
+                : 'border-stroke focus:border-primary dark:border-dark-3',
+            )}
+            disabled={disabled}
+          >
+            <option value=''>{field.placeholder || 'Select an option'}</option>
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {showFieldError && <div className='text-xs text-red-500'>{field.label} is required</div>}
         </div>
       )
     } else if (field.type === 'file') {
       return (
-        <div className="space-y-1">
-          <UploadInput
+        <div className='space-y-1'>
+          <EnhancedUploadInput
             value={fieldValue || []}
-            onChange={(files: FileWithPreview[]) => updateItem(item.id, field.name, files)}
+            onChange={(files: FileWithPreview[] | string | string[]) => updateItem(item.id, field.name, files)}
             accept={field.accept}
             multiple={field.multiple}
             maxCount={field.maxCount}
             disabled={disabled}
-            dragBoxTitle="Drop image here"
-            dragBoxDesc="or click to browse"
+            dragBoxTitle='Drop files here'
+            dragBoxDesc='or click to browse'
+            // Enhanced upload props
+            uploadMode={field.uploadMode || 'pick'}
+            uploadUrl={field.uploadUrl}
+            uploadHeaders={field.uploadHeaders}
+            uploadFieldName={field.uploadFieldName}
+            valueField={field.valueField || 'full'}
           />
-          {showFieldError && (
-            <div className="text-xs text-red-500">
-              {field.label} is required
-            </div>
-          )}
+          {showFieldError && <div className='text-xs text-red-500'>{field.label} is required</div>}
         </div>
       )
-    } 
-      return (
-        <div className="space-y-1">
-          <input
-            type="text"
-            value={fieldValue || ''}
-            onChange={(e) => updateItem(item.id, field.name, e.target.value)}
-            placeholder={field.placeholder}
-            className={clsx(
-              'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
-              showFieldError 
-                ? 'border-red-500 focus:border-red-500' 
-                : 'border-stroke focus:border-primary dark:border-dark-3'
-            )}
-            disabled={disabled}
-          />
-          {showFieldError && (
-            <div className="text-xs text-red-500">
-              {field.label} is required
-            </div>
+    }
+    return (
+      <div className='space-y-1'>
+        <input
+          type='text'
+          value={fieldValue || ''}
+          onChange={(e) => updateItem(item.id, field.name, e.target.value)}
+          placeholder={field.placeholder}
+          className={clsx(
+            'w-full rounded-lg border bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:bg-dark-2',
+            showFieldError
+              ? 'border-red-500 focus:border-red-500'
+              : 'border-stroke focus:border-primary dark:border-dark-3',
           )}
-        </div>
-      )
-    
+          disabled={disabled}
+        />
+        {showFieldError && <div className='text-xs text-red-500'>{field.label} is required</div>}
+      </div>
+    )
   }
 
   return (
@@ -217,33 +249,31 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
       classNames={classNames}
       className={className}
     >
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {items.map((item, index) => (
           <div
             key={item.id}
-            className="rounded-lg border border-stroke bg-gray-50 p-4 dark:border-dark-3 dark:bg-dark-2"
+            className='rounded-lg border border-stroke bg-gray-50 p-4 dark:border-dark-3 dark:bg-dark-2'
           >
-            <div className="mb-3 flex items-center justify-between">
-              <h4 className="text-sm font-medium text-dark dark:text-white">
-                Variation {index + 1}
-              </h4>
+            <div className='mb-3 flex items-center justify-between'>
+              <h4 className='text-sm font-medium text-dark dark:text-white'>Variation {index + 1}</h4>
               <button
-                type="button"
+                type='button'
                 onClick={() => removeItem(item.id)}
                 disabled={disabled}
-                className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600 disabled:opacity-50"
+                className='flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-xs text-white hover:bg-red-600 disabled:opacity-50'
               >
-                <Icon name="AiOutlineDelete" size="xs" />
+                <Icon name='AiOutlineDelete' size='xs' />
                 {removeButtonText}
               </button>
             </div>
-            
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
               {fields.map((field) => (
-                <div key={field.name} className="space-y-1">
-                  <label className="text-xs font-medium text-dark dark:text-white">
+                <div key={field.name} className='space-y-1'>
+                  <label className='text-xs font-medium text-dark dark:text-white'>
                     {field.label}
-                    {field.required && <span className="text-red-500">*</span>}
+                    {field.required && <span className='text-red-500'>*</span>}
                   </label>
                   {renderField(item, field)}
                 </div>
@@ -251,17 +281,17 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
             </div>
           </div>
         ))}
-        
+
         <button
-          type="button"
+          type='button'
           onClick={addItem}
           disabled={disabled}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stroke bg-transparent py-4 text-sm font-medium text-dark transition-colors hover:border-primary hover:text-primary dark:border-dark-3 dark:text-white dark:hover:border-primary disabled:opacity-50"
+          className='flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stroke bg-transparent px-4 py-4 text-sm font-medium text-dark transition-colors hover:border-primary hover:text-primary disabled:opacity-50 dark:border-dark-3 dark:text-white dark:hover:border-primary'
         >
-          <Icon name="AiOutlinePlus" size="sm" />
+          <Icon name='AiOutlinePlus' size='sm' />
           {addButtonText}
         </button>
       </div>
     </InputWrapper>
   )
-} 
+}

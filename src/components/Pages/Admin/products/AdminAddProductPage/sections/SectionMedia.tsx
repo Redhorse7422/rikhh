@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import React from 'react'
 
 import { TextField } from '@/components/FormElements/TextInput'
-import { UploadField } from '@/components/FormElements/UploadInput'
+import { EnhancedUploadField, UploadField } from '@/components/FormElements/UploadInput'
 import { Card } from '@/components/common/Card'
 import { Grid } from '@/libs/pureTailwind'
 
@@ -14,22 +14,34 @@ type SectionMediaProps = {
 }
 
 export const SectionMedia: FC<SectionMediaProps> = ({ control }) => {
+  console.log('control  => ', control)
   return (
     <Card className='pt-10'>
       <h2 className='mb-4 text-2xl font-bold'>Media</h2>
       <Grid rowGap={2} className='mx-auto max-w-4xl'>
-        <UploadField
+        <EnhancedUploadField
+          uploadMode='upload'
           control={control}
           name='thumbnailImg'
+          uploadUrl='/api/v1/media/upload'
+          uploadFieldName='file'
+          valueField='full'
           dragBoxTitle='Product Thumbnail'
           accept={['.jpeg', '.jpg', '.png', '.webp']}
           label='Thumbnail Image'
           labelAxis='horizontal'
           labelWidth={180}
+          rules={{
+            required: 'Thumbnail is required',
+          }}
         />
-        <UploadField
+        <EnhancedUploadField
+          uploadMode='upload'
           control={control}
           name='photos'
+          uploadUrl='/api/v1/media/upload'
+          uploadFieldName='file'
+          valueField='full'
           dragBoxTitle='Product Photos'
           accept={['.jpeg', '.jpg', '.png', '.webp']}
           label='Product Photos'

@@ -105,13 +105,13 @@ export const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) =>
       {/* Slider Container */}
       <div
         ref={sliderRef}
-        className='flex overflow-x-auto no-scrollbar'
+        className='no-scrollbar flex overflow-x-auto'
         style={{
           scrollSnapType: 'x mandatory',
           scrollBehavior: 'smooth',
         }}
       >
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <div
             key={category.name}
             className='flex-shrink-0 px-3'

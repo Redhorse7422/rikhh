@@ -1,6 +1,6 @@
 'use client'
 
-import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput/EnhancedUploadInput'
 
 import { useEffect, useState } from 'react'
 
@@ -58,6 +58,7 @@ const defaultValues: NewProductForm = {
 
 export type ProductVariation = {
   id?: string
+  name: string
   variant: string
   sku: string
   price: number
@@ -117,8 +118,9 @@ export const AdminEditProductPage = () => {
     enabled: !!id,
   })
 
+  console.log('Product ==> ', product)
   const methods = useForm<NewProductForm>({
-    defaultValues,
+    // defaultValues,
   })
 
   const { setValue } = methods
@@ -171,30 +173,21 @@ export const AdminEditProductPage = () => {
         setValue('externalLinkBtn', (product as any).externalLinkBtn ?? '')
 
         // Set images
-        if ((product as any).thumbnailImg) {
-          setValue('thumbnailImg', [
-            {
-              id: 'existing',
-              preview: (product as any).thumbnailImg,
-              name: 'thumbnail',
-              size: 0,
-              type: 'image/*',
-              file: null as unknown as File,
-            },
-          ])
-        }
+        setValue('thumbnailImg', product.thumbnailImg ? [(product as any).thumbnailImg] : [])
 
-        if ((product as any).photos && Array.isArray((product as any).photos)) {
-          const photoFiles: FileWithPreview[] = (product as any).photos.map((photo: string, index: number) => ({
-            id: `existing-${index}`,
-            preview: photo,
-            name: `photo-${index}`,
-            size: 0,
-            type: 'image/*',
-            file: null as unknown as File,
-          }))
-          setValue('photos', photoFiles)
-        }
+        setValue('photos', product?.photos?.length > 0 ? (product as any).photos : [])
+
+        // if ((product as any).photos && Array.isArray((product as any).photos)) {
+        //   const photoFiles: FileWithPreview[] = (product as any).photos.map((photo: string, index: number) => ({
+        //     id: `existing-${index}`,
+        //     preview: photo,
+        //     name: `photo-${index}`,
+        //     size: 0,
+        //     type: 'image/*',
+        //     file: null as unknown as File,
+        //   }))
+        //   setValue('photos', photoFiles)
+        // }
 
         // Set variations
         if ((product as any).variations && Array.isArray((product as any).variations)) {
@@ -202,6 +195,7 @@ export const AdminEditProductPage = () => {
           const variationFiles: ProductVariation[] = (product as any).variations.map(
             (variation: any, index: number) => ({
               id: variation.id || `existing-variation-${index}`,
+              name: variation.variant || '',
               variant: variation.variant || '',
               sku: variation.sku || '',
               price: variation.price || 0,
@@ -266,78 +260,64 @@ export const AdminEditProductPage = () => {
         }
       }
 
-      // Convert form data to FormData for file uploads
-      const formData = new FormData()
-      console.log('Data ==> ', data.variations)
+      console.log('data.variations', data.variations)
 
-      // Add all fields to FormData
-      Object.keys(data).forEach((key) => {
-        const value = data[key as keyof NewProductForm]
-        if (key === 'thumbnailImg') {
-          // Handle single thumbnail image
-          const thumbnailArray = value as FileWithPreview[]
-          if (Array.isArray(thumbnailArray) && thumbnailArray.length > 0) {
-            formData.append(key, thumbnailArray[0].file)
-          }
-        } else if (key === 'photos') {
-          // Handle photos array
-          const photosArray = value as FileWithPreview[]
-          if (Array.isArray(photosArray) && photosArray.length > 0) {
-            photosArray.forEach((fileWithPreview, index) => {
-              formData.append(`${key}[${index}]`, fileWithPreview.file)
-            })
-          }
-        } else if (key === 'categoryIds') {
-          // Handle categoryIds array
-          const categoryIdsArray = value as string[]
-          if (Array.isArray(categoryIdsArray) && categoryIdsArray.length > 0) {
-            categoryIdsArray.forEach((categoryId, index) => {
-              formData.append(`${key}[${index}]`, categoryId)
-            })
-          }
-        } else if (key === 'variations') {
-          // Handle variations array - send as JSON with file references
-          const variationsArray = value as ProductVariation[]
-          if (Array.isArray(variationsArray) && variationsArray.length > 0) {
-            // Process variations to separate files from data
-            const variationsData = variationsArray.map((variation, index) => {
-              // Add variation image files to FormData with indexed keys
-              if (Array.isArray(variation.imageBase64) && variation.imageBase64.length > 0) {
-                formData.append(`variation_images[${index}]`, variation.imageBase64[0].file)
-              }
+      // Prepare simple payload
+      const payload = {
+        name: data.name,
+        slug: data.slug,
+        categoryIds: data.categoryIds,
+        tags: data.tags,
+        shortDescription: data.shortDescription,
+        longDescription: data.longDescription,
+        regularPrice: data.regularPrice,
+        salePrice: data.salePrice,
+        isVariant: data.isVariant,
+        published: data.published,
+        approved: data.approved,
+        stock: data.stock,
+        cashOnDelivery: data.cashOnDelivery,
+        featured: data.featured,
+        discount: data.discount,
+        discountType: data.discountType,
+        discountStartDate: data.discountStartDate,
+        discountEndDate: data.discountEndDate,
+        tax: data.tax,
+        taxType: data.taxType,
+        shippingType: data.shippingType,
+        shippingCost: data.shippingCost,
+        estShippingDays: data.estShippingDays,
+        numOfSales: data.numOfSales,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        rating: data.rating,
+        externalLink: data.externalLink,
+        externalLinkBtn: data.externalLinkBtn,
+        // Handle file uploads separately or convert to base64 if needed
+        thumbnailImgId: data.thumbnailImg.length > 0 ? data.thumbnailImg[0].fileId : null,
+        photosIds: data.photos.map((file) => (file.fileId ? file.fileId : file.id)),
+        variations: data.variations.map((variation) => ({
+          id: variation.id, // Include ID for existing variations
+          name: variation.name,
+          variant: variation.variant,
+          sku: variation.sku,
+          price: variation.price,
+          quantity: variation.quantity,
+          imageId: variation.imageBase64.length > 0 ? variation.imageBase64[0] : null,
+        })),
+      }
 
-              // Return variation data without the file (just metadata)
-              return {
-                id: variation.id, // Include ID for existing variations
-                variant: variation.variant,
-                sku: variation.sku,
-                price: variation.price,
-                quantity: variation.quantity,
-                // Don't include imageBase64 in the JSON, files are sent separately
-              }
-            })
-
-            // Add the variations data as JSON
-            formData.append(key, JSON.stringify(variationsData))
-          }
-        } else {
-          // Handle other fields
-          if (value !== undefined && value !== null && value !== '') {
-            formData.append(key, String(value))
-          }
-        }
-      })
-
-      console.log('final Variations ==> ', formData.get('variations'))
+      console.log('Product payload:', payload)
 
       await updateDataSource.mutateAsync({
         path: `/v1/products/update/${id}`,
-        body: formData,
+        body: payload,
       })
-      showToast('Product Updated successful!', 'success')
+      showToast('Product Updated successfully!', 'success')
       router.push('/products')
     } catch (error) {
-      showToast('An error occurred!', 'error')
+      console.error('Error updating product:', error)
+      showToast('An error occurred while updating the product!', 'error')
     } finally {
       fullLoading.close()
     }
