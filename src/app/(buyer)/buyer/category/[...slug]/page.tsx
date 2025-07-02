@@ -19,7 +19,7 @@ const categoryData = {
     productCount: '1.2k+ products',
   },
   sports: {
-    name: 'Sports',
+    name: 'oils',
     image: '/images/cards/cards-04.png',
     productCount: '950+ products',
   },

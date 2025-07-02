@@ -67,7 +67,13 @@ const CartItemComponent: React.FC<CartItemProps> = ({ item, onUpdateQuantity, on
       <div className='flex flex-col space-y-4 md:flex-row md:space-x-6 md:space-y-0'>
         {/* Product Image */}
         <div className='relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg'>
-          <Image src={item.product.image} alt={item.product.name} fill className='object-cover' sizes='96px' />
+          <Image
+            src={item.product.thumbnailImg.url}
+            alt={item.product.name}
+            fill
+            className='object-cover'
+            sizes='96px'
+          />
           {item.product.badge && (
             <span className='absolute left-1 top-1 rounded-full bg-primary px-2 py-1 text-xs font-semibold text-white'>
               {item.product.badge}
@@ -100,8 +106,8 @@ const CartItemComponent: React.FC<CartItemProps> = ({ item, onUpdateQuantity, on
             <div className='space-y-1'>
               <div className='flex items-center space-x-2'>
                 <span className='text-lg font-semibold text-gray-900'>${item.price}</span>
-                {item.product.originalPrice > item.price && (
-                  <span className='text-sm text-gray-500 line-through'>${item.product.originalPrice}</span>
+                {item.product.salePrice > item.price && (
+                  <span className='text-sm text-gray-500 line-through'>${item.product.salePrice}</span>
                 )}
               </div>
               <div className='flex items-center space-x-2'>

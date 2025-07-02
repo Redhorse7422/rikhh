@@ -2,13 +2,13 @@
 
 // ===== PRODUCT TYPES =====
 export interface Product {
-  id: number
+  id: string
   name: string
-  price: number
-  originalPrice: number
+  regularPrice: number
+  salePrice: number
   rating: number
   reviews: number
-  image: string
+  thumbnailImg: any
   badge?: string
   description?: string
   category?: string
@@ -26,7 +26,7 @@ export interface Product {
 // ===== CATEGORY TYPES =====
 export interface Category {
   name: string
-  image: string
+  thumbnailImage: any
   href: string
   count: string
   slug: string

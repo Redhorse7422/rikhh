@@ -4,4 +4,4 @@ import { AdminUserDetailPage } from '@/components/Pages/Admin/users/AdminUserDet
 
 export default function UserDetailPage() {
   return <AdminUserDetailPage />
-} 
+}

@@ -4,4 +4,4 @@ import { AdminAddUserPage } from '@/components/Pages/Admin/users/AdminAddUserPag
 
 export default function UserAddPage() {
   return <AdminAddUserPage />
-} 
+}

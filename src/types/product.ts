@@ -1,5 +1,6 @@
 // Product Detail Page Types
 import type { Product } from './common'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput'
 
 export interface ProductVariant {
   id: string
@@ -37,10 +38,10 @@ export interface ProductImage {
 
 export interface ProductDetail extends Product {
   // Extended from base Product type
-  id: number
+  id: string
   name: string
-  price: number
-  originalPrice: number
+  regularPrice: number
+  salePrice: number
   rating: number
   reviews: number
   image: string
@@ -130,4 +131,88 @@ export interface ProductTabsProps {
   product: ProductDetail
   activeTab: string
   onTabChange: (tab: string) => void
+}
+
+export type ImageType = {
+  id: string
+  createdAt: string
+  updatedAt: string
+  scope: string
+  uri: string | null
+  url: string
+  fileName: string
+  mimetype: string
+  size: number
+  userId: string | null
+}
+export type CategoryType = {
+  id: string
+  createdAt: string
+  updatedAt: string
+  isParent: boolean
+  parentId: string | null
+  name: string
+  slug: string
+  description: string
+  isActive: boolean
+  thumbnailImageId: string
+  coverImageId: string | null
+  isFeatured: boolean
+  isPopular: boolean
+}
+
+export type VariationType = {
+  id?: string
+  name: string
+  variant: string
+  sku: string
+  price: string
+  quantity: number
+  imageId?: string
+  image?: ImageType
+  imageBase64?: FileWithPreview[]
+}
+
+export type SingleProduct = {
+  id: string
+  createdAt: string
+  updatedAt: string
+  addedBy: string
+  userId: string
+  name: string
+  slug: string
+  photosIds: string[]
+  thumbnailImgId: string
+  categoryIds: string[]
+  tags: string[]
+  shortDescription: string
+  longDescription: string
+  regularPrice: number
+  salePrice: number
+  isVariant: boolean
+  published: boolean
+  approved: boolean
+  stock: number
+  cashOnDelivery: boolean
+  featured: boolean
+  discount: number
+  discountType: 'percent' | 'amount'
+  discountStartDate: string | null
+  discountEndDate: string | null
+  tax: number
+  taxType: 'percent' | 'amount'
+  shippingType: 'free' | 'flat' | string
+  shippingCost: number
+  estShippingDays: number
+  numOfSales: number
+  metaTitle: string
+  metaDescription: string
+  rating: number
+  externalLink: string
+  externalLinkBtn: string
+  categories: CategoryType[]
+  thumbnailImg: ImageType
+  photos: ImageType[]
+  variations: VariationType[]
+  discountEnabled?: boolean
 }

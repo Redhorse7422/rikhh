@@ -1,6 +1,7 @@
 'use client'
 
 import type { TableProps } from '@/components/ui/paginated-table/type'
+import type { User } from '@/types/user'
 
 import { useState } from 'react'
 
@@ -14,8 +15,6 @@ import { Icon } from '@/components/common/icon'
 import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
 import { logger } from '@/libs/logger.client'
-
-import type { User } from '@/types/user'
 
 export const useColumn = (refetch?: () => void) => {
   const router = useRouter()
@@ -73,7 +72,10 @@ export const useColumn = (refetch?: () => void) => {
       inactive: { color: 'bg-yellow-100 text-yellow-800', label: 'Inactive' },
       suspended: { color: 'bg-red-100 text-red-800', label: 'Suspended' },
     }
-    const config = statusConfig[status as keyof typeof statusConfig] || { color: 'bg-gray-100 text-gray-800', label: status }
+    const config = statusConfig[status as keyof typeof statusConfig] || {
+      color: 'bg-gray-100 text-gray-800',
+      label: status,
+    }
     return (
       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${config.color}`}>
         {config.label}
@@ -92,13 +94,7 @@ export const useColumn = (refetch?: () => void) => {
         return (
           <Flex align='center' gap='small'>
             <div className='relative h-10 w-10 overflow-hidden rounded-full'>
-              <Image
-                src={avatarUrl}
-                width={40}
-                height={40}
-                alt={item.name || 'User avatar'}
-                className='object-cover'
-              />
+              <Image src={avatarUrl} width={40} height={40} alt={item.name || 'User avatar'} className='object-cover' />
             </div>
             <div className='flex flex-col'>
               <span className='font-medium text-gray-900'>{item.name}</span>
@@ -149,12 +145,8 @@ export const useColumn = (refetch?: () => void) => {
       render: (date: string) => {
         return (
           <div className='flex flex-col'>
-            <span className='text-sm font-medium text-gray-900'>
-              {new Date(date).toLocaleDateString()}
-            </span>
-            <span className='text-xs text-gray-500'>
-              {new Date(date).toLocaleTimeString()}
-            </span>
+            <span className='text-sm font-medium text-gray-900'>{new Date(date).toLocaleDateString()}</span>
+            <span className='text-xs text-gray-500'>{new Date(date).toLocaleTimeString()}</span>
           </div>
         )
       },
@@ -203,4 +195,4 @@ export const useColumn = (refetch?: () => void) => {
       />
     ),
   }
-} 
+}

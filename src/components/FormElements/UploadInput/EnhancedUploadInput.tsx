@@ -34,7 +34,7 @@ export type UploadedFile = {
   mimetype?: string // MIME type from response
 }
 
-export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error'
+export type UploadStatus = 'idle' | 'uploading' | 'success' | 'error' | 'existing'
 
 export type FileUploadState = {
   id: string
@@ -165,7 +165,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
               name: 'Uploaded file',
               size: 0,
               type: 'unknown',
-              status: 'success' as UploadStatus,
+              status: 'existing' as UploadStatus,
               progress: 100,
               uploadedFile: {
                 id: `existing-${index}`,
@@ -186,7 +186,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
             name: file.name,
             size: file.size,
             type: file.type,
-            status: 'success' as UploadStatus,
+            status: 'existing' as UploadStatus,
             progress: 100,
             uploadedFile: file,
           }
@@ -205,7 +205,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
           name: 'Uploaded file',
           size: 0,
           type: 'unknown',
-          status: 'success' as UploadStatus,
+          status: 'existing' as UploadStatus,
           progress: 100,
           uploadedFile: {
             id: 'existing-0',
@@ -543,6 +543,8 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
         return { icon: 'AiOutlineCheck' as const, className: 'text-green-500' }
       case 'error':
         return { icon: 'AiOutlineClose' as const, className: 'text-red-500' }
+      case 'existing':
+        return { icon: 'AiOutlineFile' as const, className: 'text-gray-400' }
       default:
         return { icon: 'AiOutlineFile' as const, className: 'text-gray-400' }
     }
@@ -635,12 +637,13 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                 return (
                   <div
                     key={file.id}
-                    className={clsx(
-                      'overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md',
-                      isError ? 'border-red-300' : 'border-gray-200',
-                      file.status === 'error' && 'border-red-300 bg-red-50',
-                      file.status === 'success' && 'border-green-300 bg-green-50',
-                    )}
+                                          className={clsx(
+                        'overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md',
+                        isError ? 'border-red-300' : 'border-gray-200',
+                        file.status === 'error' && 'border-red-300 bg-red-50',
+                        file.status === 'success' && 'border-green-300 bg-green-50',
+                        file.status === 'existing' && 'border-gray-200 bg-gray-50',
+                      )}
                   >
                     <div className='relative flex aspect-square items-center justify-center bg-gray-50'>
                       {file.preview ? (
@@ -714,6 +717,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                             <p className='text-xs text-blue-600'>Uploading... {file.progress}%</p>
                           )}
                           {file.status === 'success' && <p className='text-xs text-green-600'>Uploaded successfully</p>}
+                          {file.status === 'existing' && <p className='text-xs text-gray-600'>Existing file</p>}
                           {file.status === 'error' && <p className='text-xs text-red-600'>{file.error}</p>}
                         </div>
                       )}

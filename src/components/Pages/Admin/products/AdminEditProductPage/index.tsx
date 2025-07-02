@@ -40,6 +40,7 @@ const defaultValues: NewProductForm = {
   discountType: 'percent',
   discountStartDate: '',
   discountEndDate: '',
+  discountEnabled: false,
   tax: 0,
   taxType: 'percent',
   shippingType: 'free',
@@ -85,6 +86,7 @@ export type NewProductForm = {
   discountType: 'percent' | 'amount'
   discountStartDate: string
   discountEndDate: string
+  discountEnabled: boolean
   tax: number
   taxType: 'percent' | 'amount'
   shippingType: 'free' | 'paid'
@@ -120,7 +122,7 @@ export const AdminEditProductPage = () => {
 
   console.log('Product ==> ', product)
   const methods = useForm<NewProductForm>({
-    // defaultValues,
+    defaultValues,
   })
 
   const { setValue } = methods
@@ -175,19 +177,7 @@ export const AdminEditProductPage = () => {
         // Set images
         setValue('thumbnailImg', product.thumbnailImg ? [(product as any).thumbnailImg] : [])
 
-        setValue('photos', product?.photos?.length > 0 ? (product as any).photos : [])
-
-        // if ((product as any).photos && Array.isArray((product as any).photos)) {
-        //   const photoFiles: FileWithPreview[] = (product as any).photos.map((photo: string, index: number) => ({
-        //     id: `existing-${index}`,
-        //     preview: photo,
-        //     name: `photo-${index}`,
-        //     size: 0,
-        //     type: 'image/*',
-        //     file: null as unknown as File,
-        //   }))
-        //   setValue('photos', photoFiles)
-        // }
+        setValue('photos', (product as any).photos?.length > 0 ? (product as any).photos : [])
 
         // Set variations
         if ((product as any).variations && Array.isArray((product as any).variations)) {
@@ -195,23 +185,12 @@ export const AdminEditProductPage = () => {
           const variationFiles: ProductVariation[] = (product as any).variations.map(
             (variation: any, index: number) => ({
               id: variation.id || `existing-variation-${index}`,
-              name: variation.variant || '',
+              name: variation.name || '',
               variant: variation.variant || '',
               sku: variation.sku || '',
               price: variation.price || 0,
               quantity: variation.quantity || 0,
-              imageBase64: variation.image
-                ? [
-                    {
-                      id: `existing-variation-image-${index}`,
-                      preview: variation.image,
-                      name: `variation-${index}`,
-                      size: 0,
-                      type: 'image/*',
-                      file: null as unknown as File,
-                    },
-                  ]
-                : [],
+              imageBase64: variation.image ? [(variation as any).image] : [],
             }),
           )
           console.log('Processed variations:', variationFiles)
@@ -260,7 +239,7 @@ export const AdminEditProductPage = () => {
         }
       }
 
-      console.log('data.variations', data.variations)
+      console.log('data.variations', data)
 
       // Prepare simple payload
       const payload = {
@@ -294,16 +273,20 @@ export const AdminEditProductPage = () => {
         externalLink: data.externalLink,
         externalLinkBtn: data.externalLinkBtn,
         // Handle file uploads separately or convert to base64 if needed
-        thumbnailImgId: data.thumbnailImg.length > 0 ? data.thumbnailImg[0].fileId : null,
+        thumbnailImgId: data.thumbnailImg.length > 0 ? (data.thumbnailImg[0].fileId ?? data.thumbnailImg[0].id) : null,
         photosIds: data.photos.map((file) => (file.fileId ? file.fileId : file.id)),
         variations: data.variations.map((variation) => ({
-          id: variation.id, // Include ID for existing variations
           name: variation.name,
           variant: variation.variant,
           sku: variation.sku,
           price: variation.price,
           quantity: variation.quantity,
-          imageId: variation.imageBase64.length > 0 ? variation.imageBase64[0] : null,
+          imageId:
+            variation.imageBase64.length > 0
+              ? variation.imageBase64[0].id
+                ? variation.imageBase64[0].id
+                : variation.imageBase64[0]
+              : null,
         })),
       }
 

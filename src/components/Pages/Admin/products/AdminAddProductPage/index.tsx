@@ -39,6 +39,7 @@ export const defaultValues: NewProductForm = {
   discountType: 'percent',
   discountStartDate: '',
   discountEndDate: '',
+  discountEnabled: false,
   tax: 0,
   taxType: 'percent',
   shippingType: 'free',
@@ -83,6 +84,7 @@ export type NewProductForm = {
   discountType: 'percent' | 'amount'
   discountStartDate: string
   discountEndDate: string
+  discountEnabled: boolean
   tax: number
   taxType: 'percent' | 'amount'
   shippingType: 'free' | 'paid'
@@ -163,8 +165,10 @@ export const AdminAddProductPage: React.FC = () => {
         featured: data.featured,
         discount: data.discount,
         discountType: data.discountType,
-        discountStartDate: data.discountStartDate,
-        discountEndDate: data.discountEndDate,
+        ...(data.discountEnabled && {
+          discountStartDate: data.discountStartDate,
+          discountEndDate: data.discountEndDate,
+        }),
         tax: data.tax,
         taxType: data.taxType,
         shippingType: data.shippingType,

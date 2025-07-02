@@ -1,9 +1,8 @@
 'use client'
+import type { UserFilterValues } from '@/types/user'
 
 import type { ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
-
-import type { UserFilterValues } from '@/types/user'
 
 interface UserFilterContextType {
   filters: UserFilterValues
@@ -33,4 +32,4 @@ export const useUserFilter = () => {
     throw new Error('useUserFilter must be used within UserFilterProvider')
   }
   return context
-} 
+}

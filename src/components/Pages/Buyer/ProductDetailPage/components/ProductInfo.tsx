@@ -77,10 +77,10 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       {/* Price */}
       <div className='space-y-2'>
         <div className='flex items-center space-x-3'>
-          <span className='text-3xl font-bold text-gray-900'>${product.price}</span>
+          <span className='text-3xl font-bold text-gray-900'>${product.regularPrice}</span>
           {product.isOnSale && (
             <>
-              <span className='text-xl text-gray-500 line-through'>${product.originalPrice}</span>
+              <span className='text-xl text-gray-500 line-through'>${product.salePrice}</span>
               <span className='rounded-full bg-red-100 px-2 py-1 text-sm font-semibold text-red-600'>
                 -{product.discountPercentage}%
               </span>

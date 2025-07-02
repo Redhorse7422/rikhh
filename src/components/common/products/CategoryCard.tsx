@@ -16,7 +16,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => (
     <div className='overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md'>
       <div className='relative'>
         <Image
-          src={category.image}
+          src={category.thumbnailImage.url}
           alt={category.name}
           width={300}
           height={200}

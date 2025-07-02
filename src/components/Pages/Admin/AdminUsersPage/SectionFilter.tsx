@@ -8,4 +8,4 @@ export const SectionFilter = () => {
       <FormFilter />
     </Card>
   )
-} 
+}

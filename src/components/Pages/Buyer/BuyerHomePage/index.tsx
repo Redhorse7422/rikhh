@@ -1,6 +1,6 @@
 'use client'
 
-import type { Category } from '@/types/common'
+import type { Category, Product } from '@/types/common'
 
 import React from 'react'
 
@@ -10,71 +10,52 @@ import Link from 'next/link'
 import { ArrowRightIcon } from '@/assets/icons'
 import { CategorySlider } from '@/components/common/products/CategorySlider'
 import { ProductCard } from '@/components/common/products/ProductCard'
-// Mock data for featured products
-const featuredProducts = [
-  {
-    id: 1,
-    name: 'Wireless Bluetooth Headphones',
-    price: 89.99,
-    originalPrice: 129.99,
-    rating: 4.5,
-    reviews: 128,
-    image: '/images/product/product-01.png',
-    badge: 'Best Seller',
-  },
-  {
-    id: 2,
-    name: 'Smart Fitness Watch',
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.8,
-    reviews: 89,
-    image: '/images/product/product-02.png',
-    badge: 'New',
-  },
-  {
-    id: 3,
-    name: 'Portable Bluetooth Speaker',
-    price: 59.99,
-    originalPrice: 79.99,
-    rating: 4.3,
-    reviews: 156,
-    image: '/images/product/product-03.png',
-    badge: 'Sale',
-  },
-  {
-    id: 4,
-    name: 'Wireless Charging Pad',
-    price: 34.99,
-    originalPrice: 49.99,
-    rating: 4.6,
-    reviews: 203,
-    image: '/images/product/product-04.png',
-    badge: 'Popular',
-  },
-]
+import { useApi } from '@/hooks/useApi'
 
-const categories = [
-  { name: 'Electronics', image: '/images/cards/cards-01.png', href: '/category/electronics', count: '2.5k+ products' },
-  { name: 'Fashion', image: '/images/cards/cards-02.png', href: '/category/fashion', count: '1.8k+ products' },
-  {
-    name: 'Home & Garden',
-    image: '/images/cards/cards-03.png',
-    href: '/category/home-garden',
-    count: '1.2k+ products',
-  },
-  { name: 'Sports', image: '/images/cards/cards-04.png', href: '/category/sports', count: '950+ products' },
-  { name: 'Books', image: '/images/cards/cards-01.png', href: '/category/books', count: '750+ products' },
-  { name: 'Health', image: '/images/cards/cards-02.png', href: '/category/health', count: '600+ products' },
-  { name: 'Toys', image: '/images/cards/cards-03.png', href: '/category/toys', count: '450+ products' },
-  { name: 'Automotive', image: '/images/cards/cards-04.png', href: '/category/automotive', count: '300+ products' },
-  { name: 'Beauty', image: '/images/cards/cards-01.png', href: '/category/beauty', count: '800+ products' },
-  { name: 'Food', image: '/images/cards/cards-02.png', href: '/category/food', count: '400+ products' },
-  { name: 'Toys1', image: '/images/cards/cards-03.png', href: '/category/toys', count: '450+ products' },
-  { name: 'Automotive1', image: '/images/cards/cards-04.png', href: '/category/automotive', count: '300+ products' },
-]
+export interface HomeConfig {
+  featured: Product[]
+  new: Product[]
+  variant: Product[]
+  categories: Category[]
+}
+
+// Custom hook for fetching featured products
+const useHomeConfig = () => {
+  const { getDataSource } = useApi()
+  return getDataSource<HomeConfig>({
+    path: '/v1/home',
+  })
+}
+
+const sectionTitles: Record<string, string> = {
+  featured: 'Featured Products',
+  new: 'New Arrivals',
+  variant: 'Product Variants',
+  // Add more mappings as needed
+}
 
 export const BuyerHomePage: React.FC = () => {
+  // Fetch data
+  const { data: homeConfig, isLoading: configLoad, error: configError } = useHomeConfig()
+  console.log(homeConfig)
+
+  if (configError) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='mb-4 text-2xl font-bold text-gray-900'>Something went wrong</h2>
+          <p className='mb-4 text-gray-600'>Unable to load the home page content.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className='rounded-lg bg-primary px-6 py-2 text-white hover:bg-primary/90'
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='min-h-screen'>
       {/* Hero Section */}
@@ -125,30 +106,56 @@ export const BuyerHomePage: React.FC = () => {
             <h2 className='mb-4 text-3xl font-bold text-gray-900'>Shop by Category</h2>
             <p className='text-lg text-gray-600'>Find what you&apos;re looking for in our curated categories</p>
           </div>
-          <CategorySlider categories={categories as Category[]} />
+          {homeConfig?.categories.length === 0 ? (
+            <div className='flex justify-center py-8'>
+              <div className='h-12 w-12 animate-spin rounded-full border-b-2 border-primary'></div>
+            </div>
+          ) : (
+            <CategorySlider categories={homeConfig?.categories || []} />
+          )}
         </div>
       </section>
 
-      {/* Featured Products Section */}
-      <section className='py-16'>
-        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='mb-12 flex items-center justify-between'>
-            <div>
-              <h2 className='mb-2 text-3xl font-bold text-gray-900'>Featured Products</h2>
-              <p className='text-lg text-gray-600'>Handpicked products just for you</p>
+      {/* Dynamic Product Sections */}
+      {configLoad ? (
+        <div className='grid grid-cols-1 gap-6 py-16 md:grid-cols-2 lg:grid-cols-4'>
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className='animate-pulse'>
+              <div className='mb-4 h-64 rounded-lg bg-gray-200'></div>
+              <div className='mb-2 h-4 rounded bg-gray-200'></div>
+              <div className='h-4 w-3/4 rounded bg-gray-200'></div>
             </div>
-            <Link href='/products' className='flex items-center font-semibold text-primary hover:text-primary/80'>
-              View All
-              <ArrowRightIcon className='ml-1 h-4 w-4' />
-            </Link>
-          </div>
-          <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          ))}
         </div>
-      </section>
+      ) : (
+        homeConfig &&
+        Object.entries(homeConfig).map(([sectionKey, products]) => (
+          <section className='py-16' key={sectionKey}>
+            <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+              <div className='mb-12 flex items-center justify-between'>
+                <div>
+                  <h2 className='mb-2 text-3xl font-bold text-gray-900'>{sectionTitles[sectionKey] || sectionKey}</h2>
+                  {/* Optionally add a description here */}
+                </div>
+                <Link href='/products' className='flex items-center font-semibold text-primary hover:text-primary/80'>
+                  View All
+                  <ArrowRightIcon className='ml-1 h-4 w-4' />
+                </Link>
+              </div>
+              <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
+                {(products as Product[]).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              {Array.isArray(products) && products.length === 0 && (
+                <div className='py-8 text-center'>
+                  <p className='text-gray-600'>No products available at the moment.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        ))
+      )}
 
       {/* Promotional Banner */}
       <section className='bg-secondary py-16'>

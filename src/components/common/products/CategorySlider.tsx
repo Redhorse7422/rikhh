@@ -17,6 +17,8 @@ export const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) =>
   const [categoriesPerPage, setCategoriesPerPage] = useState(4)
   const sliderRef = useRef<HTMLDivElement>(null)
 
+  console.log('Categories ===> ', categories)
+
   // Calculate categories per page based on container width with max of 8
   useEffect(() => {
     const updateCategoriesPerPage = () => {
@@ -121,13 +123,13 @@ export const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) =>
               minWidth: `${100 / categoriesPerPage}%`,
             }}
           >
-            <Link href={category.href} className='group block'>
+            <Link href={`/category/${category.slug}`} className='group block'>
               <div className='flex flex-col items-center space-y-3'>
                 {/* Rounded Image Container */}
                 <div className='relative h-30 w-30 overflow-hidden rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 p-1 transition-transform duration-300 group-hover:scale-110'>
                   <div className='relative h-full w-full overflow-hidden rounded-full'>
                     <Image
-                      src={category.image}
+                      src={category.thumbnailImage?.url}
                       alt={category.name}
                       fill
                       className='object-cover transition-transform duration-300 group-hover:scale-110'

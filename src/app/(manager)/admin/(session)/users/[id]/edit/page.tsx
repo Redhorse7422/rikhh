@@ -4,4 +4,4 @@ import { AdminEditUserPage } from '@/components/Pages/Admin/users/AdminEditUserP
 
 export default function UserEditPage() {
   return <AdminEditUserPage />
-} 
+}

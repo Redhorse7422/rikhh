@@ -4,8 +4,12 @@ import type { Control } from 'react-hook-form'
 import type { FC } from 'react'
 import React from 'react'
 
+import { useFormContext, useWatch } from 'react-hook-form'
+
 import { RepeaterField, type RepeaterFieldConfig } from '@/components/FormElements/RepeaterField'
+import { SwitcherField } from '@/components/FormElements/Switchers/SwitcherField'
 import { Card } from '@/components/common/Card'
+import { Grid } from '@/libs/pureTailwind'
 
 type SectionVariationsProps = {
   control: Control<NewProductForm>
@@ -55,7 +59,7 @@ const variationFields: RepeaterFieldConfig[] = [
     name: 'imageBase64',
     label: 'Variant Image',
     type: 'file',
-    accept: ['image/*'],
+    accept: ['.jpeg', '.jpg', '.png', '.webp'],
     multiple: false,
     maxCount: 1,
     uploadMode: 'upload',
@@ -66,50 +70,65 @@ const variationFields: RepeaterFieldConfig[] = [
 ]
 
 export const SectionVariations: FC<SectionVariationsProps> = ({ control }) => {
+  const { control: rhfControl } = useFormContext<NewProductForm>()
+  const isVariant = useWatch({ control: rhfControl, name: 'isVariant' })
   return (
     <Card className='p-10'>
       <h2 className='mb-4 text-2xl font-bold'>Product Variations</h2>
-      <p className='mb-6 text-sm text-gray-600 dark:text-gray-400'>
-        Add different variations of your product (e.g., different sizes, colors, etc.)
-      </p>
+      <Grid rowGap={2} className='mx-auto max-w-4xl'>
+        <SwitcherField
+          name='isVariant'
+          control={control}
+          label='Have Variants?'
+          labelWidth={180}
+          labelAxis='horizontal'
+        />
+        {isVariant && (
+          <>
+            <p className='mb-6 text-sm text-gray-600 dark:text-gray-400'>
+              Add different variations of your product (e.g., different sizes, colors, etc.)
+            </p>
 
-      <RepeaterField
-        control={control}
-        name='variations'
-        fields={variationFields}
-        addButtonText='Add Variation'
-        removeButtonText='Remove Variation'
-        rules={{
-          validate: (value: any) => {
-            if (!value || !Array.isArray(value) || value.length === 0) {
-              return true // Allow empty variations
-            }
+            <RepeaterField
+              control={control}
+              name='variations'
+              fields={variationFields}
+              addButtonText='Add Variation'
+              removeButtonText='Remove Variation'
+              rules={{
+                validate: (value: any) => {
+                  if (!value || !Array.isArray(value) || value.length === 0) {
+                    return true // Allow empty variations
+                  }
 
-            // Validate each variation
-            for (let i = 0; i < value.length; i++) {
-              const variation = value[i]
+                  // Validate each variation
+                  for (let i = 0; i < value.length; i++) {
+                    const variation = value[i]
 
-              if (!variation.variant || variation.variant.trim() === '') {
-                return `Variation ${i + 1}: Variant name is required`
-              }
+                    if (!variation.variant || variation.variant.trim() === '') {
+                      return `Variation ${i + 1}: Variant name is required`
+                    }
 
-              if (!variation.sku || variation.sku.trim() === '') {
-                return `Variation ${i + 1}: SKU is required`
-              }
+                    if (!variation.sku || variation.sku.trim() === '') {
+                      return `Variation ${i + 1}: SKU is required`
+                    }
 
-              if (!variation.price || variation.price <= 0) {
-                return `Variation ${i + 1}: Price must be greater than 0`
-              }
+                    if (!variation.price || variation.price <= 0) {
+                      return `Variation ${i + 1}: Price must be greater than 0`
+                    }
 
-              if (!variation.quantity || variation.quantity < 0) {
-                return `Variation ${i + 1}: Quantity must be 0 or greater`
-              }
-            }
+                    if (!variation.quantity || variation.quantity < 0) {
+                      return `Variation ${i + 1}: Quantity must be 0 or greater`
+                    }
+                  }
 
-            return true
-          },
-        }}
-      />
+                  return true
+                },
+              }}
+            />
+          </>
+        )}
+      </Grid>
     </Card>
   )
 }
