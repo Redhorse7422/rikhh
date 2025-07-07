@@ -1,7 +1,5 @@
 'use client'
-import type { UpdateUserData, User } from '@/types/user'
-
-import { useEffect } from 'react'
+import type { UpdateUserData } from '@/types/user'
 
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -26,8 +24,8 @@ export const AdminEditUserPage = () => {
   const {
     control,
     handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
+
+    formState: { isSubmitting },
   } = useForm<UpdateUserData>()
 
   const {

@@ -9,11 +9,11 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/common/Button'
 import { SmartPaginatedTable } from '@/components/ui/smart-paginated-table'
 
-import { useUserFilter } from './UserFilterContext'
+// import { useUserFilter } from './UserFilterContext'
 import { useColumn } from './useColumn'
 
 export const SectionUsers = () => {
-  const { filters } = useUserFilter()
+  // const { filters } = useUserFilter()
   const tableRef = useRef<{ refetch: () => void }>(null)
   const { columns, modal } = useColumn(() => tableRef.current?.refetch())
   const router = useRouter()

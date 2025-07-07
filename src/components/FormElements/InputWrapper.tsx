@@ -48,7 +48,6 @@ export const InputWrapper: React.FC<InputWrapperProps> = ({
   labelAxis = 'vertical',
   width,
   labelWidth,
-  size,
   labelPosition = 'center',
   helperText,
   validationRules,

@@ -6,7 +6,6 @@ import React from 'react'
 
 import { TextAreaField } from '@/components/FormElements/Fields/TextAreaField'
 import { MultiSelectField } from '@/components/FormElements/MultiSelectField'
-import { SelectField } from '@/components/FormElements/SelectInput'
 import { TextField } from '@/components/FormElements/TextInput'
 import { Card } from '@/components/common/Card'
 import { useApi } from '@/hooks/useApi'

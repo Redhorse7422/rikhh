@@ -36,79 +36,64 @@ export interface ProductImage {
   isMain: boolean
 }
 
-export interface ProductDetail extends Product {
-  // Extended from base Product type
+export interface ProductDetail {
   id: string
+  createdAt: string
+  updatedAt: string
+  addedBy: string
+  userId: string
   name: string
-  regularPrice: number
-  salePrice: number
-  rating: number
-  reviews: number
-  image: string
-  badge?: string
-  description?: string
-  category?: string
-  tags?: string[]
-  inStock?: boolean
-  sku?: string
-  weight?: number
-  dimensions?: {
-    length: number
-    width: number
-    height: number
-  }
-
-  // Additional detail page properties
-  longDescription: string
+  slug: string
+  thumbnailImgId: string
+  tags: string[]
   shortDescription: string
-  brand: string
-  model: string
-  warranty: string
-  returnPolicy: string
-  shippingInfo: string
-  images: ProductImage[]
-  variants: ProductVariant[]
-  specifications: ProductSpecification[]
-  productReviews: ProductReview[]
-  relatedProducts: Product[]
-  inWishlist: boolean
-  stockQuantity: number
-  minOrderQuantity: number
-  maxOrderQuantity: number
-  isOnSale: boolean
-  saleEndDate?: Date
-  discountPercentage?: number
-  shippingWeight: number
-  packageDimensions: {
-    length: number
-    width: number
-    height: number
-  }
-  features: string[]
-  materials: string[]
-  colors: string[]
-  sizes: string[]
-  availability: 'in-stock' | 'low-stock' | 'out-of-stock' | 'pre-order'
-}
-
-export interface ProductDetailPageProps {
-  product?: ProductDetail
-  isLoading?: boolean
+  longDescription: string
+  regularPrice: string
+  salePrice: string
+  isVariant: boolean
+  published: boolean
+  approved: boolean
+  stock: number
+  cashOnDelivery: boolean
+  featured: boolean
+  discount: string
+  discountType: 'percent' | 'amount'
+  discountStartDate: string | null
+  discountEndDate: string | null
+  tax: string
+  taxType: 'percent' | 'amount'
+  shippingType: 'free' | 'flat' | string
+  shippingCost: string
+  estShippingDays: number
+  numOfSales: number
+  metaTitle: string
+  metaDescription: string
+  rating: string
+  externalLink: string
+  externalLinkBtn: string
+  categories: CategoryType[]
+  thumbnailImg: ImageType
+  photos: ImageType[]
+  variations: VariationType[]
+  discountEnabled?: boolean
 }
 
 export interface ProductGalleryProps {
   images: ProductImage[]
-  mainImage: ProductImage
+  mainImage: string
   onImageChange: (image: ProductImage) => void
 }
 
 export interface ProductInfoProps {
   product: ProductDetail
   selectedQuantity: number
+  selectedVariation?: VariationType | null
   onQuantityChange: (quantity: number) => void
+  onVariationChange?: (variation: VariationType) => void
   onAddToCart: () => void
   onAddToWishlist: () => void
   onShare: () => void
+  isLoading?: boolean
 }
 
 export interface ProductReviewsProps {
@@ -162,9 +147,10 @@ export type CategoryType = {
 }
 
 export type VariationType = {
-  id?: string
-  name: string
-  variant: string
+  attributeId?: string
+  attributeName: string
+  attributeValue: string
+  attributeValueId?: string
   sku: string
   price: string
   quantity: number

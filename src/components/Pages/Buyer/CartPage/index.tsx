@@ -2,6 +2,8 @@
 
 import React from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import { useCart } from '@/contexts/CartContext'
 
@@ -10,28 +12,18 @@ import { CartSummary } from './components/CartSummary'
 import { EmptyCart } from './components/EmptyCart'
 
 export const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeItem, clearCart, setUpdating } = useCart()
-
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    setUpdating(true)
-    // TODO: Implement update quantity logic with API call
-    console.log('Updating quantity:', { itemId, quantity })
-    updateQuantity(itemId, quantity)
-    setTimeout(() => setUpdating(false), 1000)
+  const { cart, updateQuantity, removeItem, clearCart } = useCart()
+  const router = useRouter()
+  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
+    await updateQuantity(itemId, quantity)
   }
 
-  const handleRemoveItem = (itemId: string) => {
-    setUpdating(true)
-    // TODO: Implement remove item logic with API call
-    console.log('Removing item:', itemId)
-    removeItem(itemId)
-    setTimeout(() => setUpdating(false), 1000)
+  const handleRemoveItem = async (itemId: string) => {
+    await removeItem(itemId)
   }
 
-  const handleClearCart = () => {
-    // TODO: Implement clear cart logic
-    console.log('Clearing cart')
-    clearCart()
+  const handleClearCart = async () => {
+    await clearCart()
   }
 
   const handleApplyCoupon = (code: string) => {
@@ -40,8 +32,7 @@ export const CartPage: React.FC = () => {
   }
 
   const handleProceedToCheckout = () => {
-    // TODO: Implement checkout logic
-    console.log('Proceeding to checkout')
+    router.push('/checkout')
   }
 
   const handleContinueShopping = () => {

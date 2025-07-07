@@ -10,7 +10,6 @@ import { SelectField } from '@/components/FormElements/SelectInput'
 import { TextField } from '@/components/FormElements/TextInput'
 import { Button } from '@/components/common/Button'
 import { Card } from '@/components/common/Card'
-import { Icon } from '@/components/common/icon'
 import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
 import { logger } from '@/libs/logger.client'
@@ -24,7 +23,7 @@ export const AdminAddUserPage = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<CreateUserData>({
     defaultValues: {
       userName: '',

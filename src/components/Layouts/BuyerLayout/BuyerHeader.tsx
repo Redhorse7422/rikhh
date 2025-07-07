@@ -4,14 +4,20 @@ import React, { useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 import { SearchIcon } from '@/assets/icons'
 import LOGO from '@/assets/logos/logo.webp'
+import { LoginPopup } from '@/components/Auth/LoginPopup'
 import { CartIcon } from '@/components/common/CartIcon'
 import { Icon } from '@/components/common/icon'
 
+import { UserDropdown } from './UserDropdown'
+
 export const BuyerHeader: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false)
+  const { data: session } = useSession()
 
   return (
     <header className='sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm'>
@@ -50,15 +56,25 @@ export const BuyerHeader: React.FC = () => {
             <CartIcon />
 
             {/* User Menu */}
-            <div className='relative'>
-              <button className='flex items-center space-x-2 p-2 text-gray-600 transition-colors hover:text-primary'>
-                <Icon name='AiOutlineUser' size='2xl' />
-                <span className='hidden md:block'>Account</span>
-              </button>
-            </div>
+            {session?.user ? (
+              <UserDropdown />
+            ) : (
+              <div className='relative'>
+                <button
+                  onClick={() => setIsLoginPopupOpen(true)}
+                  className='flex items-center space-x-2 p-2 text-gray-600 transition-colors hover:text-primary'
+                >
+                  <Icon name='AiOutlineUser' size='2xl' />
+                  <span className='hidden md:block'>Sign In</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Login Popup */}
+      <LoginPopup isOpen={isLoginPopupOpen} onClose={() => setIsLoginPopupOpen(false)} />
     </header>
   )
 }

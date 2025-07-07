@@ -1,9 +1,12 @@
 'use client'
 
+import type { AddToCartDto, CartVariantDto } from '@/services/cart.services'
 import type { CartState, CartItem } from '@/types/cart'
 
 import type { ReactNode } from 'react'
-import React, { createContext, useContext, useReducer } from 'react'
+import React, { createContext, useContext, useReducer, useEffect } from 'react'
+
+import { addToCart, getCartItems, updateCartItem, removeCartItem } from '@/services/cart.services'
 
 // Cart Actions
 type CartAction =
@@ -13,6 +16,7 @@ type CartAction =
   | { type: 'CLEAR_CART' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_UPDATING'; payload: boolean }
+  | { type: 'SET_CART'; payload: CartState }
 
 // Cart Reducer
 const cartReducer = (state: CartState, action: CartAction): CartState => {
@@ -30,6 +34,14 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           items: updatedItems,
           summary: calculateSummary(updatedItems),
         }
+      }
+
+      // Add new item if it doesn't exist
+      const newItems = [...state.items, action.payload]
+      return {
+        ...state,
+        items: newItems,
+        summary: calculateSummary(newItems),
       }
     }
 
@@ -72,6 +84,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         isUpdating: action.payload,
       }
 
+    case 'SET_CART':
+      return {
+        ...state,
+        ...action.payload,
+      }
+
     default:
       return state
   }
@@ -106,10 +124,11 @@ const initialState: CartState = {
 // Cart Context
 interface CartContextType {
   cart: CartState
-  addItem: (item: CartItem) => void
-  updateQuantity: (itemId: string, quantity: number) => void
-  removeItem: (itemId: string) => void
-  clearCart: () => void
+  addItem: (item: AddToCartDto) => Promise<void>
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>
+  removeItem: (itemId: string) => Promise<void>
+  clearCart: () => Promise<void>
+  fetchCart: () => Promise<void>
   setLoading: (loading: boolean) => void
   setUpdating: (updating: boolean) => void
 }
@@ -124,20 +143,67 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, initialState)
 
-  const addItem = (item: CartItem) => {
-    dispatch({ type: 'ADD_ITEM', payload: item })
+  // Fetch cart from backend
+  const fetchCart = async () => {
+    dispatch({ type: 'SET_LOADING', payload: true })
+    try {
+      const data = await getCartItems()
+      // Transform backend response to CartState shape if needed
+      const cartState: CartState = {
+        items: data.items || [],
+        summary: data.summary || calculateSummary(data.items || []),
+        isLoading: false,
+        isUpdating: false,
+      }
+      dispatch({
+        type: 'SET_CART',
+        payload: cartState,
+      })
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false })
+    }
   }
 
-  const updateQuantity = (itemId: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { id: itemId, quantity } })
+  // Add item to cart via backend
+  const addItem = async (item: AddToCartDto) => {
+    dispatch({ type: 'SET_UPDATING', payload: true })
+    try {
+      await addToCart(item)
+      await fetchCart()
+    } finally {
+      dispatch({ type: 'SET_UPDATING', payload: false })
+    }
   }
 
-  const removeItem = (itemId: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: itemId })
+  // Update cart item via backend
+  const updateQuantity = async (itemId: string, quantity: number) => {
+    dispatch({ type: 'SET_UPDATING', payload: true })
+    try {
+      await updateCartItem(itemId, { quantity })
+      await fetchCart()
+    } finally {
+      dispatch({ type: 'SET_UPDATING', payload: false })
+    }
   }
 
-  const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' })
+  // Remove cart item via backend
+  const removeItem = async (itemId: string) => {
+    dispatch({ type: 'SET_UPDATING', payload: true })
+    try {
+      await removeCartItem(itemId)
+      await fetchCart()
+    } finally {
+      dispatch({ type: 'SET_UPDATING', payload: false })
+    }
+  }
+
+  const clearCart = async () => {
+    // Optionally implement a backend endpoint to clear cart
+    // For now, remove all items one by one
+    for (const item of cart.items) {
+      await removeCartItem(item.id)
+    }
+    await fetchCart()
   }
 
   const setLoading = (loading: boolean) => {
@@ -148,12 +214,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     dispatch({ type: 'SET_UPDATING', payload: updating })
   }
 
+  React.useEffect(() => {
+    fetchCart()
+  }, [])
+
   const value: CartContextType = {
     cart,
     addItem,
     updateQuantity,
     removeItem,
     clearCart,
+    fetchCart,
     setLoading,
     setUpdating,
   }

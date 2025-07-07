@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import { MiniCart } from '@/components/Pages/Buyer/CartPage/components/MiniCart'
 import { Icon } from '@/components/common/icon'
 import { useCart } from '@/contexts/CartContext'
@@ -9,6 +11,7 @@ import { useCart } from '@/contexts/CartContext'
 export const CartIcon: React.FC = () => {
   const { cart, updateQuantity, removeItem } = useCart()
   const [isMiniCartOpen, setIsMiniCartOpen] = useState(false)
+  const router = useRouter()
 
   const handleOpenMiniCart = () => {
     setIsMiniCartOpen(true)
@@ -20,14 +23,12 @@ export const CartIcon: React.FC = () => {
 
   const handleViewCart = () => {
     setIsMiniCartOpen(false)
-    // TODO: Navigate to cart page
-    console.log('Navigate to cart page')
+    router.push('/cart')
   }
 
   const handleCheckout = () => {
     setIsMiniCartOpen(false)
-    // TODO: Navigate to checkout page
-    console.log('Navigate to checkout page')
+    router.push('/checkout')
   }
 
   return (

@@ -4,6 +4,7 @@
 export interface Product {
   id: string
   name: string
+  slug: string
   regularPrice: number
   salePrice: number
   rating: number
@@ -25,6 +26,7 @@ export interface Product {
 
 // ===== CATEGORY TYPES =====
 export interface Category {
+  id: string
   name: string
   thumbnailImage: any
   href: string

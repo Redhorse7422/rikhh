@@ -5,7 +5,7 @@ import type { FC } from 'react'
 import React from 'react'
 
 import { TextField } from '@/components/FormElements/TextInput'
-import { EnhancedUploadField, UploadField } from '@/components/FormElements/UploadInput'
+import { EnhancedUploadField } from '@/components/FormElements/UploadInput'
 import { Card } from '@/components/common/Card'
 import { Grid } from '@/libs/pureTailwind'
 

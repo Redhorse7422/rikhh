@@ -8,7 +8,7 @@ import { ArrowLeftIcon } from '@/assets/icons'
 interface CategoryHeaderProps {
   categoryName: string
   categoryImage: string
-  productCount: string
+  productCount: number
 }
 
 export const CategoryHeader: React.FC<CategoryHeaderProps> = ({ categoryName, categoryImage, productCount }) => {

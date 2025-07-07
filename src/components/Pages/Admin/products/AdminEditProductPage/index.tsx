@@ -1,13 +1,13 @@
 'use client'
 
 import type { FileWithPreview } from '@/components/FormElements/UploadInput/EnhancedUploadInput'
+import type { Category } from '@/types/common'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 import { useForm, FormProvider } from 'react-hook-form'
 
-import { Loader } from '@/components/common/Loading/Loader'
 import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
 import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
@@ -136,7 +136,7 @@ export const AdminEditProductPage = () => {
         // Set basic info
         setValue('name', (product as any).name ?? '')
         setValue('slug', (product as any).slug ?? '')
-        setValue('categoryIds', (product as any).categoryIds ?? [])
+        setValue('categoryIds', (product as any).categories.map((item: Category) => item.id) ?? [])
         setValue('tags', (product as any).tags ?? '')
         setValue('shortDescription', (product as any).shortDescription ?? '')
         setValue('longDescription', (product as any).longDescription ?? '')
@@ -259,8 +259,10 @@ export const AdminEditProductPage = () => {
         featured: data.featured,
         discount: data.discount,
         discountType: data.discountType,
-        discountStartDate: data.discountStartDate,
-        discountEndDate: data.discountEndDate,
+        ...(data.discountEnabled && {
+          discountStartDate: data.discountStartDate,
+          discountEndDate: data.discountEndDate,
+        }),
         tax: data.tax,
         taxType: data.taxType,
         shippingType: data.shippingType,

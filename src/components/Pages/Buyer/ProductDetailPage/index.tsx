@@ -1,166 +1,177 @@
 'use client'
 
-import type { ProductDetail, ProductDetailPageProps } from '@/types/product'
+import type { AddToCartDto, CartVariantDto } from '@/services/cart.services'
+import type { ProductDetail, ProductImage } from '@/types/product'
 
 import React, { useState } from 'react'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
+import { useCart } from '@/contexts/CartContext'
+import useToast from '@/hooks/useToast'
 
 import { ProductGallery } from './components/ProductGallery'
 import { ProductInfo } from './components/ProductInfo'
 import { ProductTabs } from './components/ProductTabs'
 import { RelatedProducts } from './components/RelatedProducts'
 
-// Mock data for demonstration
-const mockProduct: ProductDetail = {
-  id: '1',
-  name: 'Premium Wireless Bluetooth Headphones',
-  salePrice: 89.99,
-  regularPrice: 129.99,
-  rating: 4.5,
-  reviews: 128,
-  image: '/images/product/product-01.png',
-  thumbnailImg: '/images/product/product-01.png',
-  badge: 'Best Seller',
-  description: 'High-quality wireless headphones with noise cancellation',
-  category: 'Electronics',
-  tags: ['wireless', 'bluetooth', 'noise-cancelling'],
-  inStock: true,
-  sku: 'WH-001',
-  weight: 0.5,
-  dimensions: { length: 20, width: 15, height: 8 },
-  longDescription: `
-    Experience crystal-clear sound with our premium wireless Bluetooth headphones. 
-    Featuring advanced noise cancellation technology, these headphones provide an 
-    immersive listening experience whether you're commuting, working out, or just 
-    relaxing at home. With up to 30 hours of battery life and quick charging, 
-    you'll never miss a beat.
-    
-    Key Features:
-    • Active Noise Cancellation
-    • 30-hour battery life
-    • Quick charge (10 min = 5 hours)
-    • Premium build quality
-    • Comfortable over-ear design
-    • Built-in microphone for calls
-  `,
-  shortDescription: 'Premium wireless headphones with noise cancellation and 30-hour battery life',
-  brand: 'AudioTech',
-  model: 'WH-2024',
-  warranty: '2 years',
-  returnPolicy: '30-day money-back guarantee',
-  shippingInfo: 'Free shipping on orders over $50',
-  images: [
-    { id: '1', url: '/images/product/product-01.png', alt: 'Headphones front view', isMain: true },
-    { id: '2', url: '/images/product/product-02.png', alt: 'Headphones side view', isMain: false },
-    { id: '3', url: '/images/product/product-03.png', alt: 'Headphones in case', isMain: false },
-    { id: '4', url: '/images/product/product-04.png', alt: 'Headphones with accessories', isMain: false },
-  ],
-  variants: [
-    { id: '1', name: 'Color', value: 'Black', price: 89.99, inStock: true, sku: 'WH-001-BLK' },
-    { id: '2', name: 'Color', value: 'White', price: 89.99, inStock: true, sku: 'WH-001-WHT' },
-    { id: '3', name: 'Color', value: 'Blue', price: 94.99, inStock: false, sku: 'WH-001-BLU' },
-  ],
-  specifications: [
-    { name: 'Driver Size', value: '40mm' },
-    { name: 'Frequency Response', value: '20Hz - 20kHz' },
-    { name: 'Impedance', value: '32Ω' },
-    { name: 'Sensitivity', value: '105dB' },
-    { name: 'Battery Life', value: '30 hours' },
-    { name: 'Charging Time', value: '2 hours' },
-    { name: 'Weight', value: '250g' },
-    { name: 'Connectivity', value: 'Bluetooth 5.0' },
-  ],
-  productReviews: [
-    {
-      id: '1',
-      userId: 'user1',
-      userName: 'John D.',
-      userAvatar: '/images/user/user-01.png',
-      rating: 5,
-      title: 'Excellent sound quality!',
-      comment:
-        'These headphones exceeded my expectations. The sound quality is amazing and the noise cancellation works perfectly.',
-      createdAt: new Date('2024-01-15'),
-      helpful: 12,
-      verified: true,
-    },
-    {
-      id: '2',
-      userId: 'user2',
-      userName: 'Sarah M.',
-      userAvatar: '/images/user/user-02.png',
-      rating: 4,
-      title: 'Great headphones, minor issues',
-      comment: 'Love the sound quality and battery life. The only downside is they can be a bit tight after long wear.',
-      createdAt: new Date('2024-01-10'),
-      helpful: 8,
-      verified: true,
-    },
-  ],
-  relatedProducts: [
-    {
-      id: '2',
-      name: 'Wireless Earbuds',
-      regularPrice: 59.99,
-      salePrice: 79.99,
-      rating: 4.3,
-      reviews: 89,
-      thumbnailImg: '/images/product/product-02.png',
-      badge: 'New',
-    },
-    {
-      id: '3',
-      name: 'Bluetooth Speaker',
-      regularPrice: 39.99,
-      salePrice: 59.99,
-      rating: 4.1,
-      reviews: 156,
-      thumbnailImg: '/images/product/product-03.png',
-      badge: 'Sale',
-    },
-  ],
-  inWishlist: false,
-  stockQuantity: 25,
-  minOrderQuantity: 1,
-  maxOrderQuantity: 10,
-  isOnSale: true,
-  saleEndDate: new Date('2024-12-31'),
-  discountPercentage: 31,
-  shippingWeight: 0.5,
-  packageDimensions: { length: 22, width: 17, height: 10 },
-  features: [
-    'Active Noise Cancellation',
-    '30-hour battery life',
-    'Quick charge technology',
-    'Premium build quality',
-    'Comfortable over-ear design',
-    'Built-in microphone',
-    'Bluetooth 5.0',
-    'Touch controls',
-  ],
-  materials: ['Premium plastic', 'Memory foam', 'Aluminum accents'],
-  colors: ['Black', 'White', 'Blue'],
-  sizes: ['One Size'],
-  availability: 'in-stock',
+interface ProductDetailPageProps {
+  product: ProductDetail
+  isLoading: boolean
 }
 
-export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product = mockProduct, isLoading = false }) => {
+export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, isLoading = false }) => {
+  const { cart, addItem, setUpdating } = useCart()
+  const { showToast } = useToast()
+
+  // Select the first available variation (with stock > 0) or the first variation if none have stock
+  const getDefaultVariation = () => {
+    if (product.variations && product.variations.length > 0) {
+      const availableVariation = product.variations.find((v) => v.quantity > 0)
+      return availableVariation || product.variations[0]
+    }
+    return null
+  }
+
   const [selectedQuantity, setSelectedQuantity] = useState(1)
-  const [mainImage, setMainImage] = useState(product.images.find((img) => img.isMain) || product.images[0])
+  const [selectedVariation, setSelectedVariation] = useState(getDefaultVariation())
+  const [mainImage, setMainImage] = useState(product.thumbnailImg?.url || '')
   const [activeTab, setActiveTab] = useState('description')
 
-  const handleImageChange = (image: any) => {
-    setMainImage(image)
+  // Get all images from variations and thumbnail
+  const getAllImages = (): ProductImage[] => {
+    const images: ProductImage[] = []
+
+    // Add thumbnail image if it exists
+    if (product.thumbnailImg?.url) {
+      images.push({
+        id: product.thumbnailImg.id,
+        url: product.thumbnailImg.url,
+        alt: product.name,
+        isMain: true,
+      })
+    }
+
+    // Add variation images
+    if (product.variations) {
+      product.variations.forEach((variation) => {
+        const image = variation.image
+        if (image?.url && image?.id && !images.find((img) => img.id === image.id)) {
+          images.push({
+            id: image.id,
+            url: image.url,
+            alt: `${product.name} - ${variation.attributeValue}`,
+            isMain: false,
+          })
+        }
+      })
+    }
+
+    return images
+  }
+
+  const images = getAllImages()
+
+  const handleImageChange = (image: ProductImage) => {
+    setMainImage(image.url)
   }
 
   const handleQuantityChange = (quantity: number) => {
-    setSelectedQuantity(Math.max(1, Math.min(quantity, product.maxOrderQuantity)))
+    // Get current stock based on selected variation or product stock
+    const getCurrentStock = () => {
+      if (product.isVariant && product.variations && product.variations.length > 0) {
+        if (selectedVariation) {
+          return selectedVariation.quantity
+        }
+        return product.variations.some((v) => v.quantity > 0) ? 1 : 0
+      }
+      return product.stock
+    }
+
+    const maxQuantity = getCurrentStock() || 1
+    setSelectedQuantity(Math.max(1, Math.min(quantity, maxQuantity)))
   }
 
-  const handleAddToCart = () => {
-    // TODO: Implement add to cart logic
-    console.log('Adding to cart:', { product: product.name, quantity: selectedQuantity })
+  const handleVariationChange = (variation: any) => {
+    console.log('Variations ==> ', variation)
+    setSelectedVariation(variation)
+    setSelectedQuantity(1) // Reset quantity when variation changes
+  }
+
+  // Convert ProductDetail to Product for cart
+  const convertToProduct = () => {
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      regularPrice: parseFloat(product.regularPrice),
+      salePrice: parseFloat(product.salePrice || '0'),
+      rating: parseFloat(product.rating || '0'),
+      reviews: product.numOfSales || 0,
+      thumbnailImg: product.thumbnailImg,
+      description: product.shortDescription,
+      category: product.categories?.[0]?.name,
+      tags: product.tags,
+      inStock: selectedVariation ? selectedVariation.quantity > 0 : product.stock > 0,
+      sku: selectedVariation?.sku || 'N/A',
+    }
+  }
+
+  const handleAddToCart = async () => {
+    try {
+      setUpdating(true)
+
+      const currentStock = selectedVariation?.quantity || product.stock
+      if (currentStock <= 0) {
+        showToast('Product is out of stock', 'error')
+        return
+      }
+
+      if (selectedQuantity <= 0) {
+        showToast('Please select a quantity', 'error')
+        return
+      }
+
+      if (selectedQuantity > currentStock) {
+        showToast(`Only ${currentStock} items available`, 'error')
+        return
+      }
+
+      if (product.isVariant && product.variations && product.variations.length > 0 && !selectedVariation) {
+        showToast('Please select a variation', 'error')
+        return
+      }
+
+      // Build variants array for DTO if applicable
+      let variants: CartVariantDto[] | undefined = undefined
+      if (selectedVariation) {
+        variants = [
+          {
+            // Backend expects attributeId and attributeValueId; use id and sku as closest available fields
+            attributeId: selectedVariation.attributeId || '',
+            attributeValueId: selectedVariation.attributeValueId || '',
+            attributeName: selectedVariation.attributeName,
+            attributeValue: selectedVariation.attributeValue,
+          },
+        ]
+      }
+
+      const dto: AddToCartDto = {
+        productId: product.id,
+        quantity: selectedQuantity,
+        price: parseFloat(selectedVariation?.price || product.regularPrice),
+        variants,
+      }
+
+      await addItem(dto)
+      const variationText = selectedVariation ? ` (${selectedVariation.attributeValue})` : ''
+      showToast(`${product.name}${variationText} added to cart!`, 'success')
+      setSelectedQuantity(1)
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      showToast('Failed to add item to cart', 'error')
+    } finally {
+      setUpdating(false)
+    }
   }
 
   const handleAddToWishlist = () => {
@@ -220,16 +231,19 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product = 
       <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 gap-12 lg:grid-cols-2'>
           {/* Product Gallery */}
-          <ProductGallery images={product.images} mainImage={mainImage} onImageChange={handleImageChange} />
+          <ProductGallery images={images} mainImage={mainImage} onImageChange={handleImageChange} />
 
           {/* Product Info */}
           <ProductInfo
             product={product}
             selectedQuantity={selectedQuantity}
+            selectedVariation={selectedVariation}
             onQuantityChange={handleQuantityChange}
+            onVariationChange={handleVariationChange}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             onShare={handleShare}
+            isLoading={cart.isUpdating}
           />
         </div>
 
@@ -239,9 +253,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product = 
         </div>
 
         {/* Related Products */}
-        <div className='mt-16'>
+        {/* <div className='mt-16'>
           <RelatedProducts products={product.relatedProducts} />
-        </div>
+        </div> */}
       </div>
     </div>
   )

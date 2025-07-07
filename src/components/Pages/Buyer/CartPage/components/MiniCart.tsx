@@ -22,7 +22,7 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   return (
     <>
       {/* Backdrop */}
-      <div className='fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity' onClick={onClose} />
+      <div className='fixed inset-0 z-40 w-full bg-black bg-opacity-50 transition-opacity' onClick={onClose} />
 
       {/* Mini Cart Sidebar */}
       <div className='fixed right-0 top-0 z-50 h-full w-full max-w-md transform bg-white shadow-xl transition-transform duration-300 ease-in-out'>
