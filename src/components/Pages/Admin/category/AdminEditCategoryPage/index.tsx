@@ -2,7 +2,7 @@
 
 import type { NewCategoryForm } from '../AdminAddCategoryPage'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'

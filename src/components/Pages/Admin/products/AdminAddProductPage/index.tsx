@@ -1,6 +1,6 @@
 'use client'
 
-import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput/EnhancedUploadInput'
 
 import React from 'react'
 
@@ -20,7 +20,7 @@ import SectionStats from './sections/SectionStats'
 import SectionTaxShipping from './sections/SectionTaxShipping'
 import SectionVariations from './sections/SectionVariations'
 
-const defaultValues: NewProductForm = {
+export const defaultValues: NewProductForm = {
   name: '',
   slug: '',
   categoryIds: [],
@@ -39,6 +39,7 @@ const defaultValues: NewProductForm = {
   discountType: 'percent',
   discountStartDate: '',
   discountEndDate: '',
+  discountEnabled: false,
   tax: 0,
   taxType: 'percent',
   shippingType: 'free',
@@ -56,6 +57,7 @@ const defaultValues: NewProductForm = {
 }
 
 export type ProductVariation = {
+  name: string
   variant: string
   sku: string
   price: number
@@ -82,6 +84,7 @@ export type NewProductForm = {
   discountType: 'percent' | 'amount'
   discountStartDate: string
   discountEndDate: string
+  discountEnabled: boolean
   tax: number
   taxType: 'percent' | 'amount'
   shippingType: 'free' | 'paid'
@@ -142,78 +145,65 @@ export const AdminAddProductPage: React.FC = () => {
           }
         }
       }
+      console.log('data.variations', data.variations)
 
-      // Convert form data to FormData for file uploads
-      const formData = new FormData()
-      console.log('Data ==> ', data.variations)
+      // Prepare simple payload
+      const payload = {
+        name: data.name,
+        slug: data.slug,
+        categoryIds: data.categoryIds,
+        tags: data.tags,
+        shortDescription: data.shortDescription,
+        longDescription: data.longDescription,
+        regularPrice: data.regularPrice,
+        salePrice: data.salePrice,
+        isVariant: data.isVariant,
+        published: data.published,
+        approved: data.approved,
+        stock: data.stock,
+        cashOnDelivery: data.cashOnDelivery,
+        featured: data.featured,
+        discount: data.discount,
+        discountType: data.discountType,
+        ...(data.discountEnabled && {
+          discountStartDate: data.discountStartDate,
+          discountEndDate: data.discountEndDate,
+        }),
+        tax: data.tax,
+        taxType: data.taxType,
+        shippingType: data.shippingType,
+        shippingCost: data.shippingCost,
+        estShippingDays: data.estShippingDays,
+        numOfSales: data.numOfSales,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        rating: data.rating,
+        externalLink: data.externalLink,
+        externalLinkBtn: data.externalLinkBtn,
+        // Handle file uploads separately or convert to base64 if needed
+        thumbnailImgId: data.thumbnailImg.length > 0 ? data.thumbnailImg[0].fileId : null,
+        photosIds: data.photos.map((file) => file.fileId),
+        variations: data.variations.map((variation) => ({
+          name: variation.name,
+          variant: variation.variant,
+          sku: variation.sku,
+          price: variation.price,
+          quantity: variation.quantity,
+          imageId: variation.imageBase64.length > 0 ? variation.imageBase64[0] : null,
+        })),
+      }
 
-      // Add all fields to FormData
-      Object.keys(data).forEach((key) => {
-        const value = data[key as keyof NewProductForm]
-        if (key === 'thumbnailImg') {
-          // Handle single thumbnail image
-          const thumbnailArray = value as FileWithPreview[]
-          if (Array.isArray(thumbnailArray) && thumbnailArray.length > 0) {
-            formData.append(key, thumbnailArray[0].file)
-          }
-        } else if (key === 'photos') {
-          // Handle photos array
-          const photosArray = value as FileWithPreview[]
-          if (Array.isArray(photosArray) && photosArray.length > 0) {
-            photosArray.forEach((fileWithPreview, index) => {
-              formData.append(`${key}[${index}]`, fileWithPreview.file)
-            })
-          }
-        } else if (key === 'categoryIds') {
-          // Handle categoryIds array
-          const categoryIdsArray = value as string[]
-          if (Array.isArray(categoryIdsArray) && categoryIdsArray.length > 0) {
-            categoryIdsArray.forEach((categoryId, index) => {
-              formData.append(`${key}[${index}]`, categoryId)
-            })
-          }
-        } else if (key === 'variations') {
-          // Handle variations array - send as JSON with file references
-          const variationsArray = value as ProductVariation[]
-          if (Array.isArray(variationsArray) && variationsArray.length > 0) {
-            // Process variations to separate files from data
-            const variationsData = variationsArray.map((variation, index) => {
-              // Add variation image files to FormData with indexed keys
-              if (Array.isArray(variation.imageBase64) && variation.imageBase64.length > 0) {
-                formData.append(`variation_images[${index}]`, variation.imageBase64[0].file)
-              }
-              
-              // Return variation data without the file (just metadata)
-              return {
-                variant: variation.variant,
-                sku: variation.sku,
-                price: variation.price,
-                quantity: variation.quantity,
-                // Don't include imageBase64 in the JSON, files are sent separately
-              }
-            })
-            
-            // Add the variations data as JSON
-            formData.append(key, JSON.stringify(variationsData))
-          }
-        } else {
-          // Handle other fields
-          if (value !== undefined && value !== null && value !== '') {
-            formData.append(key, String(value))
-          }
-        }
-      })
-
-      console.log('final Variations ==> ', formData.get('variations'))
+      console.log('Product payload:', payload)
 
       await createDataSource.mutateAsync({
         path: '/v1/products/store',
-        body: formData,
+        body: payload,
       })
-      showToast('Product Created successful!', 'success')
+      showToast('Product Created successfully!', 'success')
       router.push('/products')
     } catch (error) {
-      showToast('An error occurred!', 'error')
+      console.error('Error creating product:', error)
+      showToast('An error occurred while creating the product!', 'error')
     } finally {
       fullLoading.close()
     }

@@ -1,9 +1,14 @@
-import React, { FC } from 'react'
-import { Control } from 'react-hook-form'
+import type { NewProductForm } from '..'
+import type { Control } from 'react-hook-form'
+
+import type { FC } from 'react'
+import React from 'react'
+
+
+import { TextField } from '@/components/FormElements/TextInput'
 import { Card } from '@/components/common/Card'
 import { Grid } from '@/libs/pureTailwind'
-import { TextField } from '@/components/FormElements/TextInput'
-import { NewProductForm } from '..'
+
 
 type SectionStatsProps = {
   control: Control<NewProductForm>

@@ -1,13 +1,13 @@
 'use client'
 
-import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+import type { FileWithPreview } from '@/components/FormElements/UploadInput/EnhancedUploadInput'
+import type { Category } from '@/types/common'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 import { useForm, FormProvider } from 'react-hook-form'
 
-import { Loader } from '@/components/common/Loading/Loader'
 import { useApi } from '@/hooks/useApi'
 import useToast from '@/hooks/useToast'
 import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
@@ -40,6 +40,7 @@ const defaultValues: NewProductForm = {
   discountType: 'percent',
   discountStartDate: '',
   discountEndDate: '',
+  discountEnabled: false,
   tax: 0,
   taxType: 'percent',
   shippingType: 'free',
@@ -58,6 +59,7 @@ const defaultValues: NewProductForm = {
 
 export type ProductVariation = {
   id?: string
+  name: string
   variant: string
   sku: string
   price: number
@@ -84,6 +86,7 @@ export type NewProductForm = {
   discountType: 'percent' | 'amount'
   discountStartDate: string
   discountEndDate: string
+  discountEnabled: boolean
   tax: number
   taxType: 'percent' | 'amount'
   shippingType: 'free' | 'paid'
@@ -117,6 +120,7 @@ export const AdminEditProductPage = () => {
     enabled: !!id,
   })
 
+  console.log('Product ==> ', product)
   const methods = useForm<NewProductForm>({
     defaultValues,
   })
@@ -132,7 +136,7 @@ export const AdminEditProductPage = () => {
         // Set basic info
         setValue('name', (product as any).name ?? '')
         setValue('slug', (product as any).slug ?? '')
-        setValue('categoryIds', (product as any).categoryIds ?? [])
+        setValue('categoryIds', (product as any).categories.map((item: Category) => item.id) ?? [])
         setValue('tags', (product as any).tags ?? '')
         setValue('shortDescription', (product as any).shortDescription ?? '')
         setValue('longDescription', (product as any).longDescription ?? '')
@@ -171,30 +175,9 @@ export const AdminEditProductPage = () => {
         setValue('externalLinkBtn', (product as any).externalLinkBtn ?? '')
 
         // Set images
-        if ((product as any).thumbnailImg) {
-          setValue('thumbnailImg', [
-            {
-              id: 'existing',
-              preview: (product as any).thumbnailImg,
-              name: 'thumbnail',
-              size: 0,
-              type: 'image/*',
-              file: null as unknown as File,
-            },
-          ])
-        }
+        setValue('thumbnailImg', product.thumbnailImg ? [(product as any).thumbnailImg] : [])
 
-        if ((product as any).photos && Array.isArray((product as any).photos)) {
-          const photoFiles: FileWithPreview[] = (product as any).photos.map((photo: string, index: number) => ({
-            id: `existing-${index}`,
-            preview: photo,
-            name: `photo-${index}`,
-            size: 0,
-            type: 'image/*',
-            file: null as unknown as File,
-          }))
-          setValue('photos', photoFiles)
-        }
+        setValue('photos', (product as any).photos?.length > 0 ? (product as any).photos : [])
 
         // Set variations
         if ((product as any).variations && Array.isArray((product as any).variations)) {
@@ -202,22 +185,12 @@ export const AdminEditProductPage = () => {
           const variationFiles: ProductVariation[] = (product as any).variations.map(
             (variation: any, index: number) => ({
               id: variation.id || `existing-variation-${index}`,
+              name: variation.name || '',
               variant: variation.variant || '',
               sku: variation.sku || '',
               price: variation.price || 0,
               quantity: variation.quantity || 0,
-              imageBase64: variation.image
-                ? [
-                    {
-                      id: `existing-variation-image-${index}`,
-                      preview: variation.image,
-                      name: `variation-${index}`,
-                      size: 0,
-                      type: 'image/*',
-                      file: null as unknown as File,
-                    },
-                  ]
-                : [],
+              imageBase64: variation.image ? [(variation as any).image] : [],
             }),
           )
           console.log('Processed variations:', variationFiles)
@@ -266,78 +239,70 @@ export const AdminEditProductPage = () => {
         }
       }
 
-      // Convert form data to FormData for file uploads
-      const formData = new FormData()
-      console.log('Data ==> ', data.variations)
+      console.log('data.variations', data)
 
-      // Add all fields to FormData
-      Object.keys(data).forEach((key) => {
-        const value = data[key as keyof NewProductForm]
-        if (key === 'thumbnailImg') {
-          // Handle single thumbnail image
-          const thumbnailArray = value as FileWithPreview[]
-          if (Array.isArray(thumbnailArray) && thumbnailArray.length > 0) {
-            formData.append(key, thumbnailArray[0].file)
-          }
-        } else if (key === 'photos') {
-          // Handle photos array
-          const photosArray = value as FileWithPreview[]
-          if (Array.isArray(photosArray) && photosArray.length > 0) {
-            photosArray.forEach((fileWithPreview, index) => {
-              formData.append(`${key}[${index}]`, fileWithPreview.file)
-            })
-          }
-        } else if (key === 'categoryIds') {
-          // Handle categoryIds array
-          const categoryIdsArray = value as string[]
-          if (Array.isArray(categoryIdsArray) && categoryIdsArray.length > 0) {
-            categoryIdsArray.forEach((categoryId, index) => {
-              formData.append(`${key}[${index}]`, categoryId)
-            })
-          }
-        } else if (key === 'variations') {
-          // Handle variations array - send as JSON with file references
-          const variationsArray = value as ProductVariation[]
-          if (Array.isArray(variationsArray) && variationsArray.length > 0) {
-            // Process variations to separate files from data
-            const variationsData = variationsArray.map((variation, index) => {
-              // Add variation image files to FormData with indexed keys
-              if (Array.isArray(variation.imageBase64) && variation.imageBase64.length > 0) {
-                formData.append(`variation_images[${index}]`, variation.imageBase64[0].file)
-              }
+      // Prepare simple payload
+      const payload = {
+        name: data.name,
+        slug: data.slug,
+        categoryIds: data.categoryIds,
+        tags: data.tags,
+        shortDescription: data.shortDescription,
+        longDescription: data.longDescription,
+        regularPrice: data.regularPrice,
+        salePrice: data.salePrice,
+        isVariant: data.isVariant,
+        published: data.published,
+        approved: data.approved,
+        stock: data.stock,
+        cashOnDelivery: data.cashOnDelivery,
+        featured: data.featured,
+        discount: data.discount,
+        discountType: data.discountType,
+        ...(data.discountEnabled && {
+          discountStartDate: data.discountStartDate,
+          discountEndDate: data.discountEndDate,
+        }),
+        tax: data.tax,
+        taxType: data.taxType,
+        shippingType: data.shippingType,
+        shippingCost: data.shippingCost,
+        estShippingDays: data.estShippingDays,
+        numOfSales: data.numOfSales,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        rating: data.rating,
+        externalLink: data.externalLink,
+        externalLinkBtn: data.externalLinkBtn,
+        // Handle file uploads separately or convert to base64 if needed
+        thumbnailImgId: data.thumbnailImg.length > 0 ? (data.thumbnailImg[0].fileId ?? data.thumbnailImg[0].id) : null,
+        photosIds: data.photos.map((file) => (file.fileId ? file.fileId : file.id)),
+        variations: data.variations.map((variation) => ({
+          name: variation.name,
+          variant: variation.variant,
+          sku: variation.sku,
+          price: variation.price,
+          quantity: variation.quantity,
+          imageId:
+            variation.imageBase64.length > 0
+              ? variation.imageBase64[0].id
+                ? variation.imageBase64[0].id
+                : variation.imageBase64[0]
+              : null,
+        })),
+      }
 
-              // Return variation data without the file (just metadata)
-              return {
-                id: variation.id, // Include ID for existing variations
-                variant: variation.variant,
-                sku: variation.sku,
-                price: variation.price,
-                quantity: variation.quantity,
-                // Don't include imageBase64 in the JSON, files are sent separately
-              }
-            })
-
-            // Add the variations data as JSON
-            formData.append(key, JSON.stringify(variationsData))
-          }
-        } else {
-          // Handle other fields
-          if (value !== undefined && value !== null && value !== '') {
-            formData.append(key, String(value))
-          }
-        }
-      })
-
-      console.log('final Variations ==> ', formData.get('variations'))
+      console.log('Product payload:', payload)
 
       await updateDataSource.mutateAsync({
         path: `/v1/products/update/${id}`,
-        body: formData,
+        body: payload,
       })
-      showToast('Product Updated successful!', 'success')
+      showToast('Product Updated successfully!', 'success')
       router.push('/products')
     } catch (error) {
-      showToast('An error occurred!', 'error')
+      console.error('Error updating product:', error)
+      showToast('An error occurred while updating the product!', 'error')
     } finally {
       fullLoading.close()
     }

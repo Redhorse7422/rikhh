@@ -5,7 +5,8 @@ import { logger } from '@/libs/logger.client'
 
 // Constants for better maintainability
 const ALLOWED_NO_SESSION_ROUTES = ['/login', '/forgot-password', '/invite-callback'] as const
-const BUYER_PROTECTED_ROUTES = ['/profile', '/cart', '/checkout', '/order'] as const
+// const BUYER_PROTECTED_ROUTES = ['/profile', '/cart', '/checkout', '/order'] as const
+const BUYER_PROTECTED_ROUTES = ['/profile', '/order'] as const
 
 export const middleware = async (request: NextRequest) => {
   const template = process.env.TEMPLATE

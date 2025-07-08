@@ -6,9 +6,10 @@ import { dehydrate, HydrationBoundary, QueryClient, QueryClientProvider } from '
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 
+import { CartProvider } from '@/contexts/CartContext'
+
 import { FullScreenLoadingProvider } from './FullScreenLoadingProvider'
 import ToastProvider from './ToastProvider'
-
 
 export function MainProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient())
@@ -17,7 +18,9 @@ export function MainProviders({ children }: { children: React.ReactNode }) {
       <ThemeProvider defaultTheme='light' attribute='class'>
         <QueryClientProvider client={queryClient}>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <FullScreenLoadingProvider>{children}</FullScreenLoadingProvider>
+            <CartProvider>
+              <FullScreenLoadingProvider>{children}</FullScreenLoadingProvider>
+            </CartProvider>
           </HydrationBoundary>
         </QueryClientProvider>
         <ToastProvider />

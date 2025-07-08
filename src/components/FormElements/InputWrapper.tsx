@@ -48,7 +48,6 @@ export const InputWrapper: React.FC<InputWrapperProps> = ({
   labelAxis = 'vertical',
   width,
   labelWidth,
-  size,
   labelPosition = 'center',
   helperText,
   validationRules,
@@ -59,13 +58,6 @@ export const InputWrapper: React.FC<InputWrapperProps> = ({
   const isHorizontal = labelAxis === 'horizontal'
   const idLabel = `label-${label}`
   const idBlankLabel = `blank-label-${label}`
-
-  const getSizeLabel = () => {
-    if (size === 'small') return 'xs'
-    if (size === 'large') return 'md'
-
-    return 'sm'
-  }
 
   const getAlignLabel = () => {
     if (isVertical) return 'start'

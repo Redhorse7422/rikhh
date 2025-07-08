@@ -20,7 +20,7 @@ interface SectionCategoryDetailProps {
   canEdit?: boolean
 }
 
-export const SectionCategoryDetail: FC<SectionCategoryDetailProps> = ({ control, canEdit }) => {
+export const SectionCategoryDetail: FC<SectionCategoryDetailProps> = ({ control }) => {
   const { getDataSource } = useApi()
 
   const { data: categoriesOption } = getDataSource<{ data: CategoryOption[] }>({

@@ -11,7 +11,10 @@
     "buyer:build": "cross-env TEMPLATE=buyer NEXT_PUBLIC_TEMPLATE=buyer next build",
     "admin:build": "cross-env TEMPLATE=admin NEXT_PUBLIC_TEMPLATE=admin next build",
     "seller:build": "cross-env TEMPLATE=seller NEXT_PUBLIC_TEMPLATE=seller next build",
-    "start": "next start",
+    "start": "node server.js",
+    "buyer:start": "cross-env TEMPLATE=buyer NEXT_PUBLIC_TEMPLATE=buyer next start",
+    "admin:start": "cross-env TEMPLATE=admin NEXT_PUBLIC_TEMPLATE=admin node server.js",
+    "seller:start": "cross-env TEMPLATE=seller NEXT_PUBLIC_TEMPLATE=seller node server.js",
     "lint": "next lint"
   },
   "dependencies": {

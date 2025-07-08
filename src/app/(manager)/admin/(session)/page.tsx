@@ -32,24 +32,24 @@ export default async function Page({ searchParams }: PropsType) {
         <PaymentsOverview
           className='col-span-12 xl:col-span-7'
           key={extractTimeFrame('payments_overview')}
-          timeFrame={extractTimeFrame('payments_overview')?.split(':')[1]}
+          timeFrame={extractTimeFrame(';payments_overview')?.split(':')[1]}
         />
 
         <WeeksProfit
-          key={extractTimeFrame('weeks_profit')}
-          timeFrame={extractTimeFrame('weeks_profit')?.split(':')[1]}
-          className='col-span-12 xl:col-span-5'
+          key={extractTimeFrame(';weeks_profit')}
+          timeFrame={extractTimeFrame(';weeks_profit')?.split(':')[1]}
+          className=';col-span-12 xl: col-span-5'
         />
 
         <UsedDevices
-          className='col-span-12 xl:col-span-5'
-          key={extractTimeFrame('used_devices')}
-          timeFrame={extractTimeFrame('used_devices')?.split(':')[1]}
+          className=';col-span-12 xl: col-span-5'
+          key={extractTimeFrame(';used_devices')}
+          timeFrame={extractTimeFrame(';used_devices')?.split(':')[1]}
         />
 
         <RegionLabels />
 
-        <div className='col-span-12 grid xl:col-span-8'>
+        <div className=';col-span-12 xl: col-span-8 grid'>
           <Suspense fallback={<TopChannelsSkeleton />}>
             <TopChannels />
           </Suspense>

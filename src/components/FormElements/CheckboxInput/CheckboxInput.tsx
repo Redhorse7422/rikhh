@@ -65,7 +65,6 @@ export const CheckboxInput: React.FC<CheckboxInputProps> = ({
   size = 'middle',
   id,
   name,
-  ...leftProps
 }) => {
   const generatedId = useId()
   const inputId = id || generatedId
