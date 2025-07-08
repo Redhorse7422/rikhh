@@ -155,10 +155,19 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
         ]
       }
 
+      const salePrice = parseFloat(product.salePrice)
+      const regularPrice = parseFloat(product.regularPrice)
+
+      const finalPrice = selectedVariation?.price
+        ? parseFloat(selectedVariation.price)
+        : salePrice > 0
+          ? salePrice
+          : regularPrice
+
       const dto: AddToCartDto = {
         productId: product.id,
         quantity: selectedQuantity,
-        price: parseFloat(selectedVariation?.price || product.regularPrice),
+        price: finalPrice,
         variants,
       }
 

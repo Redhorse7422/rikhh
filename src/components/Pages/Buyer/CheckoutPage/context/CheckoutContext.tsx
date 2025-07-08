@@ -15,6 +15,7 @@ interface CheckoutContextType {
   selectedShippingOption: ShippingOption | null
   selectedShippingAddressId: string | null
   selectedBillingAddressId: string | null
+  orderResponse: any
   isInitiating: boolean
   isCalculatingShipping: boolean
   isConfirming: boolean
@@ -40,6 +41,7 @@ interface CheckoutProviderProps {
   selectedShippingOption: ShippingOption | null
   selectedShippingAddressId: string | null
   selectedBillingAddressId: string | null
+  orderResponse: any
   isInitiating: boolean
   isCalculatingShipping: boolean
   isConfirming: boolean
@@ -63,6 +65,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   selectedShippingOption,
   selectedShippingAddressId,
   selectedBillingAddressId,
+  orderResponse,
   isInitiating,
   isCalculatingShipping,
   isConfirming,
@@ -86,6 +89,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         selectedShippingOption,
         selectedShippingAddressId,
         selectedBillingAddressId,
+        orderResponse,
         isInitiating,
         isCalculatingShipping,
         isConfirming,

@@ -24,7 +24,7 @@ export const ShippingStep: React.FC = () => {
       setForm({
         firstName: defaultAddress.firstName,
         lastName: defaultAddress.lastName,
-        email: '', // Email not in address data, will need to be entered manually
+        email: defaultAddress.email ?? '',
         phone: defaultAddress.phone,
         address: defaultAddress.addressLine1 + (defaultAddress.addressLine2 ? `, ${defaultAddress.addressLine2}` : ''),
         city: defaultAddress.city,
@@ -33,13 +33,17 @@ export const ShippingStep: React.FC = () => {
         country: defaultAddress.country,
       })
     }
-  }, [getDefaultShippingAddress, form.firstName])
+    // Preselect default address if none is selected
+    if (defaultAddress && !selectedShippingAddressId) {
+      onSelectShippingAddress(defaultAddress.id)
+    }
+  }, [getDefaultShippingAddress, form.firstName, selectedShippingAddressId, onSelectShippingAddress])
 
   const handleAddressSelect = (address: any) => {
     setForm({
       firstName: address.firstName,
       lastName: address.lastName,
-      email: '', // Email not in address data, will need to be entered manually
+      email: address.email ?? '', // Email not in address data, will need to be entered manually
       phone: address.phone,
       address: address.addressLine1 + (address.addressLine2 ? `, ${address.addressLine2}` : ''),
       city: address.city,
@@ -60,12 +64,12 @@ export const ShippingStep: React.FC = () => {
     }
     setError(null)
     onDataUpdate('shipping', form)
-    
+
     // If no shipping address ID is set (manual entry), set a temporary one
     if (!selectedShippingAddressId) {
       onSelectShippingAddress('temp-shipping-address')
     }
-    
+
     onStepChange('billing')
   }
 
@@ -81,7 +85,11 @@ export const ShippingStep: React.FC = () => {
             {shippingAddresses.map((address) => (
               <div
                 key={address.id}
-                className='cursor-pointer rounded border border-gray-200 bg-white p-3 hover:border-primary'
+                className={`cursor-pointer rounded border p-3 transition-colors ${
+                  selectedShippingAddressId === address.id
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200 bg-white hover:border-primary'
+                }`}
                 onClick={() => handleAddressSelect(address)}
               >
                 <div className='flex items-center justify-between'>
@@ -90,7 +98,9 @@ export const ShippingStep: React.FC = () => {
                       {address.firstName} {address.lastName}
                     </p>
                     <p className='text-sm text-gray-600'>
-                      {address.addressLine1}{address.addressLine2 ? `, ${address.addressLine2}` : ''}, {address.city}, {address.state} {address.postalCode}
+                      {address.addressLine1}
+                      {address.addressLine2 ? `, ${address.addressLine2}` : ''}, {address.city}, {address.state}{' '}
+                      {address.postalCode}
                     </p>
                     <p className='text-sm text-gray-600'>{address.phone}</p>
                   </div>

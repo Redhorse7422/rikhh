@@ -50,8 +50,8 @@ async function getCurrentUserId(): Promise<{ userId?: string; guestId?: string }
 // Calculate cart summary (copied from CartContext)
 function calculateSummary(items: CartItem[]) {
   const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0)
-  const shipping = subtotal >= 50 ? 0 : 5.99 // Free shipping over $50
-  const tax = subtotal * 0.08 // 8% tax rate
+  const shipping = 0 // Free shipping
+  const tax = 0 // No tax
   const discount = 0 // TODO: Implement coupon logic
   const total = subtotal + shipping + tax - discount
   return {
@@ -118,10 +118,10 @@ export const getCartItems = async (): Promise<CartBackendResponse> => {
 
 // Update cart item
 export const updateCartItem = async (id: string, data: Partial<AddToCartDto>) => {
-  const { userId, guestId } = await getCurrentUserId()
+  // const { userId, guestId } = await getCurrentUserId()
   const payload = {
     ...data,
-    ...(userId ? { userId } : { guestId }),
+    // ...(userId ? { userId } : { guestId }),
   }
   return client.put(`/v1/cart/update/${id}`, payload)
 }

@@ -7,7 +7,14 @@ import { useAddresses } from '@/hooks/useAddresses'
 import { useCheckout } from '../context/CheckoutContext'
 
 export const BillingStep: React.FC = () => {
-  const { checkoutData, onDataUpdate, onStepChange, onSelectBillingAddress } = useCheckout()
+  const {
+    checkoutData,
+    onDataUpdate,
+    onStepChange,
+    onSelectBillingAddress,
+    selectedBillingAddressId,
+    selectedShippingAddressId,
+  } = useCheckout()
   const { getBillingAddresses, getDefaultBillingAddress } = useAddresses()
   const [form, setForm] = useState(checkoutData.billing)
   const [error, setError] = useState<string | null>(null)
@@ -35,8 +42,12 @@ export const BillingStep: React.FC = () => {
           country: defaultAddress.country,
         }))
       }
+      // Preselect default address if none is selected
+      if (defaultAddress && !selectedBillingAddressId) {
+        onSelectBillingAddress(defaultAddress.id)
+      }
     }
-  }, [form.sameAsShipping, getDefaultBillingAddress, form.firstName])
+  }, [form.sameAsShipping, getDefaultBillingAddress, form.firstName, selectedBillingAddressId, onSelectBillingAddress])
 
   const handleAddressSelect = (address: any) => {
     setForm((prev) => ({
@@ -55,14 +66,14 @@ export const BillingStep: React.FC = () => {
     onSelectBillingAddress(address.id)
   }
 
-    const handleNext = () => {
+  const handleNext = () => {
     if (!form.sameAsShipping && (!form.firstName || !form.lastName || !form.email || !form.address)) {
       setError('Please fill in all required fields.')
       return
     }
     setError(null)
     onDataUpdate('billing', form)
-    
+
     // Move to shipping method step
     onStepChange('shipping-method')
   }
@@ -83,7 +94,11 @@ export const BillingStep: React.FC = () => {
             {billingAddresses.map((address) => (
               <div
                 key={address.id}
-                className='cursor-pointer rounded border border-gray-200 bg-white p-3 hover:border-primary'
+                className={`cursor-pointer rounded border p-3 transition-colors ${
+                  selectedBillingAddressId === address.id
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200 bg-white hover:border-primary'
+                }`}
                 onClick={() => handleAddressSelect(address)}
               >
                 <div className='flex items-center justify-between'>
@@ -120,7 +135,13 @@ export const BillingStep: React.FC = () => {
           <input
             type='checkbox'
             checked={form.sameAsShipping}
-            onChange={(e) => setForm((f) => ({ ...f, sameAsShipping: e.target.checked }))}
+            onChange={(e) => {
+              const checked = e.target.checked
+              setForm((f) => ({ ...f, sameAsShipping: checked }))
+              if (checked && selectedShippingAddressId) {
+                onSelectBillingAddress(selectedShippingAddressId)
+              }
+            }}
             id='sameAsShipping'
           />
           <label htmlFor='sameAsShipping' className='ml-2'>

@@ -64,7 +64,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         return selectedVariation.quantity
       }
       // If no variation selected, check if any variant has stock
-      return product.variations.some(v => v.quantity > 0) ? 1 : 0
+      return product.variations.some((v) => v.quantity > 0) ? 1 : 0
     }
     return product.stock
   }
@@ -110,10 +110,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       {/* Price */}
       <div className='space-y-2'>
         <div className='flex items-center space-x-3'>
-          <span className='text-3xl font-bold text-gray-900'>${currentPrice.toFixed(2)}</span>
+          <span className='text-3xl font-bold text-gray-900'>
+            ${isOnSale ? salePrice.toFixed(2) : currentPrice.toFixed(2)}
+          </span>
           {isOnSale && (
             <>
-              <span className='text-xl text-gray-500 line-through'>${salePrice?.toFixed(2)}</span>
+              <span className='text-xl text-gray-500 line-through'>${currentPrice?.toFixed(2)}</span>
               <span className='rounded-full bg-red-100 px-2 py-1 text-sm font-semibold text-red-600'>
                 -{Math.round(((currentPrice - salePrice!) / currentPrice) * 100)}%
               </span>
@@ -133,10 +135,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           <h3 className='text-sm font-medium text-gray-900'>Categories</h3>
           <div className='flex flex-wrap gap-2'>
             {product.categories.map((category) => (
-              <span
-                key={category.id}
-                className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'
-              >
+              <span key={category.id} className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'>
                 {category.name}
               </span>
             ))}
@@ -161,7 +160,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
                 } ${variation.quantity <= 0 ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 {variation.attributeValue}
-                {variation.quantity <= 0 && <span className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500'></span>}
+                {variation.quantity <= 0 && (
+                  <span className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500'></span>
+                )}
               </button>
             ))}
           </div>
@@ -187,9 +188,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           >
             <Icon name='AiOutlinePlus' className='h-4 w-4' />
           </button>
-          <span className='text-sm text-gray-500'>
-            {getCurrentStock()} available
-          </span>
+          <span className='text-sm text-gray-500'>{getCurrentStock()} available</span>
         </div>
       </div>
 
@@ -205,8 +204,10 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
               <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
               Adding...
             </div>
+          ) : isOutOfStock() ? (
+            'Out of Stock'
           ) : (
-            isOutOfStock() ? 'Out of Stock' : 'Add to Cart'
+            'Add to Cart'
           )}
         </button>
 
@@ -258,10 +259,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <div className='rounded-lg bg-gray-50 p-4'>
         <h3 className='mb-2 font-medium text-gray-900'>Shipping Information</h3>
         <p className='text-sm text-gray-600'>
-          {product.shippingType === 'free' 
-            ? 'Free shipping on all orders' 
-            : `Standard shipping: $${product.shippingCost}`
-          }
+          {product.shippingType === 'free'
+            ? 'Free shipping on all orders'
+            : `Standard shipping: $${product.shippingCost}`}
           {product.cashOnDelivery && ' • Cash on delivery available'}
         </p>
       </div>

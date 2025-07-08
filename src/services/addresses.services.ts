@@ -7,6 +7,7 @@ export interface Address {
   status: 'active' | 'inactive'
   firstName: string
   lastName: string
+  email?: string
   company: string | null
   addressLine1: string
   addressLine2: string | null

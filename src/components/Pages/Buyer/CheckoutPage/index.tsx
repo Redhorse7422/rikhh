@@ -113,13 +113,14 @@ export const CheckoutPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null)
   const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null)
+  const [orderResponse, setOrderResponse] = useState<any>(null)
 
   // Redirect if cart is empty
   useEffect(() => {
-    if (!cart.isLoading && cart.items.length === 0) {
+    if (!cart.isLoading && cart.items.length === 0 && currentStep !== 'confirmation') {
       router.push('/cart')
     }
-  }, [cart, router])
+  }, [cart, router, currentStep])
 
   const handleStepChange = (step: CheckoutStep) => {
     setCurrentStep(step)
@@ -145,7 +146,9 @@ export const CheckoutPage: React.FC = () => {
     // For now, we'll use placeholder IDs for manually entered addresses
     // In a real implementation, you might want to create temporary addresses or handle this differently
     const shippingAddressId = selectedShippingAddressId || 'temp-shipping-address'
-    const billingAddressId = selectedBillingAddressId || 'temp-billing-address'
+    const billingAddressId = checkoutData.billing.sameAsShipping
+      ? selectedShippingAddressId || 'temp-shipping-address'
+      : selectedBillingAddressId || 'temp-billing-address'
 
     if (!shippingAddressId || !billingAddressId) {
       console.error('Shipping and billing addresses must be provided')
@@ -231,12 +234,12 @@ export const CheckoutPage: React.FC = () => {
       }
 
       const result = await confirmOrder(payload)
-
-      // Refresh cart to get updated state from backend
-      // await fetchCart()
-      
+      // Store the order response data
+      setOrderResponse(result)
       // Move to confirmation step
       setCurrentStep('confirmation')
+
+      // await fetchCart()
     } catch (error) {
       console.error('Error completing order:', error)
     } finally {
@@ -277,6 +280,7 @@ export const CheckoutPage: React.FC = () => {
       selectedShippingOption={selectedShippingOption}
       selectedShippingAddressId={selectedShippingAddressId}
       selectedBillingAddressId={selectedBillingAddressId}
+      orderResponse={orderResponse}
       onStepChange={handleStepChange}
       onDataUpdate={handleDataUpdate}
       onCompleteOrder={handleCompleteOrder}
