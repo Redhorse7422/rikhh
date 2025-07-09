@@ -4,6 +4,7 @@ import { useCheckout } from '../context/CheckoutContext'
 
 import { BillingStep } from './BillingStep'
 import { ConfirmationStep } from './ConfirmationStep'
+import { GuestShippingStep } from './GuestShippingStep'
 import { PaymentStep } from './PaymentStep'
 import { ReviewStep } from './ReviewStep'
 import { ShippingMethodStep } from './ShippingMethodStep'
@@ -12,6 +13,7 @@ import { ShippingStep } from './ShippingStep'
 export const CheckoutSteps: React.FC = () => {
   const {
     currentStep,
+    isGuestMode,
     shippingOptions,
     selectedShippingOption,
     onStepChange,
@@ -22,7 +24,11 @@ export const CheckoutSteps: React.FC = () => {
   let StepComponent: React.ReactNode
   switch (currentStep) {
     case 'shipping':
-      StepComponent = <ShippingStep />
+      StepComponent = isGuestMode ? (
+        <GuestShippingStep onNext={() => onStepChange('billing')} onBack={() => {}} />
+      ) : (
+        <ShippingStep />
+      )
       break
     case 'billing':
       StepComponent = <BillingStep />

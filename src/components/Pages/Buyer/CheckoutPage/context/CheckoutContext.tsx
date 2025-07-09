@@ -16,9 +16,11 @@ interface CheckoutContextType {
   selectedShippingAddressId: string | null
   selectedBillingAddressId: string | null
   orderResponse: any
+  isGuestMode: boolean
   isInitiating: boolean
   isCalculatingShipping: boolean
   isConfirming: boolean
+  isSavingAddress: boolean
   onStepChange: (step: CheckoutStep) => void
   onDataUpdate: <K extends keyof CheckoutData>(section: K, data: Partial<CheckoutData[K]>) => void
   onCompleteOrder: () => Promise<void>
@@ -42,9 +44,11 @@ interface CheckoutProviderProps {
   selectedShippingAddressId: string | null
   selectedBillingAddressId: string | null
   orderResponse: any
+  isGuestMode: boolean
   isInitiating: boolean
   isCalculatingShipping: boolean
   isConfirming: boolean
+  isSavingAddress: boolean
   onStepChange: (step: CheckoutStep) => void
   onDataUpdate: <K extends keyof CheckoutData>(section: K, data: Partial<CheckoutData[K]>) => void
   onCompleteOrder: () => Promise<void>
@@ -66,9 +70,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   selectedShippingAddressId,
   selectedBillingAddressId,
   orderResponse,
+  isGuestMode,
   isInitiating,
   isCalculatingShipping,
   isConfirming,
+  isSavingAddress,
   onStepChange,
   onDataUpdate,
   onCompleteOrder,
@@ -90,9 +96,11 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         selectedShippingAddressId,
         selectedBillingAddressId,
         orderResponse,
+        isGuestMode,
         isInitiating,
         isCalculatingShipping,
         isConfirming,
+        isSavingAddress,
         onStepChange,
         onDataUpdate,
         onCompleteOrder,
