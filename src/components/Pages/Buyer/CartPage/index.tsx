@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -8,12 +8,14 @@ import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import { useCart } from '@/contexts/CartContext'
 
 import { CartItems } from './components/CartItems'
+import { CartMigrationPrompt } from './components/CartMigrationPrompt'
 import { CartSummary } from './components/CartSummary'
 import { EmptyCart } from './components/EmptyCart'
 
 export const CartPage: React.FC = () => {
   const { cart, updateQuantity, removeItem, clearCart } = useCart()
   const router = useRouter()
+  const [showMigrationPrompt, setShowMigrationPrompt] = useState(true)
   const handleUpdateQuantity = async (itemId: string, quantity: number) => {
     await updateQuantity(itemId, quantity)
   }
@@ -89,6 +91,7 @@ export const CartPage: React.FC = () => {
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
           {/* Cart Items */}
           <div className='lg:col-span-2'>
+            {showMigrationPrompt && <CartMigrationPrompt onDismiss={() => setShowMigrationPrompt(false)} />}
             <CartItems
               items={cart.items}
               onUpdateQuantity={handleUpdateQuantity}

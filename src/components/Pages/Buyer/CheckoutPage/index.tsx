@@ -1,17 +1,20 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import { useCart } from '@/contexts/CartContext'
 import { useAddresses } from '@/hooks/useAddresses'
 import { useCheckout } from '@/hooks/useCheckout'
+import { createAddress } from '@/services/addresses.services'
 
 import { CheckoutProgress } from './components/CheckoutProgress'
 import { CheckoutSteps } from './components/CheckoutSteps'
 import { CheckoutSummary } from './components/CheckoutSummary'
+import { GuestCheckoutPrompt } from './components/GuestCheckoutPrompt'
 import { CheckoutProvider } from './context/CheckoutContext'
 
 export type CheckoutStep = 'shipping' | 'billing' | 'shipping-method' | 'payment' | 'review' | 'confirmation'
@@ -94,8 +97,9 @@ const initialCheckoutData: CheckoutData = {
 
 export const CheckoutPage: React.FC = () => {
   const router = useRouter()
+  const { data: session } = useSession()
   const { cart, fetchCart } = useCart()
-  const { addresses, getDefaultShippingAddress, getDefaultBillingAddress } = useAddresses()
+  const { addresses, getDefaultShippingAddress, getDefaultBillingAddress, isAuthenticated, refetch } = useAddresses()
   const {
     checkoutId,
     shippingOptions,
@@ -103,9 +107,11 @@ export const CheckoutPage: React.FC = () => {
     initiateCheckout,
     calculateShipping,
     confirmOrder,
+    saveCheckoutAddress,
     isInitiating,
     isCalculatingShipping,
     isConfirming,
+    isSavingAddress,
   } = useCheckout()
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('shipping')
@@ -114,6 +120,13 @@ export const CheckoutPage: React.FC = () => {
   const [selectedShippingAddressId, setSelectedShippingAddressId] = useState<string | null>(null)
   const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null)
   const [orderResponse, setOrderResponse] = useState<any>(null)
+  const [isGuestMode, setIsGuestMode] = useState(false)
+  
+  // Determine if user is authenticated
+  const isUserAuthenticated = !!(session?.user || isAuthenticated)
+  
+  // Determine if we should show the guest prompt
+  const shouldShowGuestPrompt = !isUserAuthenticated && !isGuestMode
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -122,11 +135,16 @@ export const CheckoutPage: React.FC = () => {
     }
   }, [cart, router, currentStep])
 
+  // Monitor checkoutId changes
+  useEffect(() => {
+    // CheckoutId monitoring for internal state management
+  }, [checkoutId])
+
   const handleStepChange = (step: CheckoutStep) => {
     setCurrentStep(step)
   }
 
-  const handleDataUpdate = <K extends keyof CheckoutData>(section: K, data: Partial<CheckoutData[K]>) => {
+  const handleDataUpdate = useCallback(<K extends keyof CheckoutData>(section: K, data: Partial<CheckoutData[K]>) => {
     setCheckoutData((prev) => {
       const currentSection = prev[section]
       if (typeof currentSection === 'object' && currentSection !== null) {
@@ -140,25 +158,16 @@ export const CheckoutPage: React.FC = () => {
         [section]: data,
       }
     })
+  }, [])
+
+  const handleContinueAsGuest = () => {
+    setIsGuestMode(true)
   }
 
-  const handleInitiateCheckout = async () => {
-    // For now, we'll use placeholder IDs for manually entered addresses
-    // In a real implementation, you might want to create temporary addresses or handle this differently
-    const shippingAddressId = selectedShippingAddressId || 'temp-shipping-address'
-    const billingAddressId = checkoutData.billing.sameAsShipping
-      ? selectedShippingAddressId || 'temp-shipping-address'
-      : selectedBillingAddressId || 'temp-billing-address'
-
-    if (!shippingAddressId || !billingAddressId) {
-      console.error('Shipping and billing addresses must be provided')
-      return
-    }
-
+  const onInitiateCheckout = async () => {
     try {
-      await initiateCheckout({
-        shippingAddressId,
-        billingAddressId,
+      
+      const result = await initiateCheckout({
         shippingMethod: selectedShippingOption?.serviceCode || 'standard',
         paymentMethod:
           checkoutData.payment.method === 'card'
@@ -168,48 +177,117 @@ export const CheckoutPage: React.FC = () => {
               : checkoutData.payment.method === 'google-pay'
                 ? 'google_pay'
                 : checkoutData.payment.method,
-        checkoutType: 'registered',
+        // For authenticated users, include address IDs
+        ...(isAuthenticated && {
+          shippingAddressId: selectedShippingAddressId || undefined,
+          billingAddressId: selectedBillingAddressId || undefined,
+        }),
       })
+      
+      // Extract checkoutId from the result based on response format
+      let extractedCheckoutId: string | null = null
+      if (result.code === 0) {
+        extractedCheckoutId = result.data.checkoutId
+      } else if ('success' in result && result.success && 'data' in result) {
+        const successData = result as any
+        extractedCheckoutId = successData.data.checkoutId
+      }
+
+      // For guest users, save address to checkout session after successful initiation
+      if (isGuestMode && !isAuthenticated && extractedCheckoutId) {
+        // Use the extracted checkoutId directly instead of relying on state
+        const addressPayload = {
+          checkoutId: extractedCheckoutId,
+          shippingAddress: {
+            firstName: checkoutData.shipping.firstName,
+            lastName: checkoutData.shipping.lastName,
+            addressLine1: checkoutData.shipping.address,
+            city: checkoutData.shipping.city,
+            state: checkoutData.shipping.state,
+            postalCode: checkoutData.shipping.zipCode,
+            country: checkoutData.shipping.country,
+            phone: checkoutData.shipping.phone,
+            email: checkoutData.shipping.email,
+          },
+          billingAddress: {
+            firstName: checkoutData.billing.firstName,
+            lastName: checkoutData.billing.lastName,
+            addressLine1: checkoutData.billing.address,
+            city: checkoutData.billing.city,
+            state: checkoutData.billing.state,
+            postalCode: checkoutData.billing.zipCode,
+            country: checkoutData.billing.country,
+            phone: checkoutData.billing.phone,
+            email: checkoutData.billing.email,
+          },
+          billingAddressSameAsShipping: checkoutData.billing.sameAsShipping,
+        }
+
+        // Call the API directly instead of using the hook function
+        const addressResult = await fetch('/api/v1/checkout/address', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(addressPayload),
+        })
+
+        if (!addressResult.ok) {
+          throw new Error('Failed to save checkout address')
+        }
+      }
     } catch (error) {
-      console.error('Failed to initiate checkout:', error)
+      throw error
     }
   }
 
   const handleCalculateShipping = async () => {
-    const shippingAddressId = selectedShippingAddressId || 'temp-shipping-address'
+    // Check if we have shipping address data
+    if (!checkoutData.shipping.firstName || !checkoutData.shipping.address || !checkoutData.shipping.city) {
+      return
+    }
 
-    if (!shippingAddressId) {
-      console.error('Shipping address must be provided')
+    // Check if we have cart items
+    if (!cart.items || cart.items.length === 0) {
       return
     }
 
     try {
-      console.log('Calculating shipping with:', {
-        shippingAddressId,
-        shippingMethod: selectedShippingOption?.serviceCode || 'standard',
-      })
 
       const result = await calculateShipping({
-        shippingAddressId,
-        shippingMethod: selectedShippingOption?.serviceCode || 'standard',
+        shippingAddress: {
+          firstName: checkoutData.shipping.firstName,
+          lastName: checkoutData.shipping.lastName,
+          addressLine1: checkoutData.shipping.address,
+          city: checkoutData.shipping.city,
+          state: checkoutData.shipping.state,
+          postalCode: checkoutData.shipping.zipCode,
+          country: checkoutData.shipping.country,
+          phone: checkoutData.shipping.phone,
+        },
+        items: cart.items.map(item => ({
+          id: item.id,
+          productId: item.product.id,
+          quantity: item.quantity,
+          unitPrice: item.product.salePrice || item.product.regularPrice,
+          selectedVariants: item.selectedVariant ? [{
+            attributeId: item.selectedVariant.id,
+            attributeValueId: item.selectedVariant.id,
+            attributeName: item.selectedVariant.name,
+            attributeValue: item.selectedVariant.value,
+          }] : [],
+        })),
       })
-      console.log('Calculate shipping result:', result)
     } catch (error) {
-      console.error('Failed to calculate shipping:', error)
       throw error
     }
   }
 
   const handleCompleteOrder = async () => {
-    if (!checkoutId) {
-      console.error('Checkout not initiated')
-      return
-    }
-
     setIsProcessing(true)
     try {
       const payload: any = {
-        checkoutId,
         paymentMethod:
           checkoutData.payment.method === 'card'
             ? 'credit_card'
@@ -218,7 +296,6 @@ export const CheckoutPage: React.FC = () => {
               : checkoutData.payment.method === 'google-pay'
                 ? 'google_pay'
                 : checkoutData.payment.method,
-        // shippingMethod: selectedShippingOption?.method || 'standard',
         notes: checkoutData.orderNotes,
       }
 
@@ -233,15 +310,18 @@ export const CheckoutPage: React.FC = () => {
         }
       }
 
+      // The confirmOrder function from useCheckout hook handles checkoutId validation internally
       const result = await confirmOrder(payload)
+      
       // Store the order response data
       setOrderResponse(result)
       // Move to confirmation step
       setCurrentStep('confirmation')
 
-      // await fetchCart()
+      // Refresh cart after successful order
+      await fetchCart()
     } catch (error) {
-      console.error('Error completing order:', error)
+      // Don't throw - let the UI handle the error state
     } finally {
       setIsProcessing(false)
     }
@@ -281,21 +361,22 @@ export const CheckoutPage: React.FC = () => {
       selectedShippingAddressId={selectedShippingAddressId}
       selectedBillingAddressId={selectedBillingAddressId}
       orderResponse={orderResponse}
+      isGuestMode={isGuestMode}
       onStepChange={handleStepChange}
       onDataUpdate={handleDataUpdate}
       onCompleteOrder={handleCompleteOrder}
-      onInitiateCheckout={handleInitiateCheckout}
+      onInitiateCheckout={onInitiateCheckout}
       onCalculateShipping={handleCalculateShipping}
       onSelectShippingAddress={setSelectedShippingAddressId}
       onSelectBillingAddress={setSelectedBillingAddressId}
       onSelectShippingOption={(option) => {
-        // This will be implemented when we add shipping method selection
-        console.log('Selected shipping option:', option)
+        // Handle shipping option selection
       }}
       isProcessing={isProcessing}
       isInitiating={isInitiating}
       isCalculatingShipping={isCalculatingShipping}
       isConfirming={isConfirming}
+      isSavingAddress={isSavingAddress}
     >
       <div className='min-h-screen bg-gray-50'>
         {/* Breadcrumb */}
@@ -307,6 +388,23 @@ export const CheckoutPage: React.FC = () => {
 
         {/* Main Checkout Section */}
         <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
+          {/* Debug Panel - Remove in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className='mb-4 rounded-lg bg-yellow-50 p-4 border border-yellow-200'>
+              <h3 className='text-sm font-medium text-yellow-800'>Debug Info</h3>
+              <div className='mt-2 text-sm text-yellow-700'>
+                <p><strong>CheckoutId:</strong> {checkoutId || 'null'}</p>
+                <p><strong>Current Step:</strong> {currentStep}</p>
+                <p><strong>Guest Mode:</strong> {isGuestMode ? 'Yes' : 'No'}</p>
+                <p><strong>Authenticated:</strong> {isUserAuthenticated ? 'Yes' : 'No'}</p>
+                <p><strong>LocalStorage CheckoutId:</strong> {typeof window !== 'undefined' ? localStorage.getItem('checkout_id') || 'null' : 'SSR'}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Guest Checkout Prompt - only show for unauthenticated users who haven't chosen guest mode */}
+          {shouldShowGuestPrompt && <GuestCheckoutPrompt onContinueAsGuest={handleContinueAsGuest} />}
+
           <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
             {/* Checkout Steps */}
             <div className='lg:col-span-2'>

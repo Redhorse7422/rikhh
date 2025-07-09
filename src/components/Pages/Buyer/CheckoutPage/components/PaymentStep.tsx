@@ -31,7 +31,7 @@ export const PaymentStep: React.FC = () => {
     }
     setError(null)
     onDataUpdate('payment', form)
-    
+
     // Move to review step (checkout already initiated on mount)
     onStepChange('review')
   }
