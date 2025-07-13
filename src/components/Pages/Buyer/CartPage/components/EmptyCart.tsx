@@ -34,8 +34,8 @@ export const EmptyCart: React.FC<EmptyCartProps> = ({ onContinueShopping }) => {
           <div className='mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100'>
             <Icon name='AiOutlineCheck' className='h-6 w-6 text-blue-600' />
           </div>
-          <h3 className='mb-2 font-medium text-gray-900'>Free Shipping</h3>
-          <p className='text-sm text-gray-600'>On orders over $50</p>
+          <h3 className='mb-2 font-medium text-gray-900'>Fast Shipping</h3>
+          <p className='text-sm text-gray-600'>Calculated at checkout</p>
         </div>
 
         <div className='text-center'>

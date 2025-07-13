@@ -243,7 +243,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           <div>
             <span className='font-medium text-gray-900'>Shipping:</span>
             <span className='ml-2 text-gray-600'>
-              {product.shippingType === 'free' ? 'Free' : `$${product.shippingCost}`}
+              Calculated at checkout
             </span>
           </div>
           <div>
@@ -259,9 +259,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <div className='rounded-lg bg-gray-50 p-4'>
         <h3 className='mb-2 font-medium text-gray-900'>Shipping Information</h3>
         <p className='text-sm text-gray-600'>
-          {product.shippingType === 'free'
-            ? 'Free shipping on all orders'
-            : `Standard shipping: $${product.shippingCost}`}
+          Shipping cost calculated at checkout based on your location and selected method
           {product.cashOnDelivery && ' • Cash on delivery available'}
         </p>
       </div>

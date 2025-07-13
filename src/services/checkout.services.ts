@@ -3,11 +3,26 @@ import type { ApiResBodyBase } from '@/types/api'
 // Types for checkout workflow
 export interface InitiateCheckoutPayload {
   checkoutType: 'guest' | 'registered'
+  // For authenticated users
+  userId?: string
+  shippingAddressId?: string
+  // For guest users
   guestId?: string
+  shippingAddress?: {
+    firstName: string
+    lastName: string
+    addressLine1: string
+    addressLine2?: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+    phone: string
+    email: string
+  }
+  // Common fields
   shippingMethod: string
   paymentMethod: 'credit_card' | 'paypal' | 'apple_pay' | 'google_pay'
-  // For authenticated users
-  shippingAddressId?: string
   billingAddressId?: string
 }
 
@@ -77,6 +92,23 @@ export interface ShippingOption {
   serviceCode: string
   trackingAvailable: boolean
   guaranteedDelivery?: boolean
+  isDefault?: boolean
+  breakdown?: {
+    baseRate: number
+    additionalCost: number
+    handlingFee: number
+    insuranceFee: number
+    signatureFee: number
+  }
+  rateType?: string
+  baseRate?: number
+  additionalCost?: number
+  methodSlug?: string
+  rateId?: string
+  rateName?: string
+  requiresSignature?: boolean
+  isInsured?: boolean
+  insuranceAmount?: number | null
 }
 
 export interface CalculateShippingResponse {

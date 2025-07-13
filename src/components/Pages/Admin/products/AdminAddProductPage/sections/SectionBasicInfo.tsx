@@ -6,6 +6,7 @@ import React from 'react'
 
 import { TextAreaField } from '@/components/FormElements/Fields/TextAreaField'
 import { MultiSelectField } from '@/components/FormElements/MultiSelectField'
+import { SelectField } from '@/components/FormElements/SelectInput'
 import { TextField } from '@/components/FormElements/TextInput'
 import { Card } from '@/components/common/Card'
 import { useApi } from '@/hooks/useApi'
@@ -24,6 +25,14 @@ export const SectionBasicInfo: FC<SectionBasicInfoProps> = ({ control }) => {
   const categoryOptions = Array.isArray(categoriesOption?.data)
     ? categoriesOption.data.map((cat: any) => ({ value: cat.id, label: cat.name }))
     : []
+  const { data: sellerOption } = getDataSource({
+    path: '/v1/sellers',
+    query: { limit: 200 },
+  })
+  const sellerOptions = Array.isArray(sellerOption?.data)
+    ? sellerOption.data.map((cat: any) => ({ value: cat.id, label: cat.businessName }))
+    : []
+
   return (
     <Card className='p-10'>
       <h2 className='mb-4 text-2xl font-bold'>Basic Information</h2>
@@ -47,15 +56,15 @@ export const SectionBasicInfo: FC<SectionBasicInfoProps> = ({ control }) => {
           labelWidth={180}
           // maxLength={500}
         />
-        {/* <SelectField
+        <SelectField
           control={control}
-          name='categoryId'
-          label='Category'
-          items={categoryOptions}
-          placeholder='Select category'
+          name='sellerId'
+          label='Seller'
+          items={sellerOptions}
+          placeholder='Select seller'
           labelAxis='horizontal'
           labelWidth={180}
-        /> */}
+        />
         <TextField
           control={control}
           name='tags'

@@ -67,9 +67,7 @@ export const MiniCart: React.FC<MiniCartProps> = ({
                 </div>
                 <div className='flex justify-between text-sm'>
                   <span className='text-gray-600'>Shipping</span>
-                  <span className='font-medium text-gray-900'>
-                    {cart.summary.shipping === 0 ? 'Free' : `$${cart.summary.shipping.toFixed(2)}`}
-                  </span>
+                  <span className='font-medium text-gray-900'>${cart.summary.shipping.toFixed(2)}</span>
                 </div>
                 <div className='border-t border-gray-200 pt-2'>
                   <div className='flex justify-between font-semibold'>

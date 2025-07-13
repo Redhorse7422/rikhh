@@ -26,6 +26,24 @@ interface CheckoutContextType {
   onCompleteOrder: () => Promise<void>
   onInitiateCheckout: () => Promise<void>
   onCalculateShipping: () => Promise<void>
+  onCalculateShippingOptions: (params: {
+    items: Array<{
+      id: string
+      productId: string
+      quantity: number
+      price: number
+      weight: number
+      categoryIds: string[]
+    }>
+    shippingAddress: {
+      country: string
+      state: string
+      city: string
+      postalCode: string
+    }
+    orderValue: number
+    isHoliday?: boolean
+  }) => Promise<any>
   onSelectShippingAddress: (addressId: string) => void
   onSelectBillingAddress: (addressId: string) => void
   onSelectShippingOption: (option: ShippingOption) => void
@@ -54,6 +72,24 @@ interface CheckoutProviderProps {
   onCompleteOrder: () => Promise<void>
   onInitiateCheckout: () => Promise<void>
   onCalculateShipping: () => Promise<void>
+  onCalculateShippingOptions: (params: {
+    items: Array<{
+      id: string
+      productId: string
+      quantity: number
+      price: number
+      weight: number
+      categoryIds: string[]
+    }>
+    shippingAddress: {
+      country: string
+      state: string
+      city: string
+      postalCode: string
+    }
+    orderValue: number
+    isHoliday?: boolean
+  }) => Promise<any>
   onSelectShippingAddress: (addressId: string) => void
   onSelectBillingAddress: (addressId: string) => void
   onSelectShippingOption: (option: ShippingOption) => void
@@ -80,6 +116,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
   onCompleteOrder,
   onInitiateCheckout,
   onCalculateShipping,
+  onCalculateShippingOptions,
   onSelectShippingAddress,
   onSelectBillingAddress,
   onSelectShippingOption,
@@ -106,6 +143,7 @@ export const CheckoutProvider: React.FC<CheckoutProviderProps> = ({
         onCompleteOrder,
         onInitiateCheckout,
         onCalculateShipping,
+        onCalculateShippingOptions,
         onSelectShippingAddress,
         onSelectBillingAddress,
         onSelectShippingOption,

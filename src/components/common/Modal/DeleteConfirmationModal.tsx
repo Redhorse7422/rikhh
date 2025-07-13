@@ -33,7 +33,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
   return (
     <div
-      className='fixed inset-0 z-50 flex items-center justify-center px-4 py-6'
+      className='fixed inset-0 z-50 flex items-center justify-center p-4'
       aria-labelledby='modal-title'
       aria-modal='true'
       role='dialog'
@@ -46,10 +46,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
       ></div>
 
       {/* Modal container */}
-      <div className='xed py-6" inset-0 z-50 flex items-center justify-center px-4'>
+      <div className='relative w-full max-w-lg transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all'>
         {/* Modal panel */}
         <div
-          className='-full max-w-lg transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all'
+          className='w-full'
           onClick={(e) => e.stopPropagation()}
         >
           <div className='bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4'>
