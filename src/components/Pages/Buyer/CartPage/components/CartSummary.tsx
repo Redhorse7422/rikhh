@@ -37,9 +37,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
         <div className='flex justify-between text-sm'>
           <span className='text-gray-600'>Shipping</span>
-          <span className='font-medium text-gray-900'>
-            {summary.shipping === 0 ? 'Free' : `$${summary.shipping.toFixed(2)}`}
-          </span>
+          <span className='font-medium text-gray-900'>${summary.shipping.toFixed(2)}</span>
         </div>
 
         <div className='flex justify-between text-sm'>

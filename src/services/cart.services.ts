@@ -50,8 +50,8 @@ async function getCurrentUserId(): Promise<{ userId?: string; guestId?: string }
 // Calculate cart summary (copied from CartContext)
 function calculateSummary(items: CartItem[]) {
   const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0)
-  const shipping = 0 // Free shipping
-  const tax = 0 // No tax
+  const shipping = 0 // Shipping will be calculated through shipping-calculate API
+  const tax = 0 // Tax will be calculated through checkout API
   const discount = 0 // TODO: Implement coupon logic
   const total = subtotal + shipping + tax - discount
   return {

@@ -98,10 +98,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 // Calculate cart summary
 const calculateSummary = (items: CartItem[]) => {
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
-  // const shipping = subtotal >= 50 ? 0 : 5.99 // Free shipping over $50
-  const shipping = 0 // Free shipping over $50
-  const tax = 0 // 8% tax rate
-  // const tax = subtotal * 0.08 // 8% tax rate
+  const shipping = 0 // Shipping will be calculated through shipping-calculate API
+  const tax = 0 // Tax will be calculated through checkout API
   const discount = 0 // TODO: Implement coupon logic
   const total = subtotal + shipping + tax - discount
 

@@ -139,128 +139,132 @@ export const GuestMigrationModal: React.FC<GuestMigrationModalProps> = ({ isOpen
   if (!isOpen) return null
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
-      <div className='w-full max-w-md rounded-lg bg-white p-6 shadow-xl'>
-        <div className='mb-6 flex items-center justify-between'>
-          <h2 className='text-xl font-bold text-gray-900'>Create Account</h2>
-          <button
-            onClick={onClose}
-            className='rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
-            disabled={isLoading}
-          >
-            <Icon name='AiOutlineClose' className='h-5 w-5' />
-          </button>
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+      <div className='w-full max-w-md max-h-[90vh] rounded-lg bg-white shadow-xl flex flex-col'>
+        <div className='flex-shrink-0 p-6 pb-4 border-b border-gray-200'>
+          <div className='flex items-center justify-between'>
+            <h2 className='text-xl font-bold text-gray-900'>Create Account</h2>
+            <button
+              onClick={onClose}
+              className='rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+              disabled={isLoading}
+            >
+              <Icon name='AiOutlineClose' className='h-5 w-5' />
+            </button>
+          </div>
         </div>
 
-        {isCheckingData ? (
-          <div className='flex items-center justify-center py-8'>
-            <div className='text-center'>
-              <div className='mb-2 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent'></div>
-              <p className='text-sm text-gray-600'>Loading your data...</p>
+        <div className='flex-1 overflow-y-auto p-6 pt-4'>
+          {isCheckingData ? (
+            <div className='flex items-center justify-center py-8'>
+              <div className='text-center'>
+                <div className='mb-2 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent'></div>
+                <p className='text-sm text-gray-600'>Loading your data...</p>
+              </div>
             </div>
-          </div>
-        ) : (
-          <>
-            {guestData && (
-              <div className='mb-6 rounded-lg bg-blue-50 p-4'>
-                <h3 className='mb-2 font-semibold text-blue-900'>Data to be migrated:</h3>
-                <ul className='space-y-1 text-sm text-blue-800'>
-                  {guestData.guestData.hasCartItems && (
-                    <li className='flex items-center'>
-                      <Icon name='AiOutlineShopping' className='mr-2 h-4 w-4' />
-                      {guestData.guestData.cartItemCount} cart items
-                    </li>
-                  )}
-                  {guestData.guestData.hasOrders && (
-                    <li className='flex items-center'>
-                      <Icon name='AiOutlineFileText' className='mr-2 h-4 w-4' />
-                      {guestData.guestData.orderCount} orders
-                    </li>
-                  )}
-                  {guestData.orderHistory.length > 0 && (
-                    <li className='flex items-center'>
-                      <Icon name='AiOutlineFileText' className='mr-2 h-4 w-4' />
-                      Order history will be preserved
-                    </li>
-                  )}
-                </ul>
-              </div>
-            )}
+          ) : (
+            <>
+              {guestData && (
+                <div className='mb-6 rounded-lg bg-blue-50 p-4'>
+                  <h3 className='mb-2 font-semibold text-blue-900'>Data to be migrated:</h3>
+                  <ul className='space-y-1 text-sm text-blue-800'>
+                    {guestData.guestData.hasCartItems && (
+                      <li className='flex items-center'>
+                        <Icon name='AiOutlineShopping' className='mr-2 h-4 w-4' />
+                        {guestData.guestData.cartItemCount} cart items
+                      </li>
+                    )}
+                    {guestData.guestData.hasOrders && (
+                      <li className='flex items-center'>
+                        <Icon name='AiOutlineFileText' className='mr-2 h-4 w-4' />
+                        {guestData.guestData.orderCount} orders
+                      </li>
+                    )}
+                    {guestData.orderHistory.length > 0 && (
+                      <li className='flex items-center'>
+                        <Icon name='AiOutlineFileText' className='mr-2 h-4 w-4' />
+                        Order history will be preserved
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-              <div className='grid grid-cols-2 gap-4'>
+              <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+                <div className='grid grid-cols-2 gap-4'>
+                  <TextField
+                    control={control}
+                    name='firstName'
+                    label='First Name'
+                    placeholder='Enter your first name'
+                    rules={{ required: 'First name is required' }}
+                  />
+                  <TextField
+                    control={control}
+                    name='lastName'
+                    label='Last Name'
+                    placeholder='Enter your last name'
+                    rules={{ required: 'Last name is required' }}
+                  />
+                </div>
+
                 <TextField
                   control={control}
-                  name='firstName'
-                  label='First Name'
-                  placeholder='Enter your first name'
-                  rules={{ required: 'First name is required' }}
+                  name='email'
+                  label='Email Address'
+                  type='email'
+                  placeholder='Enter your email'
+                  rules={{
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Invalid email address',
+                    },
+                  }}
                 />
+
                 <TextField
                   control={control}
-                  name='lastName'
-                  label='Last Name'
-                  placeholder='Enter your last name'
-                  rules={{ required: 'Last name is required' }}
+                  name='password'
+                  label='Password'
+                  type='password'
+                  placeholder='Enter your password'
+                  rules={{
+                    required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters',
+                    },
+                  }}
                 />
-              </div>
 
-              <TextField
-                control={control}
-                name='email'
-                label='Email Address'
-                type='email'
-                placeholder='Enter your email'
-                rules={{
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
-                  },
-                }}
-              />
-
-              <TextField
-                control={control}
-                name='password'
-                label='Password'
-                type='password'
-                placeholder='Enter your password'
-                rules={{
-                  required: 'Password is required',
-                  minLength: {
-                    value: 6,
-                    message: 'Password must be at least 6 characters',
-                  },
-                }}
-              />
-
-              <TextField
-                control={control}
-                name='phone'
-                label='Phone Number (Optional)'
-                placeholder='Enter your phone number'
-              />
-
-              <div className='flex space-x-3 pt-4'>
-                <Button
-                  type='button'
-                  label='Cancel'
-                  variant='outlinePrimary'
-                  onClick={onClose}
-                  disabled={isLoading}
-                  className='flex-1'
+                <TextField
+                  control={control}
+                  name='phone'
+                  label='Phone Number (Optional)'
+                  placeholder='Enter your phone number'
                 />
-                <Button
-                  type='submit'
-                  label={isLoading ? 'Creating Account...' : 'Create Account'}
-                  disabled={isLoading}
-                  className='flex-1'
-                />
-              </div>
-            </form>
-          </>
-        )}
+
+                <div className='flex space-x-3 pt-4 border-t border-gray-200 mt-4'>
+                  <Button
+                    type='button'
+                    label='Cancel'
+                    variant='outlinePrimary'
+                    onClick={onClose}
+                    disabled={isLoading}
+                    className='flex-1'
+                  />
+                  <Button
+                    type='submit'
+                    label={isLoading ? 'Creating Account...' : 'Create Account'}
+                    disabled={isLoading}
+                    className='flex-1'
+                  />
+                </div>
+              </form>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

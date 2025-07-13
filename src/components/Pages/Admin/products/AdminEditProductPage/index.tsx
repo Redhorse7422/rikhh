@@ -55,6 +55,7 @@ const defaultValues: NewProductForm = {
   thumbnailImg: [],
   photos: [],
   variations: [],
+  sellerId: '',
 }
 
 export type ProductVariation = {
@@ -101,6 +102,7 @@ export type NewProductForm = {
   thumbnailImg: FileWithPreview[]
   photos: FileWithPreview[]
   variations: ProductVariation[]
+  sellerId: string
 }
 
 export const AdminEditProductPage = () => {
@@ -138,6 +140,7 @@ export const AdminEditProductPage = () => {
         setValue('slug', (product as any).slug ?? '')
         setValue('categoryIds', (product as any).categories.map((item: Category) => item.id) ?? [])
         setValue('tags', (product as any).tags ?? '')
+        setValue('sellerId', (product as any).seller ? (product as any).seller.id : '')
         setValue('shortDescription', (product as any).shortDescription ?? '')
         setValue('longDescription', (product as any).longDescription ?? '')
 
@@ -246,6 +249,7 @@ export const AdminEditProductPage = () => {
         name: data.name,
         slug: data.slug,
         categoryIds: data.categoryIds,
+        sellerId: data.sellerId,
         tags: data.tags,
         shortDescription: data.shortDescription,
         longDescription: data.longDescription,

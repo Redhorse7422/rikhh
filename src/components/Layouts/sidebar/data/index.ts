@@ -79,6 +79,33 @@ export const NAV_DATA = [
           },
         ],
       },
+      {
+        title: 'Shipping',
+        // icon: Icons.Truck || Icons.Delivery || Icons.Table, // fallback to Table if no truck/delivery icon
+        icon: Icons.Table,
+        items: [
+          {
+            title: 'Dashboard',
+            url: '/shipping',
+          },
+          {
+            title: 'Zones',
+            url: '/shipping/zones',
+          },
+          {
+            title: 'Methods',
+            url: '/shipping/methods',
+          },
+          {
+            title: 'Rates',
+            url: '/shipping/rates',
+          },
+          {
+            title: 'Calculator',
+            url: '/shipping/calculator',
+          },
+        ],
+      },
     ],
   },
   {

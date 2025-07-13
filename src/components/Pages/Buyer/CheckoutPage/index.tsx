@@ -106,6 +106,7 @@ export const CheckoutPage: React.FC = () => {
     selectedShippingOption,
     initiateCheckout,
     calculateShipping,
+    calculateShippingOptions,
     confirmOrder,
     saveCheckoutAddress,
     isInitiating,
@@ -166,9 +167,8 @@ export const CheckoutPage: React.FC = () => {
 
   const onInitiateCheckout = async () => {
     try {
-      
-      const result = await initiateCheckout({
-        shippingMethod: selectedShippingOption?.serviceCode || 'standard',
+      const payload: any = {
+        shippingMethod: selectedShippingOption?.id || selectedShippingOption?.serviceCode || 'standard',
         paymentMethod:
           checkoutData.payment.method === 'card'
             ? 'credit_card'
@@ -177,12 +177,29 @@ export const CheckoutPage: React.FC = () => {
               : checkoutData.payment.method === 'google-pay'
                 ? 'google_pay'
                 : checkoutData.payment.method,
-        // For authenticated users, include address IDs
-        ...(isAuthenticated && {
-          shippingAddressId: selectedShippingAddressId || undefined,
-          billingAddressId: selectedBillingAddressId || undefined,
-        }),
-      })
+      }
+
+      // For authenticated users, include user ID and address IDs
+      if (isAuthenticated) {
+        payload.userId = session?.user?.buyerId || session?.user?.id
+        payload.shippingAddressId = selectedShippingAddressId || undefined
+        payload.billingAddressId = selectedBillingAddressId || undefined
+      } else {
+        // For guest users, include shipping address
+        payload.shippingAddress = {
+          firstName: checkoutData.shipping.firstName,
+          lastName: checkoutData.shipping.lastName,
+          addressLine1: checkoutData.shipping.address,
+          city: checkoutData.shipping.city,
+          state: checkoutData.shipping.state,
+          postalCode: checkoutData.shipping.zipCode,
+          country: checkoutData.shipping.country,
+          phone: checkoutData.shipping.phone,
+          email: checkoutData.shipping.email,
+        }
+      }
+      
+      const result = await initiateCheckout(payload)
       
       // Extract checkoutId from the result based on response format
       let extractedCheckoutId: string | null = null
@@ -245,41 +262,56 @@ export const CheckoutPage: React.FC = () => {
   const handleCalculateShipping = async () => {
     // Check if we have shipping address data
     if (!checkoutData.shipping.firstName || !checkoutData.shipping.address || !checkoutData.shipping.city) {
+      console.log('Missing shipping address data') // Debug log
       return
     }
 
     // Check if we have cart items
     if (!cart.items || cart.items.length === 0) {
+      console.log('No cart items found') // Debug log
       return
     }
 
     try {
+      console.log('Starting shipping calculation...') // Debug log
+      
+      // Calculate order value
+      const orderValue = cart.items.reduce((total, item) => {
+        const price = item.product.salePrice || item.product.regularPrice
+        return total + (price * item.quantity)
+      }, 0)
 
-      const result = await calculateShipping({
-        shippingAddress: {
-          firstName: checkoutData.shipping.firstName,
-          lastName: checkoutData.shipping.lastName,
-          addressLine1: checkoutData.shipping.address,
-          city: checkoutData.shipping.city,
-          state: checkoutData.shipping.state,
-          postalCode: checkoutData.shipping.zipCode,
-          country: checkoutData.shipping.country,
-          phone: checkoutData.shipping.phone,
-        },
-        items: cart.items.map(item => ({
-          id: item.id,
-          productId: item.product.id,
-          quantity: item.quantity,
-          unitPrice: item.product.salePrice || item.product.regularPrice,
-          selectedVariants: item.selectedVariant ? [{
-            attributeId: item.selectedVariant.id,
-            attributeValueId: item.selectedVariant.id,
-            attributeName: item.selectedVariant.name,
-            attributeValue: item.selectedVariant.value,
-          }] : [],
-        })),
+      // Prepare items for shipping calculation
+      const items = cart.items.map(item => ({
+        id: item.id,
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.salePrice || item.product.regularPrice,
+        weight: item.product.weight || 0, // Default weight if not available
+        categoryIds: item.product.category ? [item.product.category] : [], // Use category string if available
+      }))
+
+      // Prepare shipping address
+      const shippingAddress = {
+        country: checkoutData.shipping.country,
+        state: checkoutData.shipping.state,
+        city: checkoutData.shipping.city,
+        postalCode: checkoutData.shipping.zipCode,
+      }
+
+      console.log('Shipping calculation payload:', { items, shippingAddress, orderValue }) // Debug log
+
+      // Use the new shipping options calculation
+      const result = await calculateShippingOptions({
+        items,
+        shippingAddress,
+        orderValue,
+        isHoliday: false, // You can make this dynamic based on current date
       })
+      
+      console.log('Shipping calculation result:', result) // Debug log
     } catch (error) {
+      console.error('Shipping calculation error:', error) // Debug log
       throw error
     }
   }
@@ -367,6 +399,7 @@ export const CheckoutPage: React.FC = () => {
       onCompleteOrder={handleCompleteOrder}
       onInitiateCheckout={onInitiateCheckout}
       onCalculateShipping={handleCalculateShipping}
+      onCalculateShippingOptions={calculateShippingOptions}
       onSelectShippingAddress={setSelectedShippingAddressId}
       onSelectBillingAddress={setSelectedBillingAddressId}
       onSelectShippingOption={(option) => {
@@ -389,7 +422,7 @@ export const CheckoutPage: React.FC = () => {
         {/* Main Checkout Section */}
         <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
           {/* Debug Panel - Remove in production */}
-          {process.env.NODE_ENV === 'development' && (
+          {/* {process.env.NODE_ENV === 'development' && (
             <div className='mb-4 rounded-lg bg-yellow-50 p-4 border border-yellow-200'>
               <h3 className='text-sm font-medium text-yellow-800'>Debug Info</h3>
               <div className='mt-2 text-sm text-yellow-700'>
@@ -400,7 +433,7 @@ export const CheckoutPage: React.FC = () => {
                 <p><strong>LocalStorage CheckoutId:</strong> {typeof window !== 'undefined' ? localStorage.getItem('checkout_id') || 'null' : 'SSR'}</p>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Guest Checkout Prompt - only show for unauthenticated users who haven't chosen guest mode */}
           {shouldShowGuestPrompt && <GuestCheckoutPrompt onContinueAsGuest={handleContinueAsGuest} />}

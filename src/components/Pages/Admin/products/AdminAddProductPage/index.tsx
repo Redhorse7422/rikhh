@@ -54,6 +54,7 @@ export const defaultValues: NewProductForm = {
   thumbnailImg: [],
   photos: [],
   variations: [],
+  sellerId: '',
 }
 
 export type ProductVariation = {
@@ -99,6 +100,7 @@ export type NewProductForm = {
   thumbnailImg: FileWithPreview[]
   photos: FileWithPreview[]
   variations: ProductVariation[]
+  sellerId: string
 }
 
 export const AdminAddProductPage: React.FC = () => {
@@ -145,13 +147,14 @@ export const AdminAddProductPage: React.FC = () => {
           }
         }
       }
-      console.log('data.variations', data.variations)
+      // console.log('data.variations', data.variations)
 
       // Prepare simple payload
       const payload = {
         name: data.name,
         slug: data.slug,
         categoryIds: data.categoryIds,
+        sellerId: data.sellerId,
         tags: data.tags,
         shortDescription: data.shortDescription,
         longDescription: data.longDescription,

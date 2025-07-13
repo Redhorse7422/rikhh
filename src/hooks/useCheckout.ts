@@ -21,6 +21,7 @@ import {
   type SaveCheckoutAddressPayload,
   type GuestOrder,
 } from '@/services/checkout.services'
+import { shippingCalculatorApi } from '@/services/shipping.services'
 
 // Helper functions for managing checkoutId in localStorage
 const CHECKOUT_ID_KEY = 'checkout_id'
@@ -158,6 +159,90 @@ export const useCheckout = () => {
     },
   })
 
+  const calculateShippingOptionsMutation = useMutation({
+    mutationFn: async (params: {
+      items: Array<{
+        id: string
+        productId: string
+        quantity: number
+        price: number
+        weight: number
+        categoryIds: string[]
+      }>
+      shippingAddress: {
+        country: string
+        state: string
+        city: string
+        postalCode: string
+      }
+      orderValue: number
+      isHoliday?: boolean
+    }) => {
+      const result = await shippingCalculatorApi.calculateCheckoutOptions(params)
+      return result
+    },
+    onSuccess: (data) => {
+      console.log('Shipping options response:', data) // Debug log
+      
+      // Handle both response formats: wrapped {code, data} and direct array
+      let shippingOptionsData = null
+      
+      if (data.code === 0 && data.data && Array.isArray(data.data)) {
+        // Wrapped response format
+        shippingOptionsData = data.data
+      } else if (Array.isArray(data)) {
+        // Direct array format
+        shippingOptionsData = data
+      } else {
+        console.error('Invalid shipping options response:', data) // Debug log
+        return
+      }
+      
+      // Transform the shipping options to match the expected format
+      const transformedOptions = shippingOptionsData.map((option: any) => ({
+        id: option.methodId,
+        name: option.methodName,
+        description: `${option.estimatedDays} day${option.estimatedDays !== 1 ? 's' : ''} delivery`,
+        price: Number(option.totalCost),
+        estimatedDays: option.estimatedDays,
+        carrier: option.methodName,
+        serviceCode: option.methodId,
+        trackingAvailable: true,
+        isDefault: option.isDefault,
+        breakdown: {
+          baseRate: Number(option.breakdown.baseRate),
+          additionalCost: Number(option.breakdown.additionalCost),
+          handlingFee: Number(option.breakdown.handlingFee),
+          insuranceFee: Number(option.breakdown.insuranceFee),
+          signatureFee: Number(option.breakdown.signatureFee),
+        },
+        rateType: option.rateType,
+        baseRate: Number(option.baseRate),
+        additionalCost: Number(option.additionalCost),
+        methodSlug: option.methodSlug,
+        rateId: option.rateId,
+        rateName: option.rateName,
+        requiresSignature: option.requiresSignature,
+        isInsured: option.isInsured,
+        insuranceAmount: option.insuranceAmount ? Number(option.insuranceAmount) : null,
+      }))
+      
+      console.log('Transformed options:', transformedOptions) // Debug log
+      setShippingOptions(transformedOptions)
+      
+      // Set default shipping option
+      const defaultOption = transformedOptions.find((option: any) => option.isDefault)
+      if (defaultOption) {
+        setSelectedShippingOption(defaultOption)
+      } else if (transformedOptions.length > 0) {
+        setSelectedShippingOption(transformedOptions[0])
+      }
+    },
+    onError: (error) => {
+      console.error('Shipping options calculation error:', error) // Debug log
+    },
+  })
+
   const calculateTaxMutation = useMutation({
     mutationFn: async (payload: Omit<CalculateTaxPayload, 'checkoutId'>) => {
       if (!checkoutId) throw new Error('Checkout ID is required')
@@ -241,9 +326,42 @@ export const useCheckout = () => {
     },
   })
 
-  const handleInitiateCheckout = async (payload: Omit<InitiateCheckoutPayload, 'checkoutType' | 'guestId'>) => {
+  const handleInitiateCheckout = async (payload: {
+    shippingMethod: string
+    paymentMethod: 'credit_card' | 'paypal' | 'apple_pay' | 'google_pay'
+    // For authenticated users
+    userId?: string
+    shippingAddressId?: string
+    billingAddressId?: string
+    // For guest users
+    shippingAddress?: {
+      firstName: string
+      lastName: string
+      addressLine1: string
+      addressLine2?: string
+      city: string
+      state: string
+      postalCode: string
+      country: string
+      phone: string
+      email: string
+    }
+  }) => {
     try {
-      const result = await initiateCheckoutMutation.mutateAsync(payload)
+      const guestId = isGuest ? getGuestId() : undefined
+      
+      const fullPayload: InitiateCheckoutPayload = {
+        checkoutType: isGuest ? 'guest' : 'registered',
+        shippingMethod: payload.shippingMethod,
+        paymentMethod: payload.paymentMethod,
+        ...(isGuest && guestId && { guestId }),
+        ...(isGuest && payload.shippingAddress && { shippingAddress: payload.shippingAddress }),
+        ...(!isGuest && payload.userId && { userId: payload.userId }),
+        ...(!isGuest && payload.shippingAddressId && { shippingAddressId: payload.shippingAddressId }),
+        ...(!isGuest && payload.billingAddressId && { billingAddressId: payload.billingAddressId }),
+      }
+      
+      const result = await initiateCheckoutMutation.mutateAsync(fullPayload)
       return result
     } catch (error) {
       throw error
@@ -253,6 +371,32 @@ export const useCheckout = () => {
   const handleCalculateShipping = async (payload: Omit<CalculateShippingPayload, 'checkoutId'>) => {
     try {
       const result = await calculateShippingMutation.mutateAsync(payload)
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const handleCalculateShippingOptions = async (params: {
+    items: Array<{
+      id: string
+      productId: string
+      quantity: number
+      price: number
+      weight: number
+      categoryIds: string[]
+    }>
+    shippingAddress: {
+      country: string
+      state: string
+      city: string
+      postalCode: string
+    }
+    orderValue: number
+    isHoliday?: boolean
+  }) => {
+    try {
+      const result = await calculateShippingOptionsMutation.mutateAsync(params)
       return result
     } catch (error) {
       throw error
@@ -337,7 +481,7 @@ export const useCheckout = () => {
 
     // Loading states
     isInitiating: initiateCheckoutMutation.isPending,
-    isCalculatingShipping: calculateShippingMutation.isPending,
+    isCalculatingShipping: calculateShippingMutation.isPending || calculateShippingOptionsMutation.isPending,
     isCalculatingTax: calculateTaxMutation.isPending,
     isApplyingCoupon: applyCouponMutation.isPending,
     isConfirming: confirmOrderMutation.isPending,
@@ -347,7 +491,7 @@ export const useCheckout = () => {
 
     // Error states
     initiateError: initiateCheckoutMutation.error,
-    shippingError: calculateShippingMutation.error,
+    shippingError: calculateShippingMutation.error || calculateShippingOptionsMutation.error,
     taxError: calculateTaxMutation.error,
     couponError: applyCouponMutation.error,
     confirmError: confirmOrderMutation.error,
@@ -358,6 +502,7 @@ export const useCheckout = () => {
     // Actions
     initiateCheckout: handleInitiateCheckout,
     calculateShipping: handleCalculateShipping,
+    calculateShippingOptions: handleCalculateShippingOptions,
     calculateTax: handleCalculateTax,
     applyCoupon: handleApplyCoupon,
     confirmOrder: handleConfirmOrder,
@@ -373,6 +518,7 @@ export const useCheckout = () => {
     // Mutations (for direct access if needed)
     initiateCheckoutMutation,
     calculateShippingMutation,
+    calculateShippingOptionsMutation,
     calculateTaxMutation,
     applyCouponMutation,
     confirmOrderMutation,

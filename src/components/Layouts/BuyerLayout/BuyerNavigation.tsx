@@ -74,7 +74,7 @@ export const BuyerNavigation: React.FC = () => {
 
           {/* Right Side - Promotional */}
           <div className='flex items-center space-x-4'>
-            <span className='text-sm font-medium text-secondary'>Free Shipping on Orders $50+</span>
+                          <span className='text-sm font-medium text-secondary'>Fast & Reliable Shipping</span>
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ export const BuyerTopBar: React.FC = () => {
             {/* Promotional Message */}
             <div className='hidden items-center space-x-1 lg:flex'>
               <GlobeIcon className='h-4 w-4 text-secondary' />
-              <span className='text-gray-300'>Free shipping on orders over $50</span>
+              <span className='text-gray-300'>Fast and reliable shipping</span>
             </div>
           </div>
 
