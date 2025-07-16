@@ -14,11 +14,11 @@ export const CheckoutSteps: React.FC = () => {
   const {
     currentStep,
     isGuestMode,
-    shippingOptions,
-    selectedShippingOption,
+    // shippingOptions,
+    // selectedShippingOption,
     onStepChange,
-    onSelectShippingOption,
-    isCalculatingShipping,
+    // onSelectShippingOption,
+    // isCalculatingShipping,
   } = useCheckout()
 
   let StepComponent: React.ReactNode

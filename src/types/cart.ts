@@ -1,6 +1,7 @@
 // Cart Page Types
 
 import type { Product } from './common'
+import type { AppliedCoupon } from './coupon'
 
 export interface CartItem {
   id: string
@@ -25,6 +26,7 @@ export interface CartSummary {
   discount: number
   total: number
   itemCount: number
+  appliedCoupon?: AppliedCoupon
 }
 
 export interface CartState {
@@ -32,6 +34,7 @@ export interface CartState {
   summary: CartSummary
   isLoading: boolean
   isUpdating: boolean
+  appliedCoupon?: AppliedCoupon
 }
 
 export interface CartPageProps {
@@ -40,6 +43,7 @@ export interface CartPageProps {
   onRemoveItem: (itemId: string) => void
   onClearCart: () => void
   onApplyCoupon: (code: string) => void
+  onRemoveCoupon: () => void
   onProceedToCheckout: () => void
 }
 
@@ -62,6 +66,7 @@ export interface CartItemProps {
 export interface CartSummaryProps {
   summary: CartSummary
   onApplyCoupon: (code: string) => void
+  onRemoveCoupon: () => void
   onProceedToCheckout: () => void
   isLoading?: boolean
 }
@@ -74,9 +79,9 @@ export interface MiniCartItemProps {
 
 export interface CouponFormProps {
   onApplyCoupon: (code: string) => void
+  onRemoveCoupon: () => void
   isLoading?: boolean
-  appliedCoupon?: string
-  onRemoveCoupon?: () => void
+  appliedCoupon?: AppliedCoupon
 }
 
 export interface EmptyCartProps {

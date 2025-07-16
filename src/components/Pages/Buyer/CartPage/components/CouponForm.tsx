@@ -8,19 +8,24 @@ import { Icon } from '@/components/common/icon'
 
 export const CouponForm: React.FC<CouponFormProps> = ({
   onApplyCoupon,
+  onRemoveCoupon,
   isLoading = false,
   appliedCoupon,
-  onRemoveCoupon,
 }) => {
   const [couponCode, setCouponCode] = useState('')
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (couponCode.trim()) {
-      onApplyCoupon(couponCode.trim())
+      await onApplyCoupon(couponCode.trim())
       setCouponCode('')
+      setIsExpanded(false)
     }
+  }
+
+  const handleRemove = () => {
+    onRemoveCoupon()
   }
 
   if (appliedCoupon) {
@@ -29,9 +34,15 @@ export const CouponForm: React.FC<CouponFormProps> = ({
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-2'>
             <Icon name='AiOutlineCheckCircle' className='h-5 w-5 text-green-600' />
-            <span className='text-sm font-medium text-green-800'>Coupon {appliedCoupon} applied successfully!</span>
+            <div>
+              <span className='text-sm font-medium text-green-800'>
+                Coupon {appliedCoupon.code} applied successfully!
+              </span>
+              {appliedCoupon.name && <p className='text-xs text-green-700'>{appliedCoupon.name}</p>}
+              <p className='text-xs text-green-700'>You saved ${appliedCoupon.discountAmount.toFixed(2)}</p>
+            </div>
           </div>
-          <button onClick={onRemoveCoupon} className='text-sm text-green-600 hover:text-green-800'>
+          <button onClick={handleRemove} className='text-sm font-medium text-green-600 hover:text-green-800'>
             Remove
           </button>
         </div>
@@ -57,7 +68,7 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
               placeholder='Enter coupon code'
-              className='flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
+              className='flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
               disabled={isLoading}
             />
             <button
@@ -72,6 +83,7 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               )}
             </button>
           </div>
+          <p className='text-xs text-gray-500'>Enter your coupon code to get a discount on your order</p>
         </form>
       )}
     </div>

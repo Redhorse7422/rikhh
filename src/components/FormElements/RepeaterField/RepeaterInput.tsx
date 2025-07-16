@@ -93,7 +93,6 @@ export const RepeaterInput: React.FC<RepeaterInputProps> = ({
 
   // Sync with external value changes
   useEffect(() => {
-    console.log('RepeaterInput received value:', value)
     setItems(value)
   }, [value])
 

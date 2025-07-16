@@ -5,7 +5,6 @@ import { server } from '@/libs/axios'
 import { logger } from '@/libs/logger.server'
 
 export const fetchCategoryDetailBySlug = async (catSlug: string) => {
-  console.log('Calling backend for slug:', catSlug)
   return server<ApiResBodyBase<Category>>({
     method: 'get',
     url: `/v1/categories/slug/${catSlug}`,
@@ -21,7 +20,6 @@ export const fetchCategoryDetailBySlug = async (catSlug: string) => {
 }
 
 export const fetchProductsByCategory = async (catId: string) => {
-  console.log('Calling backend for slug:', catId)
   return server<ApiResBodyBase<Product>>({
     method: 'get',
     url: `/v1/products/category/${catId}`,

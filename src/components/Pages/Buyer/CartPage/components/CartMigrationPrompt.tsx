@@ -23,7 +23,7 @@ export const CartMigrationPrompt: React.FC<CartMigrationPromptProps> = ({ onDism
     setShowMigrationModal(true)
   }
 
-  const handleMigrationSuccess = (result: any) => {
+  const handleMigrationSuccess = () => {
     // Refresh the page to update the session and show authenticated cart
     window.location.reload()
   }

@@ -13,9 +13,11 @@ import { CartSummary } from './components/CartSummary'
 import { EmptyCart } from './components/EmptyCart'
 
 export const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeItem, clearCart } = useCart()
+  const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart()
+  // const { cart, updateQuantity, removeItem, clearCart, applyCoupon, removeCoupon } = useCart()
   const router = useRouter()
   const [showMigrationPrompt, setShowMigrationPrompt] = useState(true)
+
   const handleUpdateQuantity = async (itemId: string, quantity: number) => {
     await updateQuantity(itemId, quantity)
   }
@@ -24,13 +26,16 @@ export const CartPage: React.FC = () => {
     await removeItem(itemId)
   }
 
-  const handleClearCart = async () => {
-    await clearCart()
+  // const handleClearCart = async () => {
+  //   await clearCart()
+  // }
+
+  const handleApplyCoupon = async (code: string) => {
+    await applyCoupon(code)
   }
 
-  const handleApplyCoupon = (code: string) => {
-    // TODO: Implement coupon logic
-    console.log('Applying coupon:', code)
+  const handleRemoveCoupon = () => {
+    removeCoupon()
   }
 
   const handleProceedToCheckout = () => {
@@ -105,6 +110,7 @@ export const CartPage: React.FC = () => {
             <CartSummary
               summary={cart.summary}
               onApplyCoupon={handleApplyCoupon}
+              onRemoveCoupon={handleRemoveCoupon}
               onProceedToCheckout={handleProceedToCheckout}
               isLoading={cart.isUpdating}
             />

@@ -12,7 +12,6 @@ import useToast from '@/hooks/useToast'
 import { ProductGallery } from './components/ProductGallery'
 import { ProductInfo } from './components/ProductInfo'
 import { ProductTabs } from './components/ProductTabs'
-import { RelatedProducts } from './components/RelatedProducts'
 
 interface ProductDetailPageProps {
   product: ProductDetail
@@ -92,28 +91,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
   }
 
   const handleVariationChange = (variation: any) => {
-    console.log('Variations ==> ', variation)
     setSelectedVariation(variation)
     setSelectedQuantity(1) // Reset quantity when variation changes
-  }
-
-  // Convert ProductDetail to Product for cart
-  const convertToProduct = () => {
-    return {
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      regularPrice: parseFloat(product.regularPrice),
-      salePrice: parseFloat(product.salePrice || '0'),
-      rating: parseFloat(product.rating || '0'),
-      reviews: product.numOfSales || 0,
-      thumbnailImg: product.thumbnailImg,
-      description: product.shortDescription,
-      category: product.categories?.[0]?.name,
-      tags: product.tags,
-      inStock: selectedVariation ? selectedVariation.quantity > 0 : product.stock > 0,
-      sku: selectedVariation?.sku || 'N/A',
-    }
   }
 
   const handleAddToCart = async () => {
@@ -200,11 +179,6 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href)
     }
-  }
-
-  const handleLoadMoreReviews = () => {
-    // TODO: Implement load more reviews logic
-    console.log('Loading more reviews...')
   }
 
   if (isLoading) {

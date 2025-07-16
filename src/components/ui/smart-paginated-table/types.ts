@@ -30,4 +30,5 @@ export interface SmartPaginatedTableProps {
   pageSizeOptions?: number[]
   initialPageSize?: number
   refetchOnWindowFocus?: boolean
+  onRowClick?: (row: Record<string, unknown>, rowIndex: number) => void
 }

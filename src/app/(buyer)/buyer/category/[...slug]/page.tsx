@@ -10,7 +10,6 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
 
   try {
     const categoryRes = await fetchCategoryDetailBySlug(slug)
-    console.log('Category Response:', categoryRes)
 
     if (!categoryRes) {
       return (

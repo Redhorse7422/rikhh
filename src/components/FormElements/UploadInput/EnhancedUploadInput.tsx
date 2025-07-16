@@ -124,7 +124,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
 
   // Compute maxCount: if not provided, use 1 for single mode and undefined for multiple
   const maxCount = initialMaxCount ?? (multiple ? undefined : 1)
-  console.log('value', value)
+
   const [files, setFiles] = useState<FileUploadState[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -150,10 +150,9 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
 
     // Handle different value types for upload mode
     if (Array.isArray(value)) {
-      console.log('In Array ')
       // Array of UploadedFile objects or strings
       const uploadedFiles = value as (UploadedFile | string)[]
-      console.log('uploadedFiles =>', uploadedFiles)
+
       setFiles(
         uploadedFiles.map((file, index) => {
           if (typeof file === 'string') {
@@ -293,7 +292,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                 fileName: responseData.fileName, // Original filename
                 mimetype: responseData.mimetype, // MIME type
               }
-              console.log('uploadedFile =>', uploadedFile)
+
               setFiles((prev) => {
                 const next = prev.map((f) =>
                   f.id === fileState.id
@@ -481,7 +480,7 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
       onChange?.(pickFiles)
     } else {
       const uploadedFiles = updatedFiles.map((f) => f.uploadedFile).filter(Boolean) as UploadedFile[]
-      console.log('Called')
+
       // Pass the appropriate value based on valueField setting
       let formValue: any
       if (valueField === 'fileId') {
@@ -637,13 +636,13 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                 return (
                   <div
                     key={file.id}
-                                          className={clsx(
-                        'overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md',
-                        isError ? 'border-red-300' : 'border-gray-200',
-                        file.status === 'error' && 'border-red-300 bg-red-50',
-                        file.status === 'success' && 'border-green-300 bg-green-50',
-                        file.status === 'existing' && 'border-gray-200 bg-gray-50',
-                      )}
+                    className={clsx(
+                      'overflow-hidden rounded-lg border shadow-sm transition-shadow hover:shadow-md',
+                      isError ? 'border-red-300' : 'border-gray-200',
+                      file.status === 'error' && 'border-red-300 bg-red-50',
+                      file.status === 'success' && 'border-green-300 bg-green-50',
+                      file.status === 'existing' && 'border-gray-200 bg-gray-50',
+                    )}
                   >
                     <div className='relative flex aspect-square items-center justify-center bg-gray-50'>
                       {file.preview ? (

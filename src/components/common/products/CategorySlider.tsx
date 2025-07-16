@@ -17,8 +17,6 @@ export const CategorySlider: React.FC<CategorySliderProps> = ({ categories }) =>
   const [categoriesPerPage, setCategoriesPerPage] = useState(4)
   const sliderRef = useRef<HTMLDivElement>(null)
 
-  console.log('Categories ===> ', categories)
-
   // Calculate categories per page based on container width with max of 8
   useEffect(() => {
     const updateCategoriesPerPage = () => {

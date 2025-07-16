@@ -147,7 +147,6 @@ export const AdminAddProductPage: React.FC = () => {
           }
         }
       }
-      // console.log('data.variations', data.variations)
 
       // Prepare simple payload
       const payload = {
@@ -195,8 +194,6 @@ export const AdminAddProductPage: React.FC = () => {
           imageId: variation.imageBase64.length > 0 ? variation.imageBase64[0] : null,
         })),
       }
-
-      console.log('Product payload:', payload)
 
       await createDataSource.mutateAsync({
         path: '/v1/products/store',

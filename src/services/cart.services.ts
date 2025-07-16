@@ -110,7 +110,7 @@ export const getCartItems = async (): Promise<CartBackendResponse> => {
   const response = await client.get('/v1/cart/items', params ? { params } : undefined)
   // response is the full backend response; items are in response.data
   const itemsRaw = (response as any) || []
-  console.log('itemsRaw ==> ', itemsRaw)
+
   const items: CartItem[] = itemsRaw.map(mapBackendCartItemToCartItem)
   const summary = calculateSummary(items)
   return { items, summary }

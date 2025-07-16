@@ -122,7 +122,6 @@ export const AdminEditProductPage = () => {
     enabled: !!id,
   })
 
-  console.log('Product ==> ', product)
   const methods = useForm<NewProductForm>({
     defaultValues,
   })
@@ -184,7 +183,6 @@ export const AdminEditProductPage = () => {
 
         // Set variations
         if ((product as any).variations && Array.isArray((product as any).variations)) {
-          console.log('Loading variations:', (product as any).variations)
           const variationFiles: ProductVariation[] = (product as any).variations.map(
             (variation: any, index: number) => ({
               id: variation.id || `existing-variation-${index}`,
@@ -196,11 +194,8 @@ export const AdminEditProductPage = () => {
               imageBase64: variation.image ? [(variation as any).image] : [],
             }),
           )
-          console.log('Processed variations:', variationFiles)
           setValue('variations', variationFiles)
-          console.log('Variations set in form')
         } else {
-          console.log('No variations found in product data')
           setValue('variations', [])
         }
       }
@@ -241,8 +236,6 @@ export const AdminEditProductPage = () => {
           }
         }
       }
-
-      console.log('data.variations', data)
 
       // Prepare simple payload
       const payload = {
@@ -295,8 +288,6 @@ export const AdminEditProductPage = () => {
               : null,
         })),
       }
-
-      console.log('Product payload:', payload)
 
       await updateDataSource.mutateAsync({
         path: `/v1/products/update/${id}`,

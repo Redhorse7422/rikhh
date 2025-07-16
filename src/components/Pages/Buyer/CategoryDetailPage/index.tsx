@@ -1,6 +1,7 @@
 'use client'
 
-import type { Product, AppliedFilters } from '@/types/common'
+import type { Product } from '@/types/common'
+// import type { Product, AppliedFilters } from '@/types/common'
 
 import React, { useState, useEffect } from 'react'
 

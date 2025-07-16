@@ -4,7 +4,7 @@ import type { ProductTabsProps } from '@/types/product'
 
 import React from 'react'
 
-import { StarIcon, CheckIcon } from '@/assets/icons'
+import { StarIcon } from '@/assets/icons'
 
 export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, onTabChange }) => {
   const tabs = [

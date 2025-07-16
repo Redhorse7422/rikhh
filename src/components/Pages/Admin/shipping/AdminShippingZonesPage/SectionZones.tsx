@@ -27,7 +27,6 @@ export const SectionZones = () => {
       key: 'name',
       header: 'Name',
       render: (name: any) => {
-        // console.log('Row ===> ', row)
         return <span className='font-medium'>{name}</span>
       },
       isSort: true,

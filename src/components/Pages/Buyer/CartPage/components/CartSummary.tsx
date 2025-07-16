@@ -2,28 +2,17 @@
 
 import type { CartSummaryProps } from '@/types/cart'
 
-import React, { useState } from 'react'
+import React from 'react'
 
 import { CouponForm } from './CouponForm'
 
 export const CartSummary: React.FC<CartSummaryProps> = ({
   summary,
   onApplyCoupon,
+  onRemoveCoupon,
   onProceedToCheckout,
   isLoading = false,
 }) => {
-  const [appliedCoupon, setAppliedCoupon] = useState<string>('SAVE20')
-
-  const handleApplyCoupon = (code: string) => {
-    onApplyCoupon(code)
-    setAppliedCoupon(code)
-  }
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon('')
-    // TODO: Implement remove coupon logic
-  }
-
   return (
     <div className='rounded-lg border border-gray-200 bg-white p-6 shadow-sm'>
       <h2 className='mb-6 text-xl font-bold text-gray-900'>Order Summary</h2>
@@ -37,7 +26,9 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
         <div className='flex justify-between text-sm'>
           <span className='text-gray-600'>Shipping</span>
-          <span className='font-medium text-gray-900'>${summary.shipping.toFixed(2)}</span>
+          <span className='font-medium text-gray-900'>
+            {summary.shipping > 0 ? `$${summary.shipping.toFixed(2)}` : 'Free'}
+          </span>
         </div>
 
         <div className='flex justify-between text-sm'>
@@ -64,10 +55,10 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
       {/* Coupon Form */}
       <div className='mt-6'>
         <CouponForm
-          onApplyCoupon={handleApplyCoupon}
+          onApplyCoupon={onApplyCoupon}
+          onRemoveCoupon={onRemoveCoupon}
           isLoading={isLoading}
-          appliedCoupon={appliedCoupon}
-          onRemoveCoupon={handleRemoveCoupon}
+          appliedCoupon={summary.appliedCoupon}
         />
       </div>
 
@@ -112,13 +103,21 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
       </div>
 
       {/* Payment Methods */}
-      <div className='mt-6 border-t border-gray-200 pt-4'>
-        <p className='mb-3 text-sm font-medium text-gray-900'>We Accept</p>
-        <div className='flex space-x-2'>
-          <div className='h-8 w-12 rounded border border-gray-200 bg-gray-50'></div>
-          <div className='h-8 w-12 rounded border border-gray-200 bg-gray-50'></div>
-          <div className='h-8 w-12 rounded border border-gray-200 bg-gray-50'></div>
-          <div className='h-8 w-12 rounded border border-gray-200 bg-gray-50'></div>
+      <div className='mt-6 border-t border-gray-200 pt-6'>
+        <p className='mb-3 text-sm text-gray-500'>We accept:</p>
+        <div className='flex space-x-3'>
+          <div className='flex h-8 w-12 items-center justify-center rounded bg-gray-100'>
+            <span className='text-xs font-medium text-gray-600'>VISA</span>
+          </div>
+          <div className='flex h-8 w-12 items-center justify-center rounded bg-gray-100'>
+            <span className='text-xs font-medium text-gray-600'>MC</span>
+          </div>
+          <div className='flex h-8 w-12 items-center justify-center rounded bg-gray-100'>
+            <span className='text-xs font-medium text-gray-600'>AMEX</span>
+          </div>
+          <div className='flex h-8 w-12 items-center justify-center rounded bg-gray-100'>
+            <span className='text-xs font-medium text-gray-600'>PP</span>
+          </div>
         </div>
       </div>
     </div>

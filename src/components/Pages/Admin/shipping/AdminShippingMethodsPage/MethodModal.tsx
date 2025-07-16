@@ -1,6 +1,6 @@
 'use client'
 
-import type { ShippingMethod, CreateShippingMethodDto, ShippingZone } from '@/types/shipping'
+import type { ShippingMethod, CreateShippingMethodDto } from '@/types/shipping'
 
 import { useState, useEffect } from 'react'
 
@@ -90,9 +90,7 @@ export const MethodModal = ({ open, onClose, onSuccess, method }: MethodModalPro
     setZonesLoading(true)
     try {
       const response = await shippingZonesApi.getActive()
-      console.log('Zone Respoense ==> ', response)
       const zoneOptions = Array.isArray(response) ? response : []
-      console.log('Zone ==> ', zoneOptions)
       setZones(zoneOptions)
     } catch (error) {
       console.error('Error fetching zones:', error)

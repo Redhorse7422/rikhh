@@ -5,14 +5,19 @@ import React from 'react'
 interface TableBodyProps {
   columns: SmartColumn[]
   rows: Record<string, unknown>[]
+  onRowClick?: (row: Record<string, unknown>, rowIndex: number) => void
 }
 
-export const TableBody: React.FC<TableBodyProps> = ({ columns, rows }) => {
+export const TableBody: React.FC<TableBodyProps> = ({ columns, rows, onRowClick }) => {
   return (
     <tbody>
       {rows.length > 0 ? (
         rows.map((row: Record<string, unknown>, rowIndex: number) => (
-          <tr key={rowIndex} className='border-b border-gray-200 dark:border-dark-3'>
+          <tr
+            key={rowIndex}
+            className={`border-b border-gray-200 dark:border-dark-3${onRowClick ? ' cursor-pointer hover:bg-gray-50' : ''}`}
+            onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
+          >
             {columns.map((column, colIndex) => (
               <td
                 key={colIndex}
