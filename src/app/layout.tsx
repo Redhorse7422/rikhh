@@ -9,6 +9,7 @@ import NextTopLoader from 'nextjs-toploader'
 import '@/css/satoshi.css'
 import '@/css/style.css'
 import { MainProviders } from '@/providers/MainProvider'
+import { AgeConfirmationGate } from '@/components/AgeConfirmationGate'
 
 export const metadata: Metadata = {
   title: {

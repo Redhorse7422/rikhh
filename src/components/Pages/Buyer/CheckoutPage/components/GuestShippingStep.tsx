@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 
 import { GuestMigrationModal } from '@/components/Auth/GuestMigrationModal'
+import { SelectField } from '@/components/FormElements/SelectInput'
 import { TextField } from '@/components/FormElements/TextInput'
 import { Button } from '@/components/common/Button'
+import { US_STATES } from '@/constants/states'
 
 import { useCheckout } from '../context/CheckoutContext'
 
@@ -30,7 +32,7 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
   const { checkoutData, onDataUpdate, onCalculateShipping, isCalculatingShipping } = useCheckout()
   const [showMigrationModal, setShowMigrationModal] = useState(false)
 
-  const { control, handleSubmit, watch, setValue } = useForm<GuestShippingForm>({
+  const { control, handleSubmit } = useForm<GuestShippingForm>({
     defaultValues: {
       firstName: checkoutData.shipping.firstName || '',
       lastName: checkoutData.shipping.lastName || '',
@@ -41,7 +43,7 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
       city: checkoutData.shipping.city || '',
       state: checkoutData.shipping.state || '',
       postalCode: checkoutData.shipping.zipCode || '',
-      country: checkoutData.shipping.country || 'US',
+      country: 'US',
     },
   })
 
@@ -60,7 +62,7 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
         city: data.city,
         state: data.state,
         zipCode: data.postalCode,
-        country: data.country,
+        country: 'US',
       })
 
       // Calculate shipping with the provided address
@@ -77,7 +79,7 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
           city: data.city,
           state: data.state,
           zipCode: data.postalCode,
-          country: data.country,
+          country: 'US',
         })
       }
 
@@ -112,11 +114,11 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
             className='whitespace-nowrap'
           />
         </div>
-        
+
         {/* Info banner */}
         <div className='rounded-md border border-blue-200 bg-blue-50 p-3'>
           <p className='text-sm text-blue-800'>
-            ✨ <strong>Want to save time?</strong> Create an account to save your address, track orders, and get faster 
+            ✨ <strong>Want to save time?</strong> Create an account to save your address, track orders, and get faster
             checkout next time!
           </p>
         </div>
@@ -190,11 +192,12 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
             placeholder='Enter your city'
             rules={{ required: 'City is required' }}
           />
-          <TextField
+          <SelectField
             control={control}
             name='state'
-            label='State/Province'
-            placeholder='Enter your state'
+            label='State'
+            items={US_STATES}
+            placeholder='Select your state'
             rules={{ required: 'State is required' }}
           />
           <TextField
@@ -210,8 +213,9 @@ export const GuestShippingStep: React.FC<GuestShippingStepProps> = ({ onNext, on
           control={control}
           name='country'
           label='Country'
-          placeholder='Enter your country'
-          rules={{ required: 'Country is required' }}
+          value='US'
+          disabled
+          helperText='Currently shipping within the United States only'
         />
 
         {/* Navigation Buttons */}

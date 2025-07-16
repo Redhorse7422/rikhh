@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { SearchIcon } from '@/assets/icons'
 
 export const ProductGallery: React.FC<ProductGalleryProps> = ({ images, mainImage, onImageChange }) => {
-  const currentImage = images.find(img => img.url === mainImage) || images[0]
+  const currentImage = images.find((img) => img.url === mainImage) || images[0]
 
   return (
     <div className='space-y-4'>

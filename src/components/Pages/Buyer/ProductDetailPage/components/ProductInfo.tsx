@@ -242,9 +242,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           </div>
           <div>
             <span className='font-medium text-gray-900'>Shipping:</span>
-            <span className='ml-2 text-gray-600'>
-              Calculated at checkout
-            </span>
+            <span className='ml-2 text-gray-600'>Calculated at checkout</span>
           </div>
           <div>
             <span className='font-medium text-gray-900'>Delivery:</span>

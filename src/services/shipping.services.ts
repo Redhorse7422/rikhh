@@ -188,23 +188,27 @@ export const shippingCalculatorApi = {
     }
     orderValue: number
     isHoliday?: boolean
-  }): Promise<ShippingApiResponse<Array<{
-    methodId: string
-    methodName: string
-    rateType: string
-    baseRate: number
-    additionalCost: number
-    totalCost: number
-    estimatedDays: number
-    isDefault: boolean
-    breakdown: {
-      baseRate: number
-      additionalCost: number
-      handlingFee: number
-      insuranceFee: number
-      signatureFee: number
-    }
-  }>>> => {
+  }): Promise<
+    ShippingApiResponse<
+      Array<{
+        methodId: string
+        methodName: string
+        rateType: string
+        baseRate: number
+        additionalCost: number
+        totalCost: number
+        estimatedDays: number
+        isDefault: boolean
+        breakdown: {
+          baseRate: number
+          additionalCost: number
+          handlingFee: number
+          insuranceFee: number
+          signatureFee: number
+        }
+      }>
+    >
+  > => {
     return client.post('/v1/shipping/checkout/calculate-options', params)
   },
 }
@@ -215,7 +219,6 @@ export const shippingHelpers = {
   calculateItemBasedCost: (rate: ShippingRate, itemCount: number): number => {
     if (rate.rateType !== 'item_based') return 0
 
-    const firstItems = Math.min(itemCount, rate.firstItemCount || 0)
     const additionalItems = Math.max(0, itemCount - (rate.firstItemCount || 0))
 
     let totalCost = rate.baseRate + additionalItems * (rate.additionalItemRate || 0)

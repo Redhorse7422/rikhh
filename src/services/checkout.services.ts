@@ -235,11 +235,14 @@ export const initiateCheckout = async (
     body: JSON.stringify(payload),
   })
 
+  const responseData = await response.json()
+
   if (!response.ok) {
-    throw new Error('Failed to initiate checkout')
+    // Throw the parsed error response for better error handling
+    throw responseData
   }
 
-  return response.json()
+  return responseData
 }
 
 export const calculateShipping = async (

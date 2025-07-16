@@ -27,7 +27,18 @@ export const FormFilter = () => {
   })
 
   const handleOnSubmit = (data: UserFilterValues) => {
-    setFilters(data)
+    // Clean up data to remove empty strings
+    const cleanedData: UserFilterValues = {
+      search: data.search || '',
+      role: data.role || '',
+      status: data.status || '',
+      emailVerified: data.emailVerified || '',
+      dateRange: {
+        start: data.dateRange?.start || '',
+        end: data.dateRange?.end || '',
+      },
+    }
+    setFilters(cleanedData)
   }
 
   const handleReset = () => {

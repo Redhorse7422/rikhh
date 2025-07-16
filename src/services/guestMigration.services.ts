@@ -1,5 +1,3 @@
-import type { ApiResBodyBase } from '@/types/api'
-
 export interface GuestDataCheckResponse {
   guestData: {
     hasCartItems: boolean

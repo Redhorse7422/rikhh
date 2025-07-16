@@ -2,8 +2,6 @@ import type { AppliedFilters } from '@/types/common'
 
 import React from 'react'
 
-import { FilterOption } from '@/types/common'
-
 interface FilterSidebarProps {
   selectedFilters: AppliedFilters
   onFilterChange: (filterType: string, value: string) => void

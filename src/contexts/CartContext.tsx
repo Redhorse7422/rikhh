@@ -1,12 +1,36 @@
 'use client'
 
-import type { AddToCartDto, CartVariantDto } from '@/services/cart.services'
+import type { AddToCartDto } from '@/services/cart.services'
 import type { CartState, CartItem } from '@/types/cart'
+import type { AppliedCoupon } from '@/types/coupon'
 
 import type { ReactNode } from 'react'
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+import React, { createContext, useContext, useReducer } from 'react'
 
+import { getSession } from 'next-auth/react'
+
+import useToast from '@/hooks/useToast'
+import { getGuestId } from '@/services/cart.guest'
 import { addToCart, getCartItems, updateCartItem, removeCartItem } from '@/services/cart.services'
+import { validateCouponForCart } from '@/services/coupon.services'
+
+// Helper function to get current user ID or guest ID
+async function getCurrentUserId(): Promise<{ userId?: string; guestId?: string }> {
+  try {
+    const session = await getSession()
+    if (session?.user?.id) {
+      // Use buyerId if available, otherwise use the general id
+      const userId = session.user.buyerId || session.user.id
+      return { userId }
+    }
+    const guestId = getGuestId()
+    return guestId ? { guestId } : {}
+  } catch (error) {
+    console.error('Error getting session:', error)
+    const guestId = getGuestId()
+    return guestId ? { guestId } : {}
+  }
+}
 
 // Cart Actions
 type CartAction =
@@ -17,6 +41,8 @@ type CartAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_UPDATING'; payload: boolean }
   | { type: 'SET_CART'; payload: CartState }
+  | { type: 'APPLY_COUPON'; payload: AppliedCoupon }
+  | { type: 'REMOVE_COUPON' }
 
 // Cart Reducer
 const cartReducer = (state: CartState, action: CartAction): CartState => {
@@ -32,7 +58,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         return {
           ...state,
           items: updatedItems,
-          summary: calculateSummary(updatedItems),
+          summary: calculateSummary(updatedItems, state.appliedCoupon),
         }
       }
 
@@ -41,7 +67,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         items: newItems,
-        summary: calculateSummary(newItems),
+        summary: calculateSummary(newItems, state.appliedCoupon),
       }
     }
 
@@ -52,7 +78,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         items: updatedItems,
-        summary: calculateSummary(updatedItems),
+        summary: calculateSummary(updatedItems, state.appliedCoupon),
       }
     }
 
@@ -61,7 +87,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         items: updatedItems,
-        summary: calculateSummary(updatedItems),
+        summary: calculateSummary(updatedItems, state.appliedCoupon),
       }
     }
 
@@ -70,6 +96,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         items: [],
         summary: calculateSummary([]),
+        appliedCoupon: undefined,
       }
 
     case 'SET_LOADING':
@@ -90,17 +117,31 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...action.payload,
       }
 
+    case 'APPLY_COUPON':
+      return {
+        ...state,
+        appliedCoupon: action.payload,
+        summary: calculateSummary(state.items, action.payload),
+      }
+
+    case 'REMOVE_COUPON':
+      return {
+        ...state,
+        appliedCoupon: undefined,
+        summary: calculateSummary(state.items),
+      }
+
     default:
       return state
   }
 }
 
-// Calculate cart summary
-const calculateSummary = (items: CartItem[]) => {
+// Calculate cart summary with coupon support
+const calculateSummary = (items: CartItem[], appliedCoupon?: AppliedCoupon) => {
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
   const shipping = 0 // Shipping will be calculated through shipping-calculate API
   const tax = 0 // Tax will be calculated through checkout API
-  const discount = 0 // TODO: Implement coupon logic
+  const discount = appliedCoupon?.discountAmount || 0
   const total = subtotal + shipping + tax - discount
 
   return {
@@ -110,6 +151,7 @@ const calculateSummary = (items: CartItem[]) => {
     discount,
     total,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
+    appliedCoupon,
   }
 }
 
@@ -119,6 +161,7 @@ const initialState: CartState = {
   summary: calculateSummary([]),
   isLoading: false,
   isUpdating: false,
+  appliedCoupon: undefined,
 }
 
 // Cart Context
@@ -131,17 +174,20 @@ interface CartContextType {
   fetchCart: () => Promise<void>
   setLoading: (loading: boolean) => void
   setUpdating: (updating: boolean) => void
+  applyCoupon: (code: string) => Promise<void>
+  removeCoupon: () => void
+  updateSummaryAndCoupon: (summary: any, appliedCoupon: AppliedCoupon) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-// Cart Provider
 interface CartProviderProps {
   children: ReactNode
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, initialState)
+  const { showToast } = useToast()
 
   // Fetch cart from backend
   const fetchCart = async () => {
@@ -154,6 +200,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         summary: data.summary || calculateSummary(data.items || []),
         isLoading: false,
         isUpdating: false,
+        appliedCoupon: undefined, // Coupon state will be managed separately
       }
       dispatch({
         type: 'SET_CART',
@@ -206,6 +253,78 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     await fetchCart()
   }
 
+  // Apply coupon to cart (Stage 1: Preview)
+  const applyCoupon = async (code: string) => {
+    if (!code.trim()) {
+      showToast('Please enter a coupon code', 'error')
+      return
+    }
+
+    dispatch({ type: 'SET_UPDATING', payload: true })
+    try {
+      const userInfo = await getCurrentUserId()
+      const updatedItems = cart.items.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        totalPrice: item.totalPrice,
+        ...(item.product.category && { categoryId: item.product.category }),
+      })) as any
+
+      const validationRequest = {
+        couponCode: code.trim().toUpperCase(),
+        items: updatedItems,
+        subtotal: cart.summary.subtotal,
+        // ...userInfo,
+      }
+
+      const response = (await validateCouponForCart(validationRequest)) as any
+
+      if (response.isValid) {
+        const appliedCoupon: AppliedCoupon = {
+          code: response.coupon?.code || code,
+          name: response.coupon?.name,
+          type: response.coupon?.type || 'percentage',
+          value: response.coupon?.value || 0,
+          discountAmount: response.discountAmount,
+          appliedAt: new Date().toISOString(),
+        }
+
+        dispatch({ type: 'APPLY_COUPON', payload: appliedCoupon })
+        showToast(`Coupon "${code}" applied successfully! You saved $${response.discountAmount.toFixed(2)}`, 'success')
+      } else {
+        showToast(response.data.message || 'Invalid coupon code', 'error')
+      }
+    } catch (error) {
+      console.error('Error applying coupon:', error)
+      showToast('Failed to apply coupon. Please try again.', 'error')
+    } finally {
+      dispatch({ type: 'SET_UPDATING', payload: false })
+    }
+  }
+
+  // Remove coupon from cart
+  const removeCoupon = () => {
+    dispatch({ type: 'REMOVE_COUPON' })
+    showToast('Coupon removed', 'success')
+  }
+
+  // Add this function to update summary and applied coupon
+  const updateSummaryAndCoupon = (summary: any, appliedCoupon: AppliedCoupon) => {
+    dispatch({
+      type: 'SET_CART',
+      payload: {
+        ...cart,
+        summary: {
+          ...cart.summary,
+          ...summary,
+          appliedCoupon,
+        },
+        appliedCoupon,
+      },
+    })
+  }
+
   const setLoading = (loading: boolean) => {
     dispatch({ type: 'SET_LOADING', payload: loading })
   }
@@ -227,6 +346,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     fetchCart,
     setLoading,
     setUpdating,
+    applyCoupon,
+    removeCoupon,
+    updateSummaryAndCoupon,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

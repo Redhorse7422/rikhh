@@ -52,8 +52,10 @@ export const ShippingMethodStep: React.FC = () => {
 
         // Calculate order value
         const orderValue = cart.items.reduce((total, item) => {
-          const price = item.product.salePrice || item.product.regularPrice
-          return total + price * item.quantity
+          const price = Number(item.product.salePrice)
+          const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
+
+          return total + finalPrice * item.quantity
         }, 0)
 
         // Prepare items for shipping calculation
@@ -125,7 +127,10 @@ export const ShippingMethodStep: React.FC = () => {
       // Move to payment step
       onStepChange('payment')
     } catch (err) {
-      setError('Failed to initiate checkout. Please try again.')
+      // Error is already handled by the parent component (CheckoutPage)
+      // which will show the error modal, so we just need to set a local error
+      console.error('Checkout initiation failed:', err)
+      setError('Please check the error details and try again.')
     }
   }
 

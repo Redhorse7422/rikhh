@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import { TextInput } from '@/components/FormElements/TextInput/TextInput'
 import { Button } from '@/components/common/Button'
+import { US_STATES } from '@/constants/states'
 import { useAddresses } from '@/hooks/useAddresses'
 import { createAddress } from '@/services/addresses.services'
 
@@ -9,13 +10,7 @@ import { useCheckout } from '../context/CheckoutContext'
 
 export const ShippingStep: React.FC = () => {
   const { checkoutData, onDataUpdate, onStepChange, onSelectShippingAddress, selectedShippingAddressId } = useCheckout()
-  const {
-    getShippingAddresses,
-    getDefaultShippingAddress,
-    isLoading: addressesLoading,
-    refetch,
-    isAuthenticated,
-  } = useAddresses()
+  const { getShippingAddresses, getDefaultShippingAddress, refetch, isAuthenticated } = useAddresses()
   const [form, setForm] = useState(checkoutData.shipping)
   const [error, setError] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -282,11 +277,36 @@ export const ShippingStep: React.FC = () => {
                 required
               />
               <div className='grid grid-cols-1 gap-4 md:grid-cols-3'>
-                <TextInput label='City' value={form.city} onChange={(v) => handleChange('city', v || '')} />
-                <TextInput label='State' value={form.state} onChange={(v) => handleChange('state', v || '')} />
-                <TextInput label='Zip Code' value={form.zipCode} onChange={(v) => handleChange('zipCode', v || '')} />
+                <TextInput label='City' value={form.city} onChange={(v) => handleChange('city', v || '')} required />
+                <div>
+                  <label className='mb-2 block text-sm font-medium text-dark dark:text-white'>State</label>
+                  <select
+                    value={form.state}
+                    onChange={(e) => handleChange('state', e.target.value)}
+                    className='w-full rounded-lg border border-stroke bg-transparent px-4 py-3 outline-none transition focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary'
+                    required
+                  >
+                    <option value=''>Select your state</option>
+                    {US_STATES.map((state) => (
+                      <option key={state.value} value={state.value}>
+                        {state.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <TextInput
+                  label='Zip Code'
+                  value={form.zipCode}
+                  onChange={(v) => handleChange('zipCode', v || '')}
+                  required
+                />
               </div>
-              <TextInput label='Country' value={form.country} onChange={(v) => handleChange('country', v || '')} />
+              <TextInput
+                label='Country'
+                value='US'
+                disabled
+                helperText='Currently shipping within the United States only'
+              />
               {error && <div className='text-red-500'>{error}</div>}
               <div className='flex justify-end space-x-3'>
                 <Button type='button' label='Cancel' onClick={handleCancelAdd} variant='outlinePrimary' />

@@ -2,7 +2,6 @@ import type { AppliedFilters } from '@/types/common'
 
 import React from 'react'
 
-
 interface MobileFilterModalProps {
   isOpen: boolean
   onClose: () => void

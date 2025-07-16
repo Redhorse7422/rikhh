@@ -9,8 +9,8 @@ import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import { useCart } from '@/contexts/CartContext'
 import { useAddresses } from '@/hooks/useAddresses'
 import { useCheckout } from '@/hooks/useCheckout'
-import { createAddress } from '@/services/addresses.services'
 
+import { CheckoutErrorModal } from './components/CheckoutErrorModal'
 import { CheckoutProgress } from './components/CheckoutProgress'
 import { CheckoutSteps } from './components/CheckoutSteps'
 import { CheckoutSummary } from './components/CheckoutSummary'
@@ -67,7 +67,7 @@ const initialCheckoutData: CheckoutData = {
     city: '',
     state: '',
     zipCode: '',
-    country: '',
+    country: 'US',
   },
   billing: {
     sameAsShipping: true,
@@ -79,7 +79,7 @@ const initialCheckoutData: CheckoutData = {
     city: '',
     state: '',
     zipCode: '',
-    country: '',
+    country: 'US',
   },
   payment: {
     method: 'card',
@@ -99,16 +99,14 @@ export const CheckoutPage: React.FC = () => {
   const router = useRouter()
   const { data: session } = useSession()
   const { cart, fetchCart } = useCart()
-  const { addresses, getDefaultShippingAddress, getDefaultBillingAddress, isAuthenticated, refetch } = useAddresses()
+  const { isAuthenticated } = useAddresses()
   const {
     checkoutId,
     shippingOptions,
     selectedShippingOption,
     initiateCheckout,
-    calculateShipping,
     calculateShippingOptions,
     confirmOrder,
-    saveCheckoutAddress,
     isInitiating,
     isCalculatingShipping,
     isConfirming,
@@ -122,10 +120,12 @@ export const CheckoutPage: React.FC = () => {
   const [selectedBillingAddressId, setSelectedBillingAddressId] = useState<string | null>(null)
   const [orderResponse, setOrderResponse] = useState<any>(null)
   const [isGuestMode, setIsGuestMode] = useState(false)
-  
+  const [checkoutError, setCheckoutError] = useState<any>(null)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+
   // Determine if user is authenticated
   const isUserAuthenticated = !!(session?.user || isAuthenticated)
-  
+
   // Determine if we should show the guest prompt
   const shouldShowGuestPrompt = !isUserAuthenticated && !isGuestMode
 
@@ -198,9 +198,9 @@ export const CheckoutPage: React.FC = () => {
           email: checkoutData.shipping.email,
         }
       }
-      
+
       const result = await initiateCheckout(payload)
-      
+
       // Extract checkoutId from the result based on response format
       let extractedCheckoutId: string | null = null
       if (result.code === 0) {
@@ -255,6 +255,26 @@ export const CheckoutPage: React.FC = () => {
         }
       }
     } catch (error) {
+      // Handle checkout initiation errors
+      console.error('Checkout initiation error:', error)
+
+      // Check if it's a structured error response
+      if (error && typeof error === 'object' && 'error' in error && 'statusCode' in error) {
+        setCheckoutError(error)
+        setShowErrorModal(true)
+      } else {
+        // Fallback for generic errors
+        setCheckoutError({
+          success: false,
+          error: {
+            code: 'CHECKOUT_INITIATION_FAILED',
+            message: (error as any)?.message || 'An unexpected error occurred during checkout initiation.',
+          },
+          statusCode: 500,
+        })
+        setShowErrorModal(true)
+      }
+
       throw error
     }
   }
@@ -262,27 +282,24 @@ export const CheckoutPage: React.FC = () => {
   const handleCalculateShipping = async () => {
     // Check if we have shipping address data
     if (!checkoutData.shipping.firstName || !checkoutData.shipping.address || !checkoutData.shipping.city) {
-      console.log('Missing shipping address data') // Debug log
       return
     }
 
     // Check if we have cart items
     if (!cart.items || cart.items.length === 0) {
-      console.log('No cart items found') // Debug log
       return
     }
-
     try {
-      console.log('Starting shipping calculation...') // Debug log
-      
       // Calculate order value
       const orderValue = cart.items.reduce((total, item) => {
-        const price = item.product.salePrice || item.product.regularPrice
-        return total + (price * item.quantity)
+        const price = Number(item.product.salePrice)
+        const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
+
+        return total + finalPrice * item.quantity
       }, 0)
 
       // Prepare items for shipping calculation
-      const items = cart.items.map(item => ({
+      const items = cart.items.map((item) => ({
         id: item.id,
         productId: item.product.id,
         quantity: item.quantity,
@@ -299,8 +316,6 @@ export const CheckoutPage: React.FC = () => {
         postalCode: checkoutData.shipping.zipCode,
       }
 
-      console.log('Shipping calculation payload:', { items, shippingAddress, orderValue }) // Debug log
-
       // Use the new shipping options calculation
       const result = await calculateShippingOptions({
         items,
@@ -308,12 +323,15 @@ export const CheckoutPage: React.FC = () => {
         orderValue,
         isHoliday: false, // You can make this dynamic based on current date
       })
-      
-      console.log('Shipping calculation result:', result) // Debug log
     } catch (error) {
       console.error('Shipping calculation error:', error) // Debug log
       throw error
     }
+  }
+
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false)
+    setCheckoutError(null)
   }
 
   const handleCompleteOrder = async () => {
@@ -331,6 +349,11 @@ export const CheckoutPage: React.FC = () => {
         notes: checkoutData.orderNotes,
       }
 
+      // Add coupon code if applied
+      if (cart.summary.appliedCoupon?.code) {
+        payload.couponCode = cart.summary.appliedCoupon.code
+      }
+
       // Add payment details if using credit card
       if (checkoutData.payment.method === 'card') {
         payload.paymentData = {
@@ -344,7 +367,7 @@ export const CheckoutPage: React.FC = () => {
 
       // The confirmOrder function from useCheckout hook handles checkoutId validation internally
       const result = await confirmOrder(payload)
-      
+
       // Store the order response data
       setOrderResponse(result)
       // Move to confirmation step
@@ -452,6 +475,9 @@ export const CheckoutPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Checkout Error Modal */}
+      <CheckoutErrorModal isOpen={showErrorModal} onClose={handleCloseErrorModal} error={checkoutError} />
     </CheckoutProvider>
   )
 }

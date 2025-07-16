@@ -6,69 +6,9 @@ import { Button } from '@/components/common/Button'
 
 import { useCheckout } from '../context/CheckoutContext'
 
-interface OrderItem {
-  id: string
-  productId: string
-  productName: string
-  quantity: number
-  unitPrice: number | string
-  totalPrice: number
-  selectedVariants: Array<{
-    attributeId: string
-    attributeValueId: string
-    attributeName: string
-    attributeValue: string
-  }>
-}
-
-interface ShippingAddress {
-  id: string
-  firstName: string
-  lastName: string
-  addressLine1: string
-  addressLine2?: string
-  city: string
-  state: string
-  postalCode: string
-  country: string
-  phone: string
-  email: string
-}
-
-interface PaymentReceipt {
-  transactionId: string
-  paymentMethod: string
-  amount: number
-  currency: string
-  status: string
-}
-
-interface OrderData {
-  id: string
-  orderNumber: string
-  status: string
-  paymentStatus: string
-  totalAmount: number
-  estimatedDeliveryDate?: string
-  trackingNumber?: string
-  items: OrderItem[]
-  shippingAddress: ShippingAddress
-  createdAt: string
-  updatedAt: string
-}
-
-interface OrderResponse {
-  success: boolean
-  data: {
-    order: OrderData
-    paymentReceipt: PaymentReceipt
-    emailSent: boolean
-  }
-}
-
 export const ConfirmationStep: React.FC = () => {
   const router = useRouter()
-  const { checkoutData, orderResponse } = useCheckout()
+  const { orderResponse } = useCheckout()
 
   // If no order response is available, show a loading state
   if (!orderResponse || !orderResponse.data) {

@@ -36,20 +36,6 @@ export const AdminEditUserPage = () => {
     path: `/v1/users/${userId}`,
   })
 
-  // useEffect(() => {
-  //   if (user) {
-  //     const userData = user as User
-  //     reset({
-  //       name: userData.name,
-  //       email: userData.email,
-  //       phone: userData.phone || '',
-  //       role: userData.role,
-  //       status: userData.status,
-  //       profile: userData.profile,
-  //     })
-  //   }
-  // }, [user, reset])
-
   const onSubmit = async (data: UpdateUserData) => {
     try {
       await updateDataSource.mutateAsync({
@@ -63,18 +49,6 @@ export const AdminEditUserPage = () => {
       showToast('Failed to update user. Please try again.', 'error')
     }
   }
-
-  const roleOptions = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'seller', label: 'Seller' },
-    { value: 'buyer', label: 'Buyer' },
-  ]
-
-  const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'suspended', label: 'Suspended' },
-  ]
 
   if (isLoading) {
     return (

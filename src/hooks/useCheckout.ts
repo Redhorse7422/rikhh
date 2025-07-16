@@ -19,7 +19,6 @@ import {
   type ApplyCouponPayload,
   type ConfirmOrderPayload,
   type SaveCheckoutAddressPayload,
-  type GuestOrder,
 } from '@/services/checkout.services'
 import { shippingCalculatorApi } from '@/services/shipping.services'
 
@@ -70,14 +69,6 @@ export const useCheckout = () => {
       setCheckoutId(storedCheckoutId)
     }
   }, [])
-
-  // Add a function to validate if the current checkoutId is still valid
-  const validateCheckoutId = async () => {
-    if (!checkoutId) return false
-    // You could add an API call here to validate the checkoutId with the backend
-    // For now, we'll assume it's valid if it exists
-    return true
-  }
 
   // Helper function to update checkoutId in both state and localStorage
   const updateCheckoutId = (newCheckoutId: string | null) => {
@@ -182,11 +173,9 @@ export const useCheckout = () => {
       return result
     },
     onSuccess: (data) => {
-      console.log('Shipping options response:', data) // Debug log
-      
       // Handle both response formats: wrapped {code, data} and direct array
       let shippingOptionsData = null
-      
+
       if (data.code === 0 && data.data && Array.isArray(data.data)) {
         // Wrapped response format
         shippingOptionsData = data.data
@@ -194,10 +183,9 @@ export const useCheckout = () => {
         // Direct array format
         shippingOptionsData = data
       } else {
-        console.error('Invalid shipping options response:', data) // Debug log
         return
       }
-      
+
       // Transform the shipping options to match the expected format
       const transformedOptions = shippingOptionsData.map((option: any) => ({
         id: option.methodId,
@@ -226,10 +214,9 @@ export const useCheckout = () => {
         isInsured: option.isInsured,
         insuranceAmount: option.insuranceAmount ? Number(option.insuranceAmount) : null,
       }))
-      
-      console.log('Transformed options:', transformedOptions) // Debug log
+
       setShippingOptions(transformedOptions)
-      
+
       // Set default shipping option
       const defaultOption = transformedOptions.find((option: any) => option.isDefault)
       if (defaultOption) {
@@ -295,7 +282,7 @@ export const useCheckout = () => {
       const result = await confirmOrder(fullPayload)
       return result
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Clear the checkout session after successful order confirmation
       updateCheckoutId(null)
     },
@@ -349,7 +336,7 @@ export const useCheckout = () => {
   }) => {
     try {
       const guestId = isGuest ? getGuestId() : undefined
-      
+
       const fullPayload: InitiateCheckoutPayload = {
         checkoutType: isGuest ? 'guest' : 'registered',
         shippingMethod: payload.shippingMethod,
@@ -360,7 +347,7 @@ export const useCheckout = () => {
         ...(!isGuest && payload.shippingAddressId && { shippingAddressId: payload.shippingAddressId }),
         ...(!isGuest && payload.billingAddressId && { billingAddressId: payload.billingAddressId }),
       }
-      
+
       const result = await initiateCheckoutMutation.mutateAsync(fullPayload)
       return result
     } catch (error) {

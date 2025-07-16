@@ -14,7 +14,6 @@ type SectionMediaProps = {
 }
 
 export const SectionMedia: FC<SectionMediaProps> = ({ control }) => {
-  console.log('control  => ', control)
   return (
     <Card className='pt-10'>
       <h2 className='mb-4 text-2xl font-bold'>Media</h2>

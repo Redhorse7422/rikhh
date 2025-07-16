@@ -27,10 +27,39 @@ export const NAV_DATA = [
         items: [],
       },
       {
+        title: 'Orders',
+        url: '/orders',
+        icon: Icons.ProductsIcon,
+        items: [],
+      },
+      {
         title: 'Users',
         url: '/users',
         icon: Icons.User,
         items: [],
+      },
+      {
+        title: 'Coupons',
+        url: '/coupons',
+        icon: Icons.Table, // Using Table icon as placeholder, can be updated with a proper coupon icon
+        items: [
+          {
+            title: 'All Coupons',
+            url: '/coupons',
+          },
+          {
+            title: 'Add Coupon',
+            url: '/coupons/add',
+          },
+          {
+            title: 'Bulk Create',
+            url: '/coupons/bulk',
+          },
+          {
+            title: 'Statistics',
+            url: '/coupons/stats',
+          },
+        ],
       },
       {
         title: 'Calendar',

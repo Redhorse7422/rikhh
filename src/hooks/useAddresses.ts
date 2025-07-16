@@ -8,8 +8,6 @@ import {
   deleteAddress,
   type Address,
   type AddressesResponse,
-  type CreateAddressDto,
-  type UpdateAddressDto,
 } from '@/services/addresses.services'
 
 export const useAddresses = () => {
@@ -56,8 +54,8 @@ export const useAddresses = () => {
   })
 
   // Helper functions
-  const shippingAddresses = isAuthenticated ? (data?.shipping || []) : []
-  const billingAddresses = isAuthenticated ? (data?.billing || []) : []
+  const shippingAddresses = isAuthenticated ? data?.shipping || [] : []
+  const billingAddresses = isAuthenticated ? data?.billing || [] : []
   const allAddresses = [...shippingAddresses, ...billingAddresses]
 
   const getShippingAddresses = () => shippingAddresses

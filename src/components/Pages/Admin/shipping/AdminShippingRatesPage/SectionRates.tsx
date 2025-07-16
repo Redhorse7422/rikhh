@@ -65,8 +65,7 @@ export const SectionRates = () => {
     {
       key: 'conditions',
       header: 'Conditions',
-      render: (conditions: any, row) => {
-        console.log('Row ==>', row)
+      render: (_, row) => {
         const conditionsUpdated = []
         if (row.minWeight && row.maxWeight) {
           conditionsUpdated.push(`${row.minWeight}-${row.maxWeight}kg`)

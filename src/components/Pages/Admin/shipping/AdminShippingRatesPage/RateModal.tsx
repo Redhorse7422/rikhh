@@ -1,6 +1,6 @@
 'use client'
 
-import type { ShippingRate, CreateShippingRateDto, ShippingMethod } from '@/types/shipping'
+import type { ShippingRate, CreateShippingRateDto } from '@/types/shipping'
 
 import { useState, useEffect } from 'react'
 
@@ -87,9 +87,7 @@ export const RateModal = ({ open, onClose, onSuccess, rate }: RateModalProps) =>
     setMethodsLoading(true)
     try {
       const response = await shippingMethodsApi.getActive()
-      console.log('Methods Response ==> ', response)
       const methodOptions = Array.isArray(response) ? response : []
-      console.log('Methods ==> ', methodOptions)
       setMethods(methodOptions)
     } catch (error) {
       console.error('Error fetching methods:', error)

@@ -25,7 +25,7 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
   sortBy,
   onSortChange,
   onToggleFilters,
-  showFilters,
+  // showFilters,
   activeFiltersCount,
   productCount,
 }) => {

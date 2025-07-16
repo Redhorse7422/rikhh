@@ -23,6 +23,7 @@ export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTable
     pageSizeOptions = [10, 20, 50, 100],
     initialPageSize = 10,
     refetchOnWindowFocus = false,
+    onRowClick,
   },
   ref,
 ) {
@@ -115,7 +116,7 @@ export const SmartPaginatedTable = forwardRef<SmartTableRef, SmartPaginatedTable
         )}
         <table className='w-full caption-bottom text-sm'>
           <TableHeader columns={columns} sort={sort} handleSort={handleSort} />
-          <TableBody columns={columns} rows={rows} />
+          <TableBody columns={columns} rows={rows} onRowClick={onRowClick} />
         </table>
       </div>
       {/* Pagination Controls */}

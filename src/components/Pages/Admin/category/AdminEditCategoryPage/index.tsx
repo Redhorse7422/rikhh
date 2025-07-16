@@ -14,6 +14,8 @@ import { useFullScreenLoading } from '@/providers/FullScreenLoadingProvider'
 import { SectionAction } from '../AdminAddCategoryPage/SectionAction'
 import { SectionCategoryDetail } from '../AdminAddCategoryPage/SectionCategoryDetail'
 
+import { SectionCategoryRestrictions } from './SectionCategoryRestrictions'
+
 const defaultValues = {
   isActive: true,
   name: '',
@@ -102,6 +104,7 @@ export const AdminEditCategoryPage = () => {
   return (
     <form className='flex flex-col gap-y-6' onSubmit={handleSubmit(handleOnSubmit)}>
       <SectionCategoryDetail control={control} />
+      {id && <SectionCategoryRestrictions categoryId={id} />}
       <SectionAction updating />
     </form>
   )
