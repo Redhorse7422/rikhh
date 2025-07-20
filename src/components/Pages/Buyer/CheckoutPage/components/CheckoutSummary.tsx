@@ -36,7 +36,7 @@ export const CheckoutSummary: React.FC = () => {
     try {
       const response = await applyCouponToCheckout({
         checkoutId,
-        couponCode: code,
+        couponCode: code.toUpperCase(),
         items: cart.items.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,

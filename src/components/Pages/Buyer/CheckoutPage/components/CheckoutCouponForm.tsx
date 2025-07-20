@@ -82,7 +82,7 @@ export const CheckoutCouponForm: React.FC<CheckoutCouponFormProps> = ({
               type='text'
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyUp={handleKeyPress}
               placeholder='Enter coupon code'
               className='flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm uppercase focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
               disabled={isLoading || disabled}
