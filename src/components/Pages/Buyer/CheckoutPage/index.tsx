@@ -367,14 +367,14 @@ export const CheckoutPage: React.FC = () => {
 
       // The confirmOrder function from useCheckout hook handles checkoutId validation internally
       const result = await confirmOrder(payload)
-
+      console.log('Resutls ==> ', result)
       // Store the order response data
       setOrderResponse(result)
       // Move to confirmation step
       setCurrentStep('confirmation')
 
-      // Refresh cart after successful order
-      await fetchCart()
+      // DO NOT fetchCart here
+      // await fetchCart()
     } catch (error) {
       // Don't throw - let the UI handle the error state
     } finally {

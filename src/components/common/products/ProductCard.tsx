@@ -39,7 +39,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className='p-4 pb-0'>
           <h3 className='mb-2 line-clamp-2 font-medium text-gray-900'>{product.name}</h3>
 
-          <div className='mb-2 flex items-center'>
+          {/* <div className='mb-2 flex items-center'>
             <div className='flex items-center'>
               {[...Array(5)].map((_, i) => (
                 <StarIcon
@@ -49,7 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               ))}
             </div>
             <span className='ml-1 text-sm text-gray-500'>({reviews})</span>
-          </div>
+          </div> */}
 
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-2'>
@@ -66,11 +66,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </Link>
 
-      <div className='flex items-center justify-between px-4 pt-3'>
+      {/* <div className='flex items-center justify-between px-4 pt-3'>
         <button className='w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90'>
           Add to Cart
         </button>
-      </div>
+      </div> */}
     </div>
   )
 }

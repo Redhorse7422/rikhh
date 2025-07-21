@@ -1,17 +1,46 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/common/Button'
+import { useCart } from '@/contexts/CartContext'
 
 import { useCheckout } from '../context/CheckoutContext'
 
 export const ConfirmationStep: React.FC = () => {
   const router = useRouter()
   const { orderResponse } = useCheckout()
-
-  // If no order response is available, show a loading state
-  if (!orderResponse || !orderResponse.data) {
+  const { fetchCart } = useCart()
+  const [showError, setShowError] = useState(false)
+  console.log('Order Response  ==> ', orderResponse)
+  // Error state: missing or malformed orderResponse
+  if (!orderResponse || !orderResponse.data || !orderResponse.data.order) {
+    // If orderResponse exists but is malformed, show error
+    if (orderResponse && (!orderResponse.data || !orderResponse.data.order)) {
+      return (
+        <div className='space-y-8'>
+          <div className='text-center'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+              <svg className='h-8 w-8 text-red-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+              </svg>
+            </div>
+            <h1 className='mb-2 text-3xl font-bold text-gray-900'>Order Confirmation Failed</h1>
+            <p className='text-lg text-gray-600'>
+              We were unable to retrieve your order details. Please check your email for confirmation or contact
+              support.
+            </p>
+            <button
+              className='mt-6 rounded bg-primary px-4 py-2 text-white hover:bg-primary/90'
+              onClick={() => router.push('/')}
+            >
+              Return to Shop
+            </button>
+          </div>
+        </div>
+      )
+    }
+    // Still waiting for order response (spinner)
     return (
       <div className='space-y-8'>
         <div className='text-center'>
@@ -27,11 +56,13 @@ export const ConfirmationStep: React.FC = () => {
 
   const orderData = orderResponse
 
-  const handleContinueShopping = () => {
+  const handleContinueShopping = async () => {
+    await fetchCart()
     router.push('/')
   }
 
-  const handleViewOrders = () => {
+  const handleViewOrders = async () => {
+    await fetchCart()
     router.push('/orders')
   }
 

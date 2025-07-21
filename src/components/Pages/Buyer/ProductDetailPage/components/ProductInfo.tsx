@@ -93,7 +93,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       </div>
 
       {/* Rating and Reviews */}
-      <div className='flex items-center space-x-4'>
+      {/* <div className='flex items-center space-x-4'>
         <div className='flex items-center'>
           {[...Array(5)].map((_, i) => (
             <StarIcon
@@ -105,7 +105,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         </div>
         <span className='text-sm text-gray-500'>({product.numOfSales} sales)</span>
         <span className={`text-sm font-medium ${availability.color}`}>{availability.text}</span>
-      </div>
+      </div> */}
 
       {/* Price */}
       <div className='space-y-2'>

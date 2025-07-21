@@ -31,6 +31,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'cannbe-files-v1.s3.us-east-1.amazonaws.com',
+        port: '',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.sanity.io',
         port: '',
       },

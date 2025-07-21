@@ -10,7 +10,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, on
   const tabs = [
     { id: 'description', label: 'Description' },
     { id: 'specifications', label: 'Specifications' },
-    { id: 'reviews', label: 'Reviews' },
+    // { id: 'reviews', label: 'Reviews' },
   ]
 
   const renderTabContent = () => {
@@ -119,34 +119,34 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, on
           </div>
         )
 
-      case 'reviews':
-        return (
-          <div className='space-y-6'>
-            <div className='flex items-center justify-between'>
-              <div>
-                <h3 className='text-lg font-semibold text-gray-900'>Customer Reviews</h3>
-                <div className='mt-2 flex items-center'>
-                  <div className='flex items-center'>
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon
-                        key={i}
-                        className={`h-5 w-5 ${i < Math.floor(Number(product.rating)) ? 'text-yellow-400' : 'text-gray-300'}`}
-                      />
-                    ))}
-                  </div>
-                  <span className='ml-2 text-sm text-gray-600'>{product.rating} out of 5</span>
-                </div>
-              </div>
-              <button className='rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90'>
-                Write a Review
-              </button>
-            </div>
+      // case 'reviews':
+      //   return (
+      //     <div className='space-y-6'>
+      //       <div className='flex items-center justify-between'>
+      //         <div>
+      //           <h3 className='text-lg font-semibold text-gray-900'>Customer Reviews</h3>
+      //           <div className='mt-2 flex items-center'>
+      //             <div className='flex items-center'>
+      //               {[...Array(5)].map((_, i) => (
+      //                 <StarIcon
+      //                   key={i}
+      //                   className={`h-5 w-5 ${i < Math.floor(Number(product.rating)) ? 'text-yellow-400' : 'text-gray-300'}`}
+      //                 />
+      //               ))}
+      //             </div>
+      //             <span className='ml-2 text-sm text-gray-600'>{product.rating} out of 5</span>
+      //           </div>
+      //         </div>
+      //         <button className='rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90'>
+      //           Write a Review
+      //         </button>
+      //       </div>
 
-            <div className='py-8 text-center'>
-              <p className='text-gray-500'>No reviews yet. Be the first to review this product!</p>
-            </div>
-          </div>
-        )
+      //       <div className='py-8 text-center'>
+      //         <p className='text-gray-500'>No reviews yet. Be the first to review this product!</p>
+      //       </div>
+      //     </div>
+      //   )
 
       default:
         return null

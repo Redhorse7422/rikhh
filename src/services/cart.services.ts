@@ -123,7 +123,7 @@ export const updateCartItem = async (id: string, data: Partial<AddToCartDto>) =>
     ...data,
     // ...(userId ? { userId } : { guestId }),
   }
-  return client.put(`/v1/cart/update/${id}`, payload)
+  return client.put(`/v1/cart/${id}`, payload)
 }
 
 // Remove cart item

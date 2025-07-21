@@ -66,18 +66,18 @@ export const BuyerHomePage: React.FC = () => {
               </p>
               <div className='flex flex-col gap-4 sm:flex-row'>
                 <Link
-                  href='/products'
+                  href='/shop'
                   className='inline-flex items-center justify-center rounded-lg bg-secondary px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-secondary/90'
                 >
                   Shop Now
                   <ArrowRightIcon className='ml-2 h-5 w-5' />
                 </Link>
-                <Link
+                {/* <Link
                   href='/deals'
                   className='rounded-lg border border-white/30 bg-white/20 px-8 py-3 text-lg font-semibold text-white transition-colors hover:bg-white/30'
                 >
                   View Deals
-                </Link>
+                </Link> */}
               </div>
             </div>
             <div className='relative'>
