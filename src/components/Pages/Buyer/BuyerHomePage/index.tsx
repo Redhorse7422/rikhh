@@ -2,14 +2,14 @@
 
 import type { Category, Product } from '@/types/common'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
 
 import { ArrowRightIcon } from '@/assets/icons'
 import { CategorySlider } from '@/components/common/products/CategorySlider'
-import { useApi } from '@/hooks/useApi'
+import { useFirebaseHomeConfig } from '@/hooks/useFirebase'
 
 import { ProductsSection } from './productsSection'
 
@@ -22,16 +22,16 @@ export interface HomeConfig {
 
 // Custom hook for fetching featured products
 const useHomeConfig = () => {
-  const { getDataSource } = useApi()
-  return getDataSource<HomeConfig>({
-    path: '/v1/home',
-  })
+  return useFirebaseHomeConfig()
 }
 
 export const BuyerHomePage: React.FC = () => {
   // Fetch data
   const { data: homeConfig, isLoading: configLoad, error: configError } = useHomeConfig()
   console.log(homeConfig)
+
+  const [loading, setLoading] = useState(true)
+
 
   if (configError) {
     return (
@@ -94,7 +94,7 @@ export const BuyerHomePage: React.FC = () => {
       </section>
 
       {/* Categories Section */}
-      <section className='bg-gray-50 py-16'>
+      {/* <section className='bg-gray-50 py-16'>
         <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
           <div className='mb-12 text-center'>
             <h2 className='mb-4 text-3xl font-bold text-gray-900'>Shop by Category</h2>
@@ -108,10 +108,10 @@ export const BuyerHomePage: React.FC = () => {
             <CategorySlider categories={homeConfig?.categories || []} />
           )}
         </div>
-      </section>
+      </section> */}
 
       {/* Dynamic Product Sections */}
-      <ProductsSection products={homeConfig?.featured ?? []} sectionTitle='Featured Products' isLoading={configLoad} />
+      <ProductsSection products={homeConfig.featured ?? []} sectionTitle='Featured Products' isLoading={configLoad} />
 
       <ProductsSection products={homeConfig?.new ?? []} sectionTitle='New Products' isLoading={configLoad} />
 

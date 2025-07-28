@@ -117,7 +117,7 @@ const MiniCartItem: React.FC<MiniCartItemProps> = ({ item, onUpdateQuantity, onR
     <div className='flex space-x-3 rounded-lg border border-gray-200 p-3'>
       {/* Product Image */}
       <div className='relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg'>
-        <Image src={item.product.thumbnailImg.url} alt={item.product.name} fill className='object-cover' sizes='64px' />
+        <Image src={item.product.thumbnailImg} alt={item.product.name} fill className='object-cover' sizes='64px' />
         {item.product.badge && (
           <span className='absolute left-1 top-1 rounded-full bg-primary px-1 py-0.5 text-xs font-semibold text-white'>
             {item.product.badge}

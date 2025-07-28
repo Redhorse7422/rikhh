@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/common/Button'
-import { useCart } from '@/contexts/CartContext'
+// import { useCart } from '@/contexts/CartContext'
 
 import { useCheckout } from '../context/CheckoutContext'
 
 export const ConfirmationStep: React.FC = () => {
   const router = useRouter()
   const { orderResponse } = useCheckout()
-  const { fetchCart } = useCart()
+  // const { fetchCart } = useCart()
   const [showError, setShowError] = useState(false)
   console.log('Order Response  ==> ', orderResponse)
   // Error state: missing or malformed orderResponse
@@ -57,12 +57,12 @@ export const ConfirmationStep: React.FC = () => {
   const orderData = orderResponse
 
   const handleContinueShopping = async () => {
-    await fetchCart()
+    // await fetchCart()
     router.push('/')
   }
 
   const handleViewOrders = async () => {
-    await fetchCart()
+    // await fetchCart()
     router.push('/orders')
   }
 

@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import { useCart } from '@/contexts/CartContext'
+// import { useCart } from '@/contexts/CartContext'
 
 import { CartItems } from './components/CartItems'
 import { CartMigrationPrompt } from './components/CartMigrationPrompt'
@@ -13,17 +13,17 @@ import { CartSummary } from './components/CartSummary'
 import { EmptyCart } from './components/EmptyCart'
 
 export const CartPage: React.FC = () => {
-  const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart()
+  // const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart()
   // const { cart, updateQuantity, removeItem, clearCart, applyCoupon, removeCoupon } = useCart()
   const router = useRouter()
   const [showMigrationPrompt, setShowMigrationPrompt] = useState(true)
 
   const handleUpdateQuantity = async (itemId: string, quantity: number) => {
-    await updateQuantity(itemId, quantity)
+    // await updateQuantity(itemId, quantity)
   }
 
   const handleRemoveItem = async (itemId: string) => {
-    await removeItem(itemId)
+    // await removeItem(itemId)
   }
 
   // const handleClearCart = async () => {
@@ -31,11 +31,11 @@ export const CartPage: React.FC = () => {
   // }
 
   const handleApplyCoupon = async (code: string) => {
-    await applyCoupon(code)
+    // await applyCoupon(code)
   }
 
   const handleRemoveCoupon = () => {
-    removeCoupon()
+    // removeCoupon()
   }
 
   const handleProceedToCheckout = () => {
@@ -47,40 +47,40 @@ export const CartPage: React.FC = () => {
     console.log('Continuing shopping')
   }
 
-  if (cart.isLoading) {
-    return (
-      <div className='min-h-screen bg-gray-50 py-8'>
-        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='animate-pulse'>
-            <div className='mb-8 h-4 w-1/4 rounded bg-gray-200'></div>
-            <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
-              <div className='space-y-4 lg:col-span-2'>
-                <div className='h-32 rounded bg-gray-200'></div>
-                <div className='h-32 rounded bg-gray-200'></div>
-                <div className='h-32 rounded bg-gray-200'></div>
-              </div>
-              <div className='h-96 rounded bg-gray-200'></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // if (cart.isLoading) {
+  //   return (
+  //     <div className='min-h-screen bg-gray-50 py-8'>
+  //       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+  //         <div className='animate-pulse'>
+  //           <div className='mb-8 h-4 w-1/4 rounded bg-gray-200'></div>
+  //           <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
+  //             <div className='space-y-4 lg:col-span-2'>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //             </div>
+  //             <div className='h-96 rounded bg-gray-200'></div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  if (cart.items.length === 0) {
-    return (
-      <div className='min-h-screen bg-gray-50'>
-        <div className='border-b bg-white'>
-          <div className='mx-auto max-w-7xl px-4 py-6 pb-0 sm:px-6 lg:px-8'>
-            <Breadcrumb pageName='Shopping Cart' />
-          </div>
-        </div>
-        <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
-          <EmptyCart onContinueShopping={handleContinueShopping} />
-        </div>
-      </div>
-    )
-  }
+  // if (cart.items.length === 0) {
+  //   return (
+  //     <div className='min-h-screen bg-gray-50'>
+  //       <div className='border-b bg-white'>
+  //         <div className='mx-auto max-w-7xl px-4 py-6 pb-0 sm:px-6 lg:px-8'>
+  //           <Breadcrumb pageName='Shopping Cart' />
+  //         </div>
+  //       </div>
+  //       <div className='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
+  //         <EmptyCart onContinueShopping={handleContinueShopping} />
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -97,23 +97,23 @@ export const CartPage: React.FC = () => {
           {/* Cart Items */}
           <div className='lg:col-span-2'>
             {showMigrationPrompt && <CartMigrationPrompt onDismiss={() => setShowMigrationPrompt(false)} />}
-            <CartItems
+            {/* <CartItems
               items={cart.items}
               onUpdateQuantity={handleUpdateQuantity}
               onRemoveItem={handleRemoveItem}
               isUpdating={cart.isUpdating}
-            />
+            /> */}
           </div>
 
           {/* Cart Summary */}
           <div className='lg:col-span-1'>
-            <CartSummary
+            {/* <CartSummary
               summary={cart.summary}
               onApplyCoupon={handleApplyCoupon}
               onRemoveCoupon={handleRemoveCoupon}
               onProceedToCheckout={handleProceedToCheckout}
               isLoading={cart.isUpdating}
-            />
+            /> */}
           </div>
         </div>
       </div>

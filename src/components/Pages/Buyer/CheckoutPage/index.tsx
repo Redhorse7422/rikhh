@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import { useCart } from '@/contexts/CartContext'
+// import { useCart } from '@/contexts/CartContext'
 import { useAddresses } from '@/hooks/useAddresses'
 import { useCheckout } from '@/hooks/useCheckout'
 
 import { CheckoutErrorModal } from './components/CheckoutErrorModal'
 import { CheckoutProgress } from './components/CheckoutProgress'
 import { CheckoutSteps } from './components/CheckoutSteps'
-import { CheckoutSummary } from './components/CheckoutSummary'
+// import { CheckoutSummary } from './components/CheckoutSummary'
 import { GuestCheckoutPrompt } from './components/GuestCheckoutPrompt'
 import { CheckoutProvider } from './context/CheckoutContext'
 
@@ -98,7 +98,7 @@ const initialCheckoutData: CheckoutData = {
 export const CheckoutPage: React.FC = () => {
   const router = useRouter()
   const { data: session } = useSession()
-  const { cart, fetchCart } = useCart()
+  // const { cart, fetchCart } = useCart()
   const { isAuthenticated } = useAddresses()
   const {
     checkoutId,
@@ -130,11 +130,11 @@ export const CheckoutPage: React.FC = () => {
   const shouldShowGuestPrompt = !isUserAuthenticated && !isGuestMode
 
   // Redirect if cart is empty
-  useEffect(() => {
-    if (!cart.isLoading && cart.items.length === 0 && currentStep !== 'confirmation') {
-      router.push('/cart')
-    }
-  }, [cart, router, currentStep])
+  // useEffect(() => {
+  //   if (!cart.isLoading && cart.items.length === 0 && currentStep !== 'confirmation') {
+  //     router.push('/cart')
+  //   }
+  // }, [cart, router, currentStep])
 
   // Monitor checkoutId changes
   useEffect(() => {
@@ -286,47 +286,47 @@ export const CheckoutPage: React.FC = () => {
     }
 
     // Check if we have cart items
-    if (!cart.items || cart.items.length === 0) {
-      return
-    }
-    try {
-      // Calculate order value
-      const orderValue = cart.items.reduce((total, item) => {
-        const price = Number(item.product.salePrice)
-        const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
+    // if (!cart.items || cart.items.length === 0) {
+    //   return
+    // }
+    // try {
+    //   // Calculate order value
+    //   const orderValue = cart.items.reduce((total, item) => {
+    //     const price = Number(item.product.salePrice)
+    //     const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
 
-        return total + finalPrice * item.quantity
-      }, 0)
+    //     return total + finalPrice * item.quantity
+    //   }, 0)
 
-      // Prepare items for shipping calculation
-      const items = cart.items.map((item) => ({
-        id: item.id,
-        productId: item.product.id,
-        quantity: item.quantity,
-        price: item.product.salePrice || item.product.regularPrice,
-        weight: item.product.weight || 0, // Default weight if not available
-        categoryIds: item.product.category ? [item.product.category] : [], // Use category string if available
-      }))
+    //   // Prepare items for shipping calculation
+    //   const items = cart.items.map((item) => ({
+    //     id: item.id,
+    //     productId: item.product.id,
+    //     quantity: item.quantity,
+    //     price: item.product.salePrice || item.product.regularPrice,
+    //     weight: item.product.weight || 0, // Default weight if not available
+    //     categoryIds: item.product.category ? [item.product.category] : [], // Use category string if available
+    //   }))
 
-      // Prepare shipping address
-      const shippingAddress = {
-        country: checkoutData.shipping.country,
-        state: checkoutData.shipping.state,
-        city: checkoutData.shipping.city,
-        postalCode: checkoutData.shipping.zipCode,
-      }
+    //   // Prepare shipping address
+    //   const shippingAddress = {
+    //     country: checkoutData.shipping.country,
+    //     state: checkoutData.shipping.state,
+    //     city: checkoutData.shipping.city,
+    //     postalCode: checkoutData.shipping.zipCode,
+    //   }
 
-      // Use the new shipping options calculation
-      const result = await calculateShippingOptions({
-        items,
-        shippingAddress,
-        orderValue,
-        isHoliday: false, // You can make this dynamic based on current date
-      })
-    } catch (error) {
-      console.error('Shipping calculation error:', error) // Debug log
-      throw error
-    }
+    //   // Use the new shipping options calculation
+    //   const result = await calculateShippingOptions({
+    //     items,
+    //     shippingAddress,
+    //     orderValue,
+    //     isHoliday: false, // You can make this dynamic based on current date
+    //   })
+    // } catch (error) {
+    //   console.error('Shipping calculation error:', error) // Debug log
+    //   throw error
+    // }
   }
 
   const handleCloseErrorModal = () => {
@@ -350,9 +350,9 @@ export const CheckoutPage: React.FC = () => {
       }
 
       // Add coupon code if applied
-      if (cart.summary.appliedCoupon?.code) {
-        payload.couponCode = cart.summary.appliedCoupon.code
-      }
+      // if (cart.summary.appliedCoupon?.code) {
+      //   payload.couponCode = cart.summary.appliedCoupon.code
+      // }
 
       // Add payment details if using credit card
       if (checkoutData.payment.method === 'card') {
@@ -382,29 +382,29 @@ export const CheckoutPage: React.FC = () => {
     }
   }
 
-  if (cart.isLoading) {
-    return (
-      <div className='min-h-screen bg-gray-50 py-8'>
-        <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-          <div className='animate-pulse'>
-            <div className='mb-8 h-4 w-1/4 rounded bg-gray-200'></div>
-            <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
-              <div className='space-y-4 lg:col-span-2'>
-                <div className='h-32 rounded bg-gray-200'></div>
-                <div className='h-32 rounded bg-gray-200'></div>
-                <div className='h-32 rounded bg-gray-200'></div>
-              </div>
-              <div className='h-96 rounded bg-gray-200'></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // if (cart.isLoading) {
+  //   return (
+  //     <div className='min-h-screen bg-gray-50 py-8'>
+  //       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+  //         <div className='animate-pulse'>
+  //           <div className='mb-8 h-4 w-1/4 rounded bg-gray-200'></div>
+  //           <div className='grid grid-cols-1 gap-8 lg:grid-cols-3'>
+  //             <div className='space-y-4 lg:col-span-2'>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //               <div className='h-32 rounded bg-gray-200'></div>
+  //             </div>
+  //             <div className='h-96 rounded bg-gray-200'></div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  if (cart.items.length === 0) {
-    return null // Will redirect to cart
-  }
+  // if (cart.items.length === 0) {
+  //   return null // Will redirect to cart
+  // }
 
   return (
     <CheckoutProvider
@@ -470,7 +470,7 @@ export const CheckoutPage: React.FC = () => {
 
             {/* Order Summary */}
             <div className='lg:col-span-1'>
-              <CheckoutSummary />
+              {/* <CheckoutSummary /> */}
             </div>
           </div>
         </div>

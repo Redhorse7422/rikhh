@@ -105,7 +105,7 @@ export const BuyerFooter: React.FC = () => {
         {/* Bottom Section */}
         <div className='mt-12 border-t border-gray-800 pt-8'>
           <div className='flex flex-col items-center justify-between md:flex-row'>
-            <p className='text-sm text-gray-400'>© 2024 CannFE. All rights reserved.</p>
+            <p className='text-sm text-gray-400'>© 2025 Rikhh TM, WORKERS CIVILIZATION. All rights reserved.</p>
             <div className='mt-4 flex items-center space-x-6 md:mt-0'>
               <Link href='/terms' className='text-sm text-gray-400 transition-colors hover:text-white'>
                 Terms of Service

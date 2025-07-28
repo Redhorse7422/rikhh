@@ -9,7 +9,8 @@ export interface Product {
   salePrice: number
   rating: number
   reviews: number
-  thumbnailImg: any
+  thumbnailImg: string
+  images?: string[]
   badge?: string
   description?: string
   category?: string
@@ -17,6 +18,7 @@ export interface Product {
   inStock?: boolean
   sku?: string
   weight?: number
+  sellerId?: string
   dimensions?: {
     length: number
     width: number

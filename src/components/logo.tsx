@@ -1,26 +1,26 @@
 import Image from 'next/image'
 
-import darkLogo from '@/assets/logos/logo.webp'
-
 export function Logo() {
   return (
     <div className='relative h-8 max-w-[10.847rem]'>
       <Image
-        src={darkLogo}
+        src="/images/logo/logo.svg"
         className='dark:hidden'
-        alt='NextAdmin logo'
+        alt='Rikhh Seller logo'
         role='presentation'
         quality={100}
         width={120}
+        height={48}
       />
 
       <Image
-        src={darkLogo}
+        src="/images/logo/logo-dark.svg"
         className='hidden dark:block'
-        alt='NextAdmin logo'
+        alt='Rikhh Seller logo'
         role='presentation'
         quality={100}
-        width={100}
+        width={120}
+        height={48}
       />
     </div>
   )

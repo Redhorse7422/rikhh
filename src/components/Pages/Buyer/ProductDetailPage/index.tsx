@@ -1,64 +1,61 @@
 'use client'
 
-import type { AddToCartDto, CartVariantDto } from '@/services/cart.services'
-import type { ProductDetail, ProductImage } from '@/types/product'
+import type { AddToCartDto } from '@/services/cart.services'
+import type { Product } from '@/types/common'
 
 import React, { useState } from 'react'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
-import { useCart } from '@/contexts/CartContext'
 import useToast from '@/hooks/useToast'
 
 import { ProductGallery } from './components/ProductGallery'
 import { ProductInfo } from './components/ProductInfo'
 import { ProductTabs } from './components/ProductTabs'
 
+// Extended Product interface to match Firebase response
+export interface FirebaseProduct extends Product {
+  sellerId: string
+  images: string[]
+  lat: number
+  lng: number
+  description: string
+}
+
 interface ProductDetailPageProps {
-  product: ProductDetail
+  product: FirebaseProduct
   isLoading: boolean
 }
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, isLoading = false }) => {
-  const { cart, addItem, setUpdating } = useCart()
   const { showToast } = useToast()
-
-  // Select the first available variation (with stock > 0) or the first variation if none have stock
-  const getDefaultVariation = () => {
-    if (product.variations && product.variations.length > 0) {
-      const availableVariation = product.variations.find((v) => v.quantity > 0)
-      return availableVariation || product.variations[0]
-    }
-    return null
-  }
+  console.log('Product ===> ', product)
 
   const [selectedQuantity, setSelectedQuantity] = useState(1)
-  const [selectedVariation, setSelectedVariation] = useState(getDefaultVariation())
-  const [mainImage, setMainImage] = useState(product.thumbnailImg?.url || '')
+  const [mainImage, setMainImage] = useState(product.thumbnailImg || product.images?.[0] || '')
   const [activeTab, setActiveTab] = useState('description')
 
-  // Get all images from variations and thumbnail
-  const getAllImages = (): ProductImage[] => {
-    const images: ProductImage[] = []
+  // Convert Firebase images to ProductImage format
+  const getAllImages = () => {
+    const images = []
 
-    // Add thumbnail image if it exists
-    if (product.thumbnailImg?.url) {
+    // Add thumbnail image
+    if (product.thumbnailImg) {
       images.push({
-        id: product.thumbnailImg.id,
-        url: product.thumbnailImg.url,
+        id: 'thumbnail',
+        url: product.thumbnailImg,
         alt: product.name,
         isMain: true,
       })
     }
 
-    // Add variation images
-    if (product.variations) {
-      product.variations.forEach((variation) => {
-        const image = variation.image
-        if (image?.url && image?.id && !images.find((img) => img.id === image.id)) {
+    // Add additional images
+    if (product.images && product.images.length > 0) {
+      product.images.forEach((imageUrl, index) => {
+        if (imageUrl !== product.thumbnailImg) {
           images.push({
-            id: image.id,
-            url: image.url,
-            alt: `${product.name} - ${variation.attributeValue}`,
+            id: `image-${index}`,
+            url: imageUrl,
+            alt: `${product.name} - Image ${index + 1}`,
             isMain: false,
           })
         }
@@ -70,37 +67,18 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
 
   const images = getAllImages()
 
-  const handleImageChange = (image: ProductImage) => {
+  const handleImageChange = (image: any) => {
     setMainImage(image.url)
   }
 
   const handleQuantityChange = (quantity: number) => {
-    // Get current stock based on selected variation or product stock
-    const getCurrentStock = () => {
-      if (product.isVariant && product.variations && product.variations.length > 0) {
-        if (selectedVariation) {
-          return selectedVariation.quantity
-        }
-        return product.variations.some((v) => v.quantity > 0) ? 1 : 0
-      }
-      return product.stock
-    }
-
-    const maxQuantity = getCurrentStock() || 1
+    const maxQuantity = product.inStock ? 99 : 0 // Assuming max 99 items
     setSelectedQuantity(Math.max(1, Math.min(quantity, maxQuantity)))
-  }
-
-  const handleVariationChange = (variation: any) => {
-    setSelectedVariation(variation)
-    setSelectedQuantity(1) // Reset quantity when variation changes
   }
 
   const handleAddToCart = async () => {
     try {
-      setUpdating(true)
-
-      const currentStock = selectedVariation?.quantity || product.stock
-      if (currentStock <= 0) {
+      if (!product.inStock) {
         showToast('Product is out of stock', 'error')
         return
       }
@@ -110,61 +88,27 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
         return
       }
 
-      if (selectedQuantity > currentStock) {
-        showToast(`Only ${currentStock} items available`, 'error')
-        return
-      }
-
-      if (product.isVariant && product.variations && product.variations.length > 0 && !selectedVariation) {
-        showToast('Please select a variation', 'error')
-        return
-      }
-
-      // Build variants array for DTO if applicable
-      let variants: CartVariantDto[] | undefined = undefined
-      if (selectedVariation) {
-        variants = [
-          {
-            // Backend expects attributeId and attributeValueId; use id and sku as closest available fields
-            attributeId: selectedVariation.attributeId || '',
-            attributeValueId: selectedVariation.attributeValueId || '',
-            attributeName: selectedVariation.attributeName,
-            attributeValue: selectedVariation.attributeValue,
-          },
-        ]
-      }
-
-      const salePrice = parseFloat(product.salePrice)
-      const regularPrice = parseFloat(product.regularPrice)
-
-      const finalPrice = selectedVariation?.price
-        ? parseFloat(selectedVariation.price)
-        : salePrice > 0
-          ? salePrice
-          : regularPrice
+      const finalPrice = product.salePrice || product.regularPrice
 
       const dto: AddToCartDto = {
         productId: product.id,
         quantity: selectedQuantity,
         price: finalPrice,
-        variants,
       }
 
-      await addItem(dto)
-      const variationText = selectedVariation ? ` (${selectedVariation.attributeValue})` : ''
-      showToast(`${product.name}${variationText} added to cart!`, 'success')
+      // TODO: Implement cart functionality
+      showToast(`${product.name} added to cart!`, 'success')
       setSelectedQuantity(1)
     } catch (error) {
       console.error('Error adding to cart:', error)
       showToast('Failed to add item to cart', 'error')
-    } finally {
-      setUpdating(false)
     }
   }
 
   const handleAddToWishlist = () => {
     // TODO: Implement add to wishlist logic
     console.log('Adding to wishlist:', product.name)
+    showToast('Added to wishlist!', 'success')
   }
 
   const handleShare = () => {
@@ -172,12 +116,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
     if (navigator.share) {
       navigator.share({
         title: product.name,
-        text: product.shortDescription,
+        text: product.description,
         url: window.location.href,
       })
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href)
+      showToast('Link copied to clipboard!', 'success')
     }
   }
 
@@ -220,13 +165,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
           <ProductInfo
             product={product}
             selectedQuantity={selectedQuantity}
-            selectedVariation={selectedVariation}
             onQuantityChange={handleQuantityChange}
-            onVariationChange={handleVariationChange}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             onShare={handleShare}
-            isLoading={cart.isUpdating}
           />
         </div>
 
@@ -235,10 +177,28 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
           <ProductTabs product={product} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
 
-        {/* Related Products */}
-        {/* <div className='mt-16'>
-          <RelatedProducts products={product.relatedProducts} />
-        </div> */}
+        {/* Seller Information */}
+        <div className='mt-16 rounded-lg bg-white p-6 shadow-sm'>
+          <h3 className='mb-4 text-lg font-semibold'>Seller Information</h3>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+            <div>
+              <p className='text-sm text-gray-600'>Seller ID</p>
+              <p className='font-medium'>{product.sellerId}</p>
+            </div>
+            <div>
+              <p className='text-sm text-gray-600'>Category</p>
+              <p className='font-medium'>{product.category}</p>
+            </div>
+            {product.lat && product.lng && (
+              <div className='md:col-span-2'>
+                <p className='text-sm text-gray-600'>Location</p>
+                <p className='font-medium'>
+                  {product.lat.toFixed(6)}, {product.lng.toFixed(6)}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

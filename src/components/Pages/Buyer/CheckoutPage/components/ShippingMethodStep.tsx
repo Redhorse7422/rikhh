@@ -3,12 +3,12 @@ import type { ShippingOption } from '@/services/checkout.services'
 import React, { useEffect, useState } from 'react'
 
 import { Button } from '@/components/common/Button'
-import { useCart } from '@/contexts/CartContext'
+// import { useCart } from '@/contexts/CartContext'
 
 import { useCheckout } from '../context/CheckoutContext'
 
 export const ShippingMethodStep: React.FC = () => {
-  const { cart } = useCart()
+  // const { cart } = useCart()
   const {
     shippingOptions,
     selectedShippingOption,
@@ -45,28 +45,28 @@ export const ShippingMethodStep: React.FC = () => {
           return
         }
 
-        if (!cart.items || cart.items.length === 0) {
-          setError('No items in cart')
-          return
-        }
+        // if (!cart.items || cart.items.length === 0) {
+        //   setError('No items in cart')
+        //   return
+        // }
 
         // Calculate order value
-        const orderValue = cart.items.reduce((total, item) => {
-          const price = Number(item.product.salePrice)
-          const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
+        // const orderValue = cart.items.reduce((total, item) => {
+        //   const price = Number(item.product.salePrice)
+        //   const finalPrice = !isNaN(price) && price > 0 ? price : Number(item.product.regularPrice || 0)
 
-          return total + finalPrice * item.quantity
-        }, 0)
+        //   return total + finalPrice * item.quantity
+        // }, 0)
 
         // Prepare items for shipping calculation
-        const items = cart.items.map((item) => ({
-          id: item.id,
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.salePrice || item.product.regularPrice,
-          weight: item.product.weight || 0,
-          categoryIds: item.product.category ? [item.product.category] : [],
-        }))
+        // const items = cart.items.map((item) => ({
+        //   id: item.id,
+        //   productId: item.product.id,
+        //   quantity: item.quantity,
+        //   price: item.product.salePrice || item.product.regularPrice,
+        //   weight: item.product.weight || 0,
+        //   categoryIds: item.product.category ? [item.product.category] : [],
+        // }))
 
         // Prepare shipping address
         const shippingAddress = {
@@ -76,12 +76,12 @@ export const ShippingMethodStep: React.FC = () => {
           postalCode: checkoutData.shipping.zipCode,
         }
 
-        await onCalculateShippingOptions({
-          items,
-          shippingAddress,
-          orderValue,
-          isHoliday: false,
-        })
+        // await onCalculateShippingOptions({
+        //   items,
+        //   shippingAddress,
+        //   orderValue,
+        //   isHoliday: false,
+        // })
       } catch (err) {
         console.error('Shipping calculation error:', err)
         setError('Failed to load shipping options. Please try again.')
@@ -97,7 +97,7 @@ export const ShippingMethodStep: React.FC = () => {
     isCalculatingShipping,
     hasTriedLoading,
     onCalculateShippingOptions,
-    cart.items,
+    // cart.items,
     checkoutData.shipping,
   ])
 
@@ -206,26 +206,26 @@ export const ShippingMethodStep: React.FC = () => {
                     return
                   }
 
-                  if (!cart.items || cart.items.length === 0) {
-                    setError('No items in cart')
-                    return
-                  }
+                  // if (!cart.items || cart.items.length === 0) {
+                  //   setError('No items in cart')
+                  //   return
+                  // }
 
                   // Calculate order value
-                  const orderValue = cart.items.reduce((total, item) => {
-                    const price = item.product.salePrice || item.product.regularPrice
-                    return total + price * item.quantity
-                  }, 0)
+                  // const orderValue = cart.items.reduce((total, item) => {
+                  //   const price = item.product.salePrice || item.product.regularPrice
+                  //   return total + price * item.quantity
+                  // }, 0)
 
                   // Prepare items for shipping calculation
-                  const items = cart.items.map((item) => ({
-                    id: item.id,
-                    productId: item.product.id,
-                    quantity: item.quantity,
-                    price: item.product.salePrice || item.product.regularPrice,
-                    weight: item.product.weight || 0,
-                    categoryIds: item.product.category ? [item.product.category] : [],
-                  }))
+                  // const items = cart.items.map((item) => ({
+                  //   id: item.id,
+                  //   productId: item.product.id,
+                  //   quantity: item.quantity,
+                  //   price: item.product.salePrice || item.product.regularPrice,
+                  //   weight: item.product.weight || 0,
+                  //   categoryIds: item.product.category ? [item.product.category] : [],
+                  // }))
 
                   // Prepare shipping address
                   const shippingAddress = {
@@ -235,12 +235,12 @@ export const ShippingMethodStep: React.FC = () => {
                     postalCode: checkoutData.shipping.zipCode,
                   }
 
-                  await onCalculateShippingOptions({
-                    items,
-                    shippingAddress,
-                    orderValue,
-                    isHoliday: false,
-                  })
+                  // await onCalculateShippingOptions({
+                  //   items,
+                  //   shippingAddress,
+                  //   orderValue,
+                  //   isHoliday: false,
+                  // })
                 } catch (err) {
                   setError('Failed to load shipping options. Please try again.')
                 }

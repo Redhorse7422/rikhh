@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
 import { SearchIcon } from '@/assets/icons'
-import LOGO from '@/assets/logos/logo.webp'
+import LOGO from '@/assets/logos/logo.jpg'
 import { LoginPopup } from '@/components/Auth/LoginPopup'
 import { CartIcon } from '@/components/common/CartIcon'
 import { Icon } from '@/components/common/icon'
@@ -53,7 +53,7 @@ export const BuyerHeader: React.FC = () => {
               </span>
             </Link> */}
 
-            <CartIcon />
+            {/* <CartIcon /> */}
 
             {/* User Menu */}
             {session?.user ? (

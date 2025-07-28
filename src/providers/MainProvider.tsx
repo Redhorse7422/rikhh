@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary, QueryClient, QueryClientProvider } from '
 import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 
-import { CartProvider } from '@/contexts/CartContext'
+import { FirebaseProvider } from '@/contexts/FirebaseContext'
 
 import { FullScreenLoadingProvider } from './FullScreenLoadingProvider'
 import ToastProvider from './ToastProvider'
@@ -18,9 +18,9 @@ export function MainProviders({ children }: { children: React.ReactNode }) {
       <ThemeProvider defaultTheme='light' attribute='class'>
         <QueryClientProvider client={queryClient}>
           <HydrationBoundary state={dehydrate(queryClient)}>
-            <CartProvider>
+            <FirebaseProvider>
               <FullScreenLoadingProvider>{children}</FullScreenLoadingProvider>
-            </CartProvider>
+            </FirebaseProvider>
           </HydrationBoundary>
         </QueryClientProvider>
         <ToastProvider />

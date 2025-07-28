@@ -1,18 +1,35 @@
 'use client'
 
-import type { ProductInfoProps } from '@/types/product'
+import type { Product } from '@/types/common'
 
 import React from 'react'
 
 import { StarIcon, HeartIcon } from '@/assets/icons'
 import { Icon } from '@/components/common/icon'
 
+// Extended Product interface to match Firebase response
+interface FirebaseProduct extends Product {
+  sellerId: string
+  images: string[]
+  lat: number
+  lng: number
+  description: string
+}
+
+interface ProductInfoProps {
+  product: FirebaseProduct
+  selectedQuantity: number
+  onQuantityChange: (quantity: number) => void
+  onAddToCart: () => void
+  onAddToWishlist: () => void
+  onShare: () => void
+  isLoading?: boolean
+}
+
 export const ProductInfo: React.FC<ProductInfoProps> = ({
   product,
   selectedQuantity,
-  selectedVariation,
   onQuantityChange,
-  onVariationChange,
   onAddToCart,
   onAddToWishlist,
   onShare,
@@ -26,52 +43,26 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     onQuantityChange(selectedQuantity - 1)
   }
 
-  const handleVariantChange = (variation: any) => {
-    if (onVariationChange) {
-      onVariationChange(variation)
-    }
-  }
-
   const getCurrentPrice = () => {
-    if (selectedVariation) {
-      return parseFloat(selectedVariation.price)
-    }
-    return parseFloat(product.regularPrice)
+    return product.salePrice || product.regularPrice
   }
 
   const getSalePrice = () => {
-    if (product.salePrice && parseFloat(product.salePrice) > 0) {
-      return parseFloat(product.salePrice)
+    if (product.salePrice && product.salePrice !== product.regularPrice) {
+      return product.salePrice
     }
     return null
   }
 
   const getAvailabilityText = () => {
-    const currentStock = getCurrentStock()
-    if (currentStock > 10) {
+    if (product.inStock) {
       return { text: 'In Stock', color: 'text-green-600' }
-    }
-    if (currentStock > 0) {
-      return { text: 'Low Stock', color: 'text-orange-600' }
     }
     return { text: 'Out of Stock', color: 'text-red-600' }
   }
 
-  const getCurrentStock = () => {
-    if (product.isVariant && product.variations && product.variations.length > 0) {
-      // For variant products, check selected variation or total stock across all variants
-      if (selectedVariation) {
-        return selectedVariation.quantity
-      }
-      // If no variation selected, check if any variant has stock
-      return product.variations.some((v) => v.quantity > 0) ? 1 : 0
-    }
-    return product.stock
-  }
-
   const isOutOfStock = () => {
-    const currentStock = getCurrentStock()
-    return currentStock <= 0
+    return !product.inStock
   }
 
   const availability = getAvailabilityText()
@@ -83,29 +74,24 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
     <div className='space-y-6'>
       {/* Product Title and Badge */}
       <div>
-        {product.featured && (
-          <span className='mb-2 inline-block rounded-full bg-primary px-3 py-1 text-sm font-semibold text-white'>
-            Featured
-          </span>
-        )}
         <h1 className='mb-2 text-3xl font-bold text-gray-900'>{product.name}</h1>
-        <p className='text-lg text-gray-600'>{product.shortDescription}</p>
+        <p className='text-lg text-gray-600'>{product.description}</p>
       </div>
 
       {/* Rating and Reviews */}
-      {/* <div className='flex items-center space-x-4'>
+      <div className='flex items-center space-x-4'>
         <div className='flex items-center'>
           {[...Array(5)].map((_, i) => (
             <StarIcon
               key={i}
-              className={`h-5 w-5 ${i < Math.floor(parseFloat(product.rating)) ? 'text-yellow-400' : 'text-gray-300'}`}
+              className={`h-5 w-5 ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
             />
           ))}
-          <span className='ml-2 text-sm text-gray-600'>{product.rating}</span>
+          <span className='ml-2 text-sm text-gray-600'>{product.rating || 0}</span>
         </div>
-        <span className='text-sm text-gray-500'>({product.numOfSales} sales)</span>
+        <span className='text-sm text-gray-500'>({product.reviews || 0} reviews)</span>
         <span className={`text-sm font-medium ${availability.color}`}>{availability.text}</span>
-      </div> */}
+      </div>
 
       {/* Price */}
       <div className='space-y-2'>
@@ -115,56 +101,23 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           </span>
           {isOnSale && (
             <>
-              <span className='text-xl text-gray-500 line-through'>${currentPrice?.toFixed(2)}</span>
+              <span className='text-xl text-gray-500 line-through'>${currentPrice.toFixed(2)}</span>
               <span className='rounded-full bg-red-100 px-2 py-1 text-sm font-semibold text-red-600'>
-                -{Math.round(((currentPrice - salePrice!) / currentPrice) * 100)}%
+                -{Math.round(((currentPrice - salePrice) / currentPrice) * 100)}%
               </span>
             </>
           )}
         </div>
-        {product.discount && parseFloat(product.discount) > 0 && (
-          <p className='text-sm text-gray-600'>
-            {product.discountType === 'percent' ? `${product.discount}% off` : `$${product.discount} off`}
-          </p>
-        )}
       </div>
 
-      {/* Categories */}
-      {product.categories && product.categories.length > 0 && (
+      {/* Category */}
+      {product.category && (
         <div className='space-y-2'>
-          <h3 className='text-sm font-medium text-gray-900'>Categories</h3>
+          <h3 className='text-sm font-medium text-gray-900'>Category</h3>
           <div className='flex flex-wrap gap-2'>
-            {product.categories.map((category) => (
-              <span key={category.id} className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'>
-                {category.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Variations */}
-      {product.variations && product.variations.length > 0 && (
-        <div className='space-y-3'>
-          <h3 className='text-sm font-medium text-gray-900'>Size</h3>
-          <div className='flex space-x-3'>
-            {product.variations.map((variation) => (
-              <button
-                key={variation.sku}
-                onClick={() => handleVariantChange(variation)}
-                disabled={variation.quantity <= 0}
-                className={`relative rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${
-                  selectedVariation?.sku === variation.sku
-                    ? 'border-primary bg-primary text-white'
-                    : 'border-gray-200 bg-white text-gray-900 hover:border-gray-300'
-                } ${variation.quantity <= 0 ? 'cursor-not-allowed opacity-50' : ''}`}
-              >
-                {variation.attributeValue}
-                {variation.quantity <= 0 && (
-                  <span className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500'></span>
-                )}
-              </button>
-            ))}
+            <span className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'>
+              {product.category}
+            </span>
           </div>
         </div>
       )}
@@ -183,12 +136,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           <span className='w-16 text-center text-lg font-medium'>{selectedQuantity}</span>
           <button
             onClick={handleQuantityIncrement}
-            disabled={selectedQuantity >= getCurrentStock()}
+            disabled={selectedQuantity >= 99}
             className='rounded-lg border border-gray-300 p-2 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50'
           >
             <Icon name='AiOutlinePlus' className='h-4 w-4' />
           </button>
-          <span className='text-sm text-gray-500'>{getCurrentStock()} available</span>
+          <span className='text-sm text-gray-500'>Max 99</span>
         </div>
       </div>
 
@@ -233,22 +186,20 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <div className='space-y-4 border-t pt-6'>
         <div className='grid grid-cols-2 gap-4 text-sm'>
           <div>
-            <span className='font-medium text-gray-900'>SKU:</span>
-            <span className='ml-2 text-gray-600'>{selectedVariation?.sku || 'N/A'}</span>
+            <span className='font-medium text-gray-900'>Product ID:</span>
+            <span className='ml-2 text-gray-600'>{product.id}</span>
           </div>
           <div>
             <span className='font-medium text-gray-900'>Stock:</span>
-            <span className='ml-2 text-gray-600'>{getCurrentStock()}</span>
+            <span className='ml-2 text-gray-600'>{product.inStock ? 'Available' : 'Out of Stock'}</span>
           </div>
           <div>
             <span className='font-medium text-gray-900'>Shipping:</span>
             <span className='ml-2 text-gray-600'>Calculated at checkout</span>
           </div>
           <div>
-            <span className='font-medium text-gray-900'>Delivery:</span>
-            <span className='ml-2 text-gray-600'>
-              {product.estShippingDays > 0 ? `${product.estShippingDays} days` : 'Same day'}
-            </span>
+            <span className='font-medium text-gray-900'>Images:</span>
+            <span className='ml-2 text-gray-600'>{product.images?.length || 0} photos</span>
           </div>
         </div>
       </div>
@@ -258,7 +209,6 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         <h3 className='mb-2 font-medium text-gray-900'>Shipping Information</h3>
         <p className='text-sm text-gray-600'>
           Shipping cost calculated at checkout based on your location and selected method
-          {product.cashOnDelivery && ' • Cash on delivery available'}
         </p>
       </div>
     </div>

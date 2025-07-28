@@ -2,21 +2,20 @@
 import type { Metadata } from 'next'
 import type { PropsWithChildren } from 'react'
 
-import 'flatpickr/dist/flatpickr.min.css'
 import 'jsvectormap/dist/jsvectormap.css'
 import NextTopLoader from 'nextjs-toploader'
 
 import '@/css/satoshi.css'
 import '@/css/style.css'
 import { MainProviders } from '@/providers/MainProvider'
-import { AgeConfirmationGate } from '@/components/AgeConfirmationGate'
+import { BuyerLayout } from '@/components/Layouts/BuyerLayout/BuyerLayout'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Aura Well USA',
-    default: 'Aura Well USA',
+    template: '%s | Rikhh',
+    default: 'Rikhh',
   },
-  description: 'Aura Well USA',
+  description: 'Rikhh',
 }
 
 export default function RootLayout({ children }: PropsWithChildren) {
@@ -24,8 +23,8 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html lang='en' suppressHydrationWarning>
       <body>
         <MainProviders>
-          <NextTopLoader color='#5750F1' showSpinner={false} />
-          {children}
+          <NextTopLoader color='#22AD5C' showSpinner={false} />
+          <BuyerLayout>{children}</BuyerLayout>
         </MainProviders>
       </body>
     </html>
