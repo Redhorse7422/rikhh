@@ -1,4 +1,4 @@
-import type { Product } from '@/types/common'
+import type { FirebaseProduct } from '../ProductDetailPage'
 
 import Link from 'next/link'
 
@@ -6,22 +6,26 @@ import { ArrowRightIcon } from '@/assets/icons'
 import { ProductCard } from '@/components/common/products/ProductCard'
 
 interface CartItemsProps {
-  products: Product[]
+  products: FirebaseProduct[]
   sectionTitle: string
   isLoading?: boolean
 }
 
 export const ProductsSection: React.FC<CartItemsProps> = ({ products, sectionTitle, isLoading }) => {
   return isLoading ? (
-    <div className='grid grid-cols-1 gap-6 py-16 md:grid-cols-2 lg:grid-cols-4'>
-      {[...Array(4)].map((_, index) => (
-        <div key={index} className='animate-pulse'>
-          <div className='mb-4 h-64 rounded-lg bg-gray-200'></div>
-          <div className='mb-2 h-4 rounded bg-gray-200'></div>
-          <div className='h-4 w-3/4 rounded bg-gray-200'></div>
+    <section className='py-16'>
+      <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+        <div className='grid grid-cols-1 gap-6 py-16 md:grid-cols-2 lg:grid-cols-4'>
+          {[...Array(8)].map((_, index) => (
+            <div key={index} className='animate-pulse'>
+              <div className='mb-4 h-64 rounded-lg bg-gray-200'></div>
+              <div className='mb-2 h-4 rounded bg-gray-200'></div>
+              <div className='h-4 w-3/4 rounded bg-gray-200'></div>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      </div>
+    </section>
   ) : (
     <section className='py-16'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
@@ -36,7 +40,7 @@ export const ProductsSection: React.FC<CartItemsProps> = ({ products, sectionTit
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
-          {products.map((product: Product) => (
+          {products.map((product: FirebaseProduct) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

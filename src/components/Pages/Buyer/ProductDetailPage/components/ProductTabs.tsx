@@ -39,26 +39,6 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, on
                 <p className='whitespace-pre-line'>{product.description}</p>
               </div>
             </div>
-
-            {product.images && product.images.length > 0 && (
-              <div>
-                <h3 className='mb-4 text-lg font-semibold text-gray-900'>Product Images</h3>
-                <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                  {product.images.map((imageUrl, index) => (
-                    <div key={index} className='aspect-square overflow-hidden rounded-lg'>
-                      <img
-                        src={imageUrl}
-                        alt={`${product.name} - Image ${index + 1}`}
-                        className='h-full w-full object-cover'
-                        onError={(e) => {
-                          e.currentTarget.src = '/images/no-image.png'
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )
 
@@ -76,51 +56,15 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, on
                       </td>
                       <td className='px-6 py-4 text-sm text-gray-600'>{product.name}</td>
                     </tr>
-                    <tr className='bg-gray-50'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Product ID</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>{product.id}</td>
-                    </tr>
+
                     <tr className='bg-white'>
                       <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Category</td>
                       <td className='px-6 py-4 text-sm text-gray-600'>{product.category}</td>
                     </tr>
-                    <tr className='bg-gray-50'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Stock Status</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
-                      </td>
-                    </tr>
+
                     <tr className='bg-white'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Regular Price</td>
+                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Price</td>
                       <td className='px-6 py-4 text-sm text-gray-600'>${product.regularPrice}</td>
-                    </tr>
-                    <tr className='bg-gray-50'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Sale Price</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>${product.salePrice}</td>
-                    </tr>
-                    <tr className='bg-white'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Rating</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>{product.rating} / 5</td>
-                    </tr>
-                    <tr className='bg-gray-50'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Reviews</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>{product.reviews} reviews</td>
-                    </tr>
-                    <tr className='bg-white'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Seller ID</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>{product.sellerId}</td>
-                    </tr>
-                    {product.lat && product.lng && (
-                      <tr className='bg-gray-50'>
-                        <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Location</td>
-                        <td className='px-6 py-4 text-sm text-gray-600'>
-                          {product.lat.toFixed(6)}, {product.lng.toFixed(6)}
-                        </td>
-                      </tr>
-                    )}
-                    <tr className='bg-white'>
-                      <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Images</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>{product.images?.length || 0} photos</td>
                     </tr>
                   </tbody>
                 </table>

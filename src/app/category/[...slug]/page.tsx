@@ -1,7 +1,5 @@
 import React from 'react'
 
-import { CategoryDetailPage } from '@/components/Pages/Buyer/CategoryDetailPage'
-
 import { fetchCategoryDetailBySlug } from './utils'
 
 export default async function Page({ params }: { params: Promise<{ slug: string[] }> }) {
@@ -23,13 +21,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
     }
 
     return (
-      <div>Span</div>
-      // <CategoryDetailPage
-      //   categoryName={categoryRes.name}
-      //   categoryImage={categoryRes.thumbnailImage.url || '/images/cards/cards-01.png'}
-      //   productCount={categoryRes.count || '0+ products'}
-      //   categoryId={categoryRes.id}
-      // />
+      <div>Category: {slug}</div>
     )
   } catch (error) {
     console.error('Error fetching category:', error)

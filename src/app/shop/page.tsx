@@ -1,61 +1,49 @@
 'use client'
+import type { FirebaseProduct } from '@/components/Pages/Buyer/ProductDetailPage'
+import type { Category } from '@/types/common'
 
-import type { Product, Category } from '@/types/common'
-
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 
 import { ChevronUpIcon } from '@/assets/icons'
 import { ProductsGrid } from '@/components/Pages/Buyer/CategoryDetailPage/components'
 import { FilterSidebar } from '@/components/Pages/Buyer/CategoryDetailPage/components/FilterSidebar'
 import { useFirebaseProducts } from '@/hooks/useFirebase'
 
-const PRODUCTS_PER_PAGE = 20
-
 const ShopPage: React.FC = () => {
-  const [page, setPage] = useState(1)
-  const [products, setProducts] = useState<Product[]>([])
-  const [hasMoreProducts, setHasMoreProducts] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<any>({})
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
 
-  // Fetch categories for sidebar (temporary empty array - you'll need to implement categories)
+  // 🔧 Example empty categories for now
   const categories: Category[] = []
 
-  // Fetch products from Firebase
-  const { data, isLoading, isFetching, error } = useFirebaseProducts({
-    page,
-    limit: PRODUCTS_PER_PAGE,
-    category: selectedCategory || undefined,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-  })
+  const productParams = useMemo(
+    () => ({
+      category: selectedCategory || undefined,
+      sortBy: 'createdAt',
+      sortOrder: 'desc',
+      limit: 16,
+      ...selectedFilters,
+    }),
+    [selectedCategory, selectedFilters],
+  )
 
-  console.log(data)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isFetching } =
+    useFirebaseProducts(productParams)
 
-  useEffect(() => {
-    if (data?.data) {
-      setProducts((prev) => (page === 1 ? data.data : [...prev, ...data.data]))
-      setHasMoreProducts(data.data.length === PRODUCTS_PER_PAGE)
-    }
-  }, [data, page])
-
-  // Reset products when category or filters change
-  useEffect(() => {
-    setPage(1)
-  }, [selectedCategory, selectedFilters])
-
-  // Remove the isCategoriesLoading reference since we're not using it anymore
+  // Flatten all pages of data
+  const products: FirebaseProduct[] = useMemo(() => {
+    return data?.pages?.flatMap((page) => page.data) ?? []
+  }, [data])
 
   const handleLoadMore = () => {
-    if (hasMoreProducts && !isFetching) {
-      setPage((prev) => prev + 1)
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage()
     }
   }
 
   const handleCategorySelect = (cat: Category) => {
     setSelectedCategory(cat.id)
-    setPage(1)
   }
 
   const handleFilterChange = (filterType: string, value: string) => {
@@ -67,12 +55,10 @@ const ShopPage: React.FC = () => {
         [filterType]: updated.length > 0 ? updated : [],
       }
     })
-    setPage(1)
   }
 
   const clearFilters = () => {
     setSelectedFilters({})
-    setPage(1)
   }
 
   const handleToggleExpand = (catId: string) => {
@@ -108,7 +94,7 @@ const ShopPage: React.FC = () => {
                       >
                         {cat.name}
                       </button>
-                      {cat.subcategories && cat.subcategories.length > 0 && (
+                      {/* {cat.subcategories?.length > 0 && (
                         <button
                           className='ml-2 p-1 text-gray-400 hover:text-primary'
                           onClick={() => handleToggleExpand(cat.id)}
@@ -118,9 +104,9 @@ const ShopPage: React.FC = () => {
                             className={`h-4 w-4 transition-transform ${expandedCategories[cat.id] ? 'rotate-180' : ''}`}
                           />
                         </button>
-                      )}
+                      )} */}
                     </div>
-                    {cat.subcategories && cat.subcategories.length > 0 && expandedCategories[cat.id] && (
+                    {/* {cat.subcategories?.length > 0 && expandedCategories[cat.id] && (
                       <ul className='ml-4 mt-2 space-y-1 border-l border-gray-100 pl-3'>
                         {cat.subcategories.map((sub) => (
                           <li key={sub.id}>
@@ -133,7 +119,7 @@ const ShopPage: React.FC = () => {
                           </li>
                         ))}
                       </ul>
-                    )}
+                    )} */}
                   </li>
                 ))}
               </ul>
@@ -145,9 +131,9 @@ const ShopPage: React.FC = () => {
             />
           </aside>
 
-          {/* Main Products Section */}
+          {/* Main Section */}
           <main className='flex-1'>
-            {isLoading && page === 1 ? (
+            {isLoading ? (
               <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
                 {[...Array(8)].map((_, index) => (
                   <div key={index} className='animate-pulse'>
@@ -158,17 +144,19 @@ const ShopPage: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <ProductsGrid products={products} onLoadMore={handleLoadMore} hasMoreProducts={hasMoreProducts} />
-            )}
-            {isFetching && page > 1 && (
-              <div className='flex justify-center py-4'>
-                <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-primary'></div>
-              </div>
-            )}
-            {!isLoading && products.length === 0 && (
-              <div className='py-8 text-center'>
-                <p className='text-gray-600'>No products found.</p>
-              </div>
+              <>
+                <ProductsGrid products={products} onLoadMore={handleLoadMore} hasMoreProducts={hasNextPage} />
+                {isFetchingNextPage && (
+                  <div className='flex justify-center py-4'>
+                    <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-primary'></div>
+                  </div>
+                )}
+                {!isFetching && products.length === 0 && (
+                  <div className='py-8 text-center'>
+                    <p className='text-gray-600'>No products found.</p>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>

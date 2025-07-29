@@ -2,7 +2,7 @@
 
 import type { Product } from '@/types/common'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 import { StarIcon, HeartIcon } from '@/assets/icons'
 import { Icon } from '@/components/common/icon'
@@ -11,6 +11,7 @@ import { Icon } from '@/components/common/icon'
 interface FirebaseProduct extends Product {
   sellerId: string
   images: string[]
+  sizes: string[] // Add sizes array
   lat: number
   lng: number
   description: string
@@ -19,7 +20,9 @@ interface FirebaseProduct extends Product {
 interface ProductInfoProps {
   product: FirebaseProduct
   selectedQuantity: number
+  selectedSize: string
   onQuantityChange: (quantity: number) => void
+  onSizeChange: (size: string) => void
   onAddToCart: () => void
   onAddToWishlist: () => void
   onShare: () => void
@@ -29,7 +32,9 @@ interface ProductInfoProps {
 export const ProductInfo: React.FC<ProductInfoProps> = ({
   product,
   selectedQuantity,
+  selectedSize,
   onQuantityChange,
+  onSizeChange,
   onAddToCart,
   onAddToWishlist,
   onShare,
@@ -41,6 +46,10 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
 
   const handleQuantityDecrement = () => {
     onQuantityChange(selectedQuantity - 1)
+  }
+
+  const handleSizeSelect = (size: string) => {
+    onSizeChange(size)
   }
 
   const getCurrentPrice = () => {
@@ -64,6 +73,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   const isOutOfStock = () => {
     return !product.inStock
   }
+
+  const hasSizes = product.sizes && product.sizes.length > 0
+  const isSizeRequired = hasSizes && !selectedSize
 
   const availability = getAvailabilityText()
   const currentPrice = getCurrentPrice()
@@ -97,11 +109,11 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <div className='space-y-2'>
         <div className='flex items-center space-x-3'>
           <span className='text-3xl font-bold text-gray-900'>
-            ${isOnSale ? salePrice.toFixed(2) : currentPrice.toFixed(2)}
+            ₹{isOnSale ? salePrice.toFixed(2) : currentPrice.toFixed(2)}
           </span>
           {isOnSale && (
             <>
-              <span className='text-xl text-gray-500 line-through'>${currentPrice.toFixed(2)}</span>
+              <span className='text-xl text-gray-500 line-through'>₹{currentPrice.toFixed(2)}</span>
               <span className='rounded-full bg-red-100 px-2 py-1 text-sm font-semibold text-red-600'>
                 -{Math.round(((currentPrice - salePrice) / currentPrice) * 100)}%
               </span>
@@ -115,10 +127,34 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         <div className='space-y-2'>
           <h3 className='text-sm font-medium text-gray-900'>Category</h3>
           <div className='flex flex-wrap gap-2'>
-            <span className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'>
-              {product.category}
-            </span>
+            <span className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700'>{product.category}</span>
           </div>
+        </div>
+      )}
+
+      {/* Sizes */}
+      {product.sizes && product.sizes.length > 0 && (
+        <div className='space-y-3'>
+          <h3 className='text-sm font-medium text-gray-900'>Select Size</h3>
+          <div className='flex flex-wrap gap-2'>
+            {product.sizes.map((size, index) => (
+              <button
+                key={index}
+                type='button'
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedSize === size 
+                    ? 'bg-blue-500 text-white shadow-md' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                onClick={() => handleSizeSelect(size)}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+          {isSizeRequired && (
+            <p className='text-sm text-red-600'>Please select a size</p>
+          )}
         </div>
       )}
 
@@ -141,7 +177,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           >
             <Icon name='AiOutlinePlus' className='h-4 w-4' />
           </button>
-          <span className='text-sm text-gray-500'>Max 99</span>
+          {/* <span className='text-sm text-gray-500'>Max 99</span> */}
         </div>
       </div>
 
@@ -149,7 +185,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       <div className='space-y-3'>
         <button
           onClick={onAddToCart}
-          disabled={isOutOfStock() || isLoading}
+          disabled={isOutOfStock() || isLoading || isSizeRequired}
           className='w-full rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50'
         >
           {isLoading ? (
@@ -159,6 +195,8 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
             </div>
           ) : isOutOfStock() ? (
             'Out of Stock'
+          ) : isSizeRequired ? (
+            'Select Size'
           ) : (
             'Add to Cart'
           )}

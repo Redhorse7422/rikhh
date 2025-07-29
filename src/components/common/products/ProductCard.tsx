@@ -1,50 +1,43 @@
 'use client'
 
-import type { Product } from '@/types/common'
+import type { FirebaseProduct } from '@/components/Pages/Buyer/ProductDetailPage'
 
 import React, { useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { StarIcon } from '@/assets/icons'
 import { getSafeImageUrl, isFirebaseStorageUrl } from '@/utils/image'
 
 interface ProductCardProps {
-  product: Product
+  product: FirebaseProduct
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const rating = product.rating ?? 0
-  const reviews = product.reviews ?? 0
   const [imageError, setImageError] = useState(false)
 
   // Use the utility function to get a safe image URL
   const thumbnail = imageError ? '/images/no-image.png' : getSafeImageUrl(product.thumbnailImg)
 
   const handleImageError = () => {
-    console.error('❌ Image failed to load:', product.thumbnailImg)
     setImageError(true)
   }
 
-  const handleImageLoad = () => {
-    console.log('✅ Image loaded successfully:', product.thumbnailImg)
-  }
-
   return (
-    <div className='group overflow-hidden rounded-lg border border-gray-200 bg-white py-4 shadow-sm transition-shadow hover:shadow-md'>
-      <Link href={`/product/${product.slug}`} className='block'>
+    <div className='group overflow-hidden rounded-lg border border-gray-200 bg-white pb-4 shadow-sm transition-shadow hover:shadow-md'>
+      <Link href={`/product/${product.id}`} className='block'>
         <div className='relative'>
-          <img
-            src={product.thumbnailImg}
+          <Image
+            src={thumbnail}
             alt={product.name}
-            // width={300}
-            // height={300}
-            // className='h-48 w-full bg-white object-cover transition-transform duration-300 group-hover:scale-105'
-            // onError={handleImageError}
-            // onLoad={handleImageLoad}
-            // unoptimized={isFirebaseStorageUrl(thumbnail)}
+            width={0}
+            height={0}
+            sizes='100vw'
+            className='h-56 w-full bg-white object-cover transition-transform duration-300 group-hover:scale-105'
+            onError={handleImageError}
+            unoptimized={isFirebaseStorageUrl(thumbnail)}
           />
+
           {product.badge && (
             <span className='absolute left-2 top-2 rounded-full bg-primary px-2 py-1 text-xs text-white'>
               {product.badge}
@@ -55,38 +48,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className='p-4 pb-0'>
           <h3 className='mb-2 line-clamp-2 font-medium text-gray-900'>{product.name}</h3>
 
-          <div className='mb-2 flex items-center'>
-            <div className='flex items-center'>
-              {[...Array(5)].map((_, i) => (
-                <StarIcon
-                  key={i}
-                  className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                />
-              ))}
-            </div>
-            <span className='ml-1 text-sm text-gray-500'>({reviews})</span>
-          </div>
-
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-2'>
-              {product.salePrice > 0 && <span className='text-lg font-bold text-gray-900'>${product.salePrice}</span>}
+              {product.salePrice > 0 && product.salePrice !== product.regularPrice && (
+                <span className='text-lg font-bold text-gray-900'>${product.salePrice}</span>
+              )}
               <span
                 className={`${
-                  product.salePrice > 0 ? 'text-sm text-gray-500 line-through' : 'text-lg font-bold text-gray-900'
+                  product.salePrice > 0 && product.salePrice !== product.regularPrice
+                    ? 'text-sm text-gray-500 line-through'
+                    : 'text-lg font-bold text-gray-900'
                 }`}
               >
-                ${product.regularPrice}
+                ₹{product.regularPrice}
               </span>
             </div>
           </div>
         </div>
       </Link>
-
-      {/* <div className='flex items-center justify-between px-4 pt-3'>
-        <button className='w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90'>
-          Add to Cart
-        </button>
-      </div> */}
     </div>
   )
 }

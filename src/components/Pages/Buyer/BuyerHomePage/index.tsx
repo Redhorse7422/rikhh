@@ -28,9 +28,6 @@ const useHomeConfig = () => {
 export const BuyerHomePage: React.FC = () => {
   // Fetch data
   const { data: homeConfig, isLoading: configLoad, error: configError } = useHomeConfig()
-  console.log(homeConfig)
-
-  const [loading, setLoading] = useState(true)
 
 
   if (configError) {

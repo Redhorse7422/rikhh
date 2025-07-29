@@ -1,6 +1,6 @@
 // Product Detail Page Types
-import type { Product } from './common'
 import type { FileWithPreview } from '@/components/FormElements/UploadInput'
+import type { FirebaseProduct } from '@/components/Pages/Buyer/ProductDetailPage'
 
 export interface ProductVariant {
   id: string
@@ -109,7 +109,7 @@ export interface ProductSpecificationsProps {
 }
 
 export interface RelatedProductsProps {
-  products: Product[]
+  products: FirebaseProduct[]
 }
 
 export interface ProductTabsProps {

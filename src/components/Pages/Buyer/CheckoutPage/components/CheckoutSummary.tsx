@@ -72,10 +72,6 @@ export const CheckoutSummary: React.FC = () => {
       //   showToast('Failed to apply coupon. Please try again.', 'error')
       // }
     } catch (error: any) {
-      console.log('Full error object:', error)
-      console.log('Error response:', error?.response)
-      console.log('Error response data:', error?.response?.data)
-
       const message =
         error?.error?.message || // This works for { error: { message: "..."} }
         error?.message ||

@@ -1,29 +1,74 @@
 import type { Product } from '@/types/common'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 
 import { useFirebase } from '@/contexts/FirebaseContext'
 import { firebaseAuthService } from '@/services/firebase/auth.firebase'
 // import { cartFirebaseService } from '@/services/firebase/cart.firebase'
+import { categoryFirebaseService } from '@/services/firebase/category.firebase'
 import { productFirebaseService } from '@/services/firebase/products.firebase'
 
 // Firebase Product Hooks
+// export const useFirebaseProducts = (
+//   params: {
+//     search?: string
+//     category?: string
+//     minPrice?: number
+//     maxPrice?: number
+//     sortBy?: string
+//     sortOrder?: 'asc' | 'desc'
+//     limit?: number
+//   } = {},
+// ) => {
+//   const { search, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = 'desc', limit = 8 } = params
+//   return useQuery({
+//     queryKey: ['firebase-products', params],
+//     queryFn: async ({ pageParam }) =>
+//       productFirebaseService.getAllProducts({
+//         search,
+//         category,
+//         minPrice,
+//         maxPrice,
+//         sortBy,
+//         sortOrder,
+//         limit,
+//         lastVisible: pageParam ?? null,
+//       }),
+//     staleTime: 5 * 60 * 1000,
+//   })
+// }
+
 export const useFirebaseProducts = (
   params: {
-    page?: number
-    limit?: number
     search?: string
     category?: string
     minPrice?: number
     maxPrice?: number
     sortBy?: string
     sortOrder?: 'asc' | 'desc'
+    limit?: number
   } = {},
 ) => {
-  return useQuery({
+  const { search, category, minPrice, maxPrice, sortBy = 'createdAt', sortOrder = 'desc', limit = 8 } = params
+
+  return useInfiniteQuery({
     queryKey: ['firebase-products', params],
-    queryFn: () => productFirebaseService.getAllProducts(params),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: async ({ pageParam = null }) =>
+      productFirebaseService.getAllProducts({
+        search,
+        category,
+        minPrice,
+        maxPrice,
+        sortBy,
+        sortOrder,
+        limit,
+        lastVisible: pageParam,
+      }),
+    getNextPageParam: (lastPage: any) => {
+      return lastPage.hasNextPage ? lastPage.nextCursor : undefined
+    },
+    initialPageParam: null,
+    staleTime: 5 * 60 * 1000,
   })
 }
 
@@ -36,11 +81,11 @@ export const useFirebaseProduct = (id: string) => {
   })
 }
 
-export const useFirebaseProductBySlug = (slug: string) => {
+export const useFirebaseProductById = (id: string) => {
   return useQuery({
-    queryKey: ['firebase-product-slug', slug],
-    queryFn: () => productFirebaseService.getProductBySlug(slug),
-    enabled: !!slug,
+    queryKey: ['firebase-product-id', id],
+    queryFn: () => productFirebaseService.getProductById(id),
+    enabled: !!id,
     staleTime: 5 * 60 * 1000,
   })
 }
@@ -68,6 +113,25 @@ export const useFirebaseSearchProducts = (query: string) => {
     queryFn: () => productFirebaseService.searchProducts(query),
     enabled: !!query && query.length > 2,
     staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useFirebaseCategory = (
+  params: {
+    page?: number
+    limit?: number
+    search?: string
+    category?: string
+    minPrice?: number
+    maxPrice?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+  } = {},
+) => {
+  return useQuery({
+    queryKey: ['firebase-categories', params],
+    queryFn: () => categoryFirebaseService.getAllCategories(params),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }
 
@@ -111,21 +175,26 @@ export const useFirebaseAuth = () => {
 
 // Firebase Home Config Hook (replaces the existing home config)
 export const useFirebaseHomeConfig = () => {
-  const featuredProducts = useFirebaseFeaturedProducts(8)
-  const newProducts = useFirebaseProducts({ limit: 8, sortBy: 'createdAt', sortOrder: 'desc' })
-
-  // For now, we'll use the same products for different sections
-  // You can modify this based on your needs
-  const variantProducts = useFirebaseProducts({ limit: 8, sortBy: 'regularPrice', sortOrder: 'asc' })
+  // const featuredProducts = useFirebaseFeaturedProducts(8)
+  // const newProducts = useFirebaseProducts({ limit: 8, sortBy: 'createdAt', sortOrder: 'desc' })
+  const {
+    data: newProducts,
+    isLoading,
+    error,
+  } = useFirebaseProducts({
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    limit: 8,
+  })
 
   return {
     data: {
-      featured: featuredProducts.data || [],
-      new: newProducts.data?.data || [],
-      variant: variantProducts.data?.data || [],
+      featured: newProducts?.pages.flatMap((page) => page.data) || [],
+      new: newProducts?.pages.flatMap((page) => page.data) || [],
+      variant: newProducts?.pages.flatMap((page) => page.data) || [],
       categories: [], // You'll need to implement categories separately
     },
-    isLoading: featuredProducts.isLoading || newProducts.isLoading || variantProducts.isLoading,
-    error: featuredProducts.error || newProducts.error || variantProducts.error,
+    isLoading: isLoading,
+    error: error,
   }
 }

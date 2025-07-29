@@ -1,6 +1,6 @@
 'use client'
 
-import type { Product } from '@/types/common'
+import type { FirebaseProduct } from '../ProductDetailPage'
 // import type { Product, AppliedFilters } from '@/types/common'
 
 import React, { useState, useEffect } from 'react'
@@ -28,7 +28,7 @@ export const CategoryDetailPage: React.FC<CategoryDetailPageProps> = ({
   const [showFilters, setShowFilters] = useState(false)
   const [selectedFilters, setSelectedFilters] = useState({})
   const [page, setPage] = useState(1)
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<FirebaseProduct[]>([])
   const [hasMoreProducts, setHasMoreProducts] = useState(true)
 
   const { getDataSource } = useApi()

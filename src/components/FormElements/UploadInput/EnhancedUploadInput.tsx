@@ -325,7 +325,6 @@ export const EnhancedUploadInput: React.FC<EnhancedUploadInputProps> = (props) =
                 return next
               })
             } catch (error) {
-              console.log(error)
               handleUploadError(fileState.id, 'Invalid response format')
             }
           } else {

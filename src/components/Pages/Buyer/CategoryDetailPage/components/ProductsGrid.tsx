@@ -1,11 +1,11 @@
-import type { Product } from '@/types/common'
+import type { FirebaseProduct } from '../../ProductDetailPage'
 
 import React from 'react'
 
 import { ProductCard } from '@/components/common/products/ProductCard'
 
 interface ProductsGridProps {
-  products: Product[]
+  products: FirebaseProduct[]
   onLoadMore?: () => void
   hasMoreProducts?: boolean
 }

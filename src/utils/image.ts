@@ -84,6 +84,23 @@ export const getOptimizedImageUrl = (url: string, width: number = 300, height: n
 }
 
 /**
+ * Get image dimensions for proper sizing
+ */
+export const getImageDimensions = (containerWidth: number, aspectRatio: number = 16/9) => {
+  return {
+    width: containerWidth,
+    height: Math.round(containerWidth / aspectRatio)
+  }
+}
+
+/**
+ * Get responsive sizes for Next.js Image component
+ */
+export const getResponsiveSizes = (containerWidth: number): string => {
+  return `(max-width: 640px) ${containerWidth}px, (max-width: 768px) ${containerWidth * 0.8}px, (max-width: 1024px) ${containerWidth * 0.6}px, ${containerWidth * 0.4}px`
+}
+
+/**
  * Create a proxy URL for Firebase Storage images to avoid CORS issues
  */
 export const getProxyImageUrl = (url: string): string => {

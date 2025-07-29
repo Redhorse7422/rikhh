@@ -11,6 +11,7 @@ export interface Product {
   reviews: number
   thumbnailImg: string
   images?: string[]
+  sizes?: string[] // Add sizes array
   badge?: string
   description?: string
   category?: string

@@ -7,10 +7,10 @@ import { useRouter } from 'next/navigation'
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 // import { useCart } from '@/contexts/CartContext'
 
-import { CartItems } from './components/CartItems'
+// import { CartItems } from './components/CartItems'
 import { CartMigrationPrompt } from './components/CartMigrationPrompt'
-import { CartSummary } from './components/CartSummary'
-import { EmptyCart } from './components/EmptyCart'
+// import { CartSummary } from './components/CartSummary'
+// import { EmptyCart } from './components/EmptyCart'
 
 export const CartPage: React.FC = () => {
   // const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart()

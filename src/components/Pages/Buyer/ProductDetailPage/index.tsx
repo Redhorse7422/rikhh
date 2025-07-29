@@ -3,7 +3,7 @@
 import type { AddToCartDto } from '@/services/cart.services'
 import type { Product } from '@/types/common'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
 import useToast from '@/hooks/useToast'
@@ -15,7 +15,9 @@ import { ProductTabs } from './components/ProductTabs'
 // Extended Product interface to match Firebase response
 export interface FirebaseProduct extends Product {
   sellerId: string
+  thumbnailImg: string
   images: string[]
+  sizes: string[] // Add sizes array
   lat: number
   lng: number
   description: string
@@ -31,8 +33,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
   console.log('Product ===> ', product)
 
   const [selectedQuantity, setSelectedQuantity] = useState(1)
+  const [selectedSize, setSelectedSize] = useState<string>('')
   const [mainImage, setMainImage] = useState(product.thumbnailImg || product.images?.[0] || '')
   const [activeTab, setActiveTab] = useState('description')
+
+  // Reset selected size when product changes
+  useEffect(() => {
+    setSelectedSize('')
+  }, [product.id])
 
   // Convert Firebase images to ProductImage format
   const getAllImages = () => {
@@ -76,6 +84,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
     setSelectedQuantity(Math.max(1, Math.min(quantity, maxQuantity)))
   }
 
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size)
+  }
+
   const handleAddToCart = async () => {
     try {
       if (!product.inStock) {
@@ -88,17 +100,35 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
         return
       }
 
+      // Check if size is required but not selected
+      const hasSizes = product.sizes && product.sizes.length > 0
+      if (hasSizes && !selectedSize) {
+        showToast('Please select a size', 'error')
+        return
+      }
+
       const finalPrice = product.salePrice || product.regularPrice
 
       const dto: AddToCartDto = {
         productId: product.id,
         quantity: selectedQuantity,
         price: finalPrice,
+        variants: selectedSize
+          ? [
+              {
+                attributeId: 'size',
+                attributeValueId: selectedSize,
+                attributeName: 'Size',
+                attributeValue: selectedSize,
+              },
+            ]
+          : undefined,
       }
 
       // TODO: Implement cart functionality
       showToast(`${product.name} added to cart!`, 'success')
       setSelectedQuantity(1)
+      setSelectedSize('')
     } catch (error) {
       console.error('Error adding to cart:', error)
       showToast('Failed to add item to cart', 'error')
@@ -165,7 +195,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
           <ProductInfo
             product={product}
             selectedQuantity={selectedQuantity}
+            selectedSize={selectedSize}
             onQuantityChange={handleQuantityChange}
+            onSizeChange={handleSizeChange}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             onShare={handleShare}
@@ -175,29 +207,6 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
         {/* Product Tabs */}
         <div className='mt-16'>
           <ProductTabs product={product} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
-
-        {/* Seller Information */}
-        <div className='mt-16 rounded-lg bg-white p-6 shadow-sm'>
-          <h3 className='mb-4 text-lg font-semibold'>Seller Information</h3>
-          <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            <div>
-              <p className='text-sm text-gray-600'>Seller ID</p>
-              <p className='font-medium'>{product.sellerId}</p>
-            </div>
-            <div>
-              <p className='text-sm text-gray-600'>Category</p>
-              <p className='font-medium'>{product.category}</p>
-            </div>
-            {product.lat && product.lng && (
-              <div className='md:col-span-2'>
-                <p className='text-sm text-gray-600'>Location</p>
-                <p className='font-medium'>
-                  {product.lat.toFixed(6)}, {product.lng.toFixed(6)}
-                </p>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>
