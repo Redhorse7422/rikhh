@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       'Find answers to common questions about Rikhh. Learn about orders, shipping, returns, vendor registration, and more.',
     type: 'website',
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'}/faq`,
+    url: '/faq',
   },
 }
 

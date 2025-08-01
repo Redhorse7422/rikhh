@@ -11,6 +11,7 @@ import { MainProviders } from '@/providers/MainProvider'
 import { BuyerLayout } from '@/components/Layouts/BuyerLayout/BuyerLayout'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'),
   title: {
     template: '%s | Rikhh',
     default: 'Rikhh - Your Online Shopping Destination',
@@ -30,7 +31,6 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com',
     siteName: 'Rikhh',
     title: 'Rikhh - Your Online Shopping Destination',
     description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',

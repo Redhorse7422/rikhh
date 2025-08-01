@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: 'Contact Us | Rikhh',
     description: 'Get in touch with Rikhh. Contact us for inquiries, support, or any assistance you need.',
     type: 'website',
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'}/contact-us`,
+    url: '/contact-us',
   },
 }
 

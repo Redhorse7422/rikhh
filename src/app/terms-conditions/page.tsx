@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Terms and Conditions | Rikhh',
     description: 'Read the terms and conditions for using Rikhh platform. Learn about user responsibilities, fees, liability, and more.',
     type: 'website',
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'}/terms-conditions`,
+    url: '/terms-conditions',
   },
 }
 
