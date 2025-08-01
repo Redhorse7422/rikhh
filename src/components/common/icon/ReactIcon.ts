@@ -19,58 +19,36 @@ import {
   AiOutlineLeft,
   // AiOutlineLineChart,
   AiOutlineLogout,
-  // AiOutlineMail,
+  AiOutlineMail,
   // AiOutlineMenu,
   // AiOutlineMenuFold,
   // AiOutlineMenuUnfold,
   // AiOutlineMessage,
   // AiOutlineNotification,
-  // AiOutlinePhone,
+  AiOutlinePhone,
   AiOutlinePlus,
   AiOutlineMinus,
   // AiOutlinePlusCircle,
   AiOutlineRight,
   AiOutlineSearch,
   AiOutlineSetting,
-  // AiOutlineTag,
-  // AiOutlineTeam,
-  // AiOutlineUp,
   AiOutlineUpload,
   AiOutlineUser,
-  // AiOutlineUsergroupAdd,
-  // AiOutlineBars,
   AiOutlineFileText,
-  // AiOutlineMore,
-  // AiOutlineHeart,
-  // AiOutlineShareAlt,
-  // AiOutlineCopy,
-  // AiOutlineEnvironment,
+  AiOutlineEnvironment,
   AiOutlineCloudUpload,
   AiOutlineReload,
   AiOutlineLoading,
   AiOutlineCheckCircle,
   AiOutlineCloseCircle,
   AiOutlineShopping,
+  AiOutlinePrinter,
+  AiOutlineClockCircle,
+  AiOutlineExclamationCircle,
+  AiOutlineInfoCircle,
+  AiOutlineFileExclamation,
 } from 'react-icons/ai'
-// import { BsGeo, BsGeoAlt } from 'react-icons/bs'
-import {
-  FaFacebookF,
-  FaInstagram,
-  //   FaLine,
-  //   FaLinkedinIn,
-  //   FaRegEdit,
-  //   FaRegHeart,
-  FaTwitter,
-  FaYoutube,
-} from 'react-icons/fa'
-// import { FiHelpCircle, FiCreditCard } from 'react-icons/fi'
-// import { HiOutlineInboxArrowDown, HiOutlineQuestionMarkCircle } from 'react-icons/hi2'
-// import { ImFileEmpty } from 'react-icons/im'
-// import { IoSettingsOutline } from 'react-icons/io5'
-// import { LiaFileImportSolid, LiaFileExportSolid, LiaCcAmex } from 'react-icons/lia'
-// import { LuUsers, LuTruck, LuUserPlus } from 'react-icons/lu'
-// import { MdOutlineDiscount } from 'react-icons/md'
-// import { RiBankLine, RiMastercardFill, RiStore2Line, RiVisaLine } from 'react-icons/ri'
+import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from 'react-icons/fa'
 
 export const ReactIcon = {
   // Ant Design Icons
@@ -98,6 +76,14 @@ export const ReactIcon = {
   AiOutlineUser,
   AiOutlineSetting,
   AiOutlineLogout,
+  AiOutlineMail,
+  AiOutlinePhone,
+  AiOutlineEnvironment,
+  AiOutlinePrinter,
+  AiOutlineClockCircle,
+  AiOutlineExclamationCircle,
+  AiOutlineInfoCircle,
+  AiOutlineFileExclamation,
   FaFacebookF,
   FaYoutube,
   FaInstagram,

@@ -2,122 +2,181 @@
 
 import React from 'react'
 
-import Image from 'next/image'
-import Link from 'next/link'
-
-const footerLinks = {
-  shop: [
-    { name: 'All Products', href: '/products' },
-    { name: 'New Arrivals', href: '/new-arrivals' },
-    { name: 'Best Sellers', href: '/best-sellers' },
-    { name: 'Deals', href: '/deals' },
-    { name: 'Clearance', href: '/clearance' },
-  ],
-  support: [
-    { name: 'Help Center', href: '/help' },
-    { name: 'Contact Us', href: '/contact' },
-    { name: 'Returns', href: '/returns' },
-    { name: 'Shipping Info', href: '/shipping' },
-    { name: 'Size Guide', href: '/size-guide' },
-  ],
-  company: [
-    { name: 'About Us', href: '/about' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Press', href: '/press' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Privacy Policy', href: '/privacy' },
-  ],
-}
+import { Icon } from '@/components/common/icon'
 
 export const BuyerFooter: React.FC = () => {
   return (
     <footer className='bg-gray-900 text-white'>
       <div className='mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5'>
-          {/* Logo and Newsletter */}
+          {/* Left Section - Branding, Contact, and Social Media */}
           <div className='lg:col-span-2'>
-            <div className='mb-6 flex items-center'>
-              <Image src='/images/logo/logo.svg' alt='CannFE' width={120} height={32} className='h-8 w-auto' />
-            </div>
-            <p className='mb-6 max-w-md text-gray-300'>
-              Discover amazing products at unbeatable prices. Shop the latest trends and find your perfect style.
-            </p>
-
-            {/* Newsletter Signup */}
+            {/* Brand Name */}
             <div className='mb-6'>
-              <h3 className='mb-3 text-lg font-semibold'>Stay Updated</h3>
-              <div className='flex'>
-                <input
-                  type='email'
-                  placeholder='Enter your email'
-                  className='flex-1 rounded-l-lg border-0 px-4 py-2 text-gray-900 ring-2 focus:ring-primary'
-                />
-                <button className='rounded-r-lg bg-primary px-6 py-2 transition-colors hover:bg-primary/90'>
-                  Subscribe
-                </button>
-              </div>
+              <h2 className='text-3xl font-bold text-white' style={{ fontFamily: 'cursive' }}>
+                Rikhh
+              </h2>
+            </div>
+
+            {/* Contact Prompt */}
+            <div className='mb-4'>
+              <p className='text-sm text-gray-300'>Got Question? Call us 24/7</p>
+            </div>
+
+            {/* Phone Number */}
+            <div className='mb-4'>
+              <p className='text-2xl font-bold text-white'>+91-70023-30896</p>
+            </div>
+
+            {/* Call to Action */}
+            <div className='mb-8'>
+              <p className='text-sm leading-relaxed text-gray-300'>
+                Register now to unlock exclusive discounts on products from both local and global vendors!
+              </p>
+            </div>
+
+            {/* Social Media Icons */}
+            <div className='flex space-x-3'>
+              <a
+                href='#'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white transition-colors hover:bg-blue-700'
+                aria-label='Facebook'
+              >
+                <Icon name='FaFacebookF' className='h-4 w-4' color='white' />
+              </a>
+              <a
+                href='#'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-sky-500 text-white transition-colors hover:bg-sky-600'
+                aria-label='Twitter'
+              >
+                <Icon name='FaTwitter' className='h-4 w-4' color='white' />
+              </a>
+              <a
+                href='#'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
+                aria-label='Instagram'
+              >
+                <Icon name='FaInstagram' className='h-4 w-4' color='white' />
+              </a>
+              <a
+                href='#'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-white transition-colors hover:bg-red-700'
+                aria-label='YouTube'
+              >
+                <Icon name='FaYoutube' className='h-4 w-4' color='white' />
+              </a>
+              <a
+                href='#'
+                className='flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
+                aria-label='Pinterest'
+              >
+                <span className='text-sm font-bold'>P</span>
+              </a>
             </div>
           </div>
 
-          {/* Shop Links */}
+          {/* COMPANY Links */}
           <div>
-            <h3 className='mb-4 text-lg font-semibold'>Shop</h3>
+            <h3 className='mb-4 text-sm font-bold uppercase text-white'>Company</h3>
             <ul className='space-y-2'>
-              {footerLinks.shop.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className='text-gray-300 transition-colors hover:text-white'>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <a
+                  href='/about-us'
+                  className='rounded px-2 py-1 text-sm text-gray-300 transition-colors hover:bg-blue-900 hover:text-white'
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a href='/become-seller' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Become a Seller
+                </a>
+              </li>
+              <li>
+                <a href='/faqs' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  FAQs
+                </a>
+              </li>
+              <li>
+                <a href='/contact-us' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href='/return-refund-policy' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Return and Refund policy
+                </a>
+              </li>
+              <li>
+                <a href='/terms-conditions' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Terms and Conditions
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Support Links */}
+          {/* MY ACCOUNT Links */}
           <div>
-            <h3 className='mb-4 text-lg font-semibold'>Support</h3>
+            <h3 className='mb-4 text-sm font-bold uppercase text-white'>My Account</h3>
             <ul className='space-y-2'>
-              {footerLinks.support.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className='text-gray-300 transition-colors hover:text-white'>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <a href='/track-order' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Track My Order
+                </a>
+              </li>
+              <li>
+                <a href='/cart' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  View Cart
+                </a>
+              </li>
+              <li>
+                <a href='/signin' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Sign In
+                </a>
+              </li>
+              <li>
+                <a href='/order-history' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Order History
+                </a>
+              </li>
+              <li>
+                <a href='/wishlist' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  My Wishlist
+                </a>
+              </li>
+              <li>
+                <a href='/privacy-policy' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Privacy Policy
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* Company Links */}
+          {/* Help & Support */}
           <div>
-            <h3 className='mb-4 text-lg font-semibold'>Company</h3>
-            <ul className='space-y-2'>
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className='text-gray-300 transition-colors hover:text-white'>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+            <h3 className='mb-4 text-sm font-bold uppercase text-white'>Help & Support</h3>
+            <ul className='space-y-3'>
+              <li className='flex items-center space-x-2'>
+                <Icon name='AiOutlinePhone' className='h-4 w-4 text-gray-300' />
+                <span className='text-sm text-gray-300'>+91-70023-30896</span>
+              </li>
+              <li className='flex items-center space-x-2'>
+                <Icon name='AiOutlineMail' className='h-4 w-4 text-gray-300' />
+                <span className='text-sm text-gray-300'>contact@rikhh.com</span>
+              </li>
+              <li className='flex items-center space-x-2'>
+                <Icon name='AiOutlineEnvironment' className='h-4 w-4 text-gray-300' />
+                <span className='text-sm text-gray-300'>Assam, India</span>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Section */}
+        {/* Copyright */}
         <div className='mt-12 border-t border-gray-800 pt-8'>
-          <div className='flex flex-col items-center justify-between md:flex-row'>
-            <p className='text-sm text-gray-400'>© 2025 Rikhh TM, WORKERS CIVILIZATION. All rights reserved.</p>
-            <div className='mt-4 flex items-center space-x-6 md:mt-0'>
-              <Link href='/terms' className='text-sm text-gray-400 transition-colors hover:text-white'>
-                Terms of Service
-              </Link>
-              <Link href='/privacy' className='text-sm text-gray-400 transition-colors hover:text-white'>
-                Privacy Policy
-              </Link>
-              <Link href='/cookies' className='text-sm text-gray-400 transition-colors hover:text-white'>
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
+          <p className='text-center text-sm text-gray-400'>
+            Copyright © 2025 Rikhh TM, WORKERS CIVILIZATION. All Rights Reserved.
+          </p>
         </div>
       </div>
     </footer>
