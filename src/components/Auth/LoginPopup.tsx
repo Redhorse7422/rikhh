@@ -5,11 +5,16 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 
+import { OTPInput } from '@/components/Auth/OTPInput'
 import { TextField } from '@/components/FormElements/TextInput'
 import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/icon'
 import useToast from '@/hooks/useToast'
 import { logger } from '@/libs/logger.client'
+import { userFirebaseService } from '@/services/firebase/users.firebase'
+import { otpManagerService } from '@/services/otp-manager.service'
+import { userSessionService } from '@/services/user-session.service'
+import { registerUser } from '@/services/user.services'
 
 interface LoginPopupProps {
   isOpen: boolean
@@ -17,19 +22,21 @@ interface LoginPopupProps {
 }
 
 interface SigninForm {
-  email: string
-  password: string
+  phoneNumber: string
 }
 
 interface SignupForm {
-  firstName: string
-  lastName: string
+  name: string
   email: string
-  password: string
-  confirmPassword: string
+  phoneNumber: string
+  // Address fields
+  street: string
+  city: string
+  state: string
+  zipCode: string
 }
 
-type AuthMode = 'signin' | 'signup'
+type AuthMode = 'signin' | 'signup' | 'otp'
 
 export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const [authMode, setAuthMode] = useState<AuthMode>('signin')
@@ -39,48 +46,56 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   // Signin form
   const signinForm = useForm<SigninForm>({
     defaultValues: {
-      email: '',
-      password: '',
+      phoneNumber: '',
     },
   })
 
   // Signup form
   const signupForm = useForm<SignupForm>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      name: '',
       email: '',
-      password: '',
-      confirmPassword: '',
+      phoneNumber: '',
+      // Address defaults
+      street: '',
+      city: '',
+      state: '',
+      zipCode: '',
     },
   })
-
-  const password = signupForm.watch('password')
 
   const onSigninSubmit = async (data: SigninForm) => {
     try {
       setIsLoading(true)
 
-      const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        userType: 'buyer',
-        redirect: false,
+      // Generate OTP and send for login via Fast2SMS API
+      console.log('Login - Original phone number:', data.phoneNumber)
+      const otp = otpManagerService.generateAndStoreOTP(data.phoneNumber)
+      
+      const params = new URLSearchParams({
+        authorization: '3qwMzdBoZIsUKvTA9Lm8CcaYpFnXt1gu0EWh467e5OSRxklDGNQxGhwdLZvP2FgXJyfnqWSVtA671aND',
+        sender_id: 'WORCVZ',
+        message: '177690',
+        variables_values: otp,
+        route: 'dlt',
+        numbers: data.phoneNumber,
+      })
+      
+      const response = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params}`, {
+        method: 'GET',
       })
 
-      if (result?.error) {
-        logger.error('Signin failed:', result.error)
-        showToast('Invalid credentials. Please try again.', 'error')
+      const result = await response.json()
+
+      if (!response.ok || !result.return) {
+        logger.error('OTP send failed:', result.message || 'Failed to send OTP')
+        showToast(result.message?.join(', ') || 'Failed to send OTP. Please try again.', 'error')
         return
       }
 
-      if (result?.ok) {
-        showToast('Login successful!', 'success')
-        signinForm.reset()
-        onClose()
-        // Optionally refresh the page or update the header state
-        window.location.reload()
-      }
+      setPhoneNumberForOTP(data.phoneNumber)
+      setAuthMode('otp')
+      showToast('OTP sent successfully!', 'success')
     } catch (error) {
       logger.error('Signin error:', error)
       showToast('An error occurred during signin. Please try again.', 'error')
@@ -89,39 +104,105 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
     }
   }
 
+  const [phoneNumberForOTP, setPhoneNumberForOTP] = useState<string>('')
+
   const onSignupSubmit = async (data: SignupForm) => {
     try {
       setIsLoading(true)
 
-      // Call signup API
-      const response = await fetch('/api/v1/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          password: data.password,
-          type: 'buyer',
-        }),
+      // Generate OTP and send via Fast2SMS API
+      console.log('Signup - Original phone number:', data.phoneNumber)
+      const otp = otpManagerService.generateAndStoreOTP(data.phoneNumber)
+      
+      const params = new URLSearchParams({
+        authorization: '3qwMzdBoZIsUKvTA9Lm8CcaYpFnXt1gu0EWh467e5OSRxklDGNQxGhwdLZvP2FgXJyfnqWSVtA671aND',
+        sender_id: 'WORCVZ',
+        message: '177690',
+        variables_values: otp,
+        route: 'dlt',
+        numbers: data.phoneNumber,
+      })
+      
+      const response = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params}`, {
+        method: 'GET',
       })
 
       const result = await response.json()
 
-      if (!response.ok) {
-        logger.error('Signup failed:', result.message)
-        showToast(result.message || 'Signup failed. Please try again.', 'error')
+      if (!response.ok || !result.return) {
+        logger.error('OTP send failed:', result.message || 'Failed to send OTP')
+        showToast(result.message?.join(', ') || 'Failed to send OTP. Please try again.', 'error')
         return
       }
 
-      showToast('Account created successfully! Please sign in.', 'success')
-      signupForm.reset()
-      setAuthMode('signin')
+      setPhoneNumberForOTP(data.phoneNumber)
+      setAuthMode('otp')
+      showToast('OTP sent successfully!', 'success')
     } catch (error) {
       logger.error('Signup error:', error)
       showToast('An error occurred during signup. Please try again.', 'error')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleOTPVerificationSuccess = async (verifiedPhoneNumber: string) => {
+    try {
+      setIsLoading(true)
+
+      // Check if this is a signup or login flow
+      const signupFormData = signupForm.getValues()
+      const isSignupFlow = signupFormData.name && signupFormData.email
+
+      if (isSignupFlow) {
+        // This is a signup flow - register the user
+        const result = await registerUser({
+          name: signupFormData.name,
+          email: signupFormData.email,
+          phoneNumber: verifiedPhoneNumber,
+          type: 'buyer',
+          // Address data
+          street: signupFormData.street,
+          city: signupFormData.city,
+          state: signupFormData.state,
+          zipCode: signupFormData.zipCode,
+        })
+
+        if (!result.success) {
+          showToast(result.message || 'Signup failed. Please try again.', 'error')
+          return
+        }
+
+        // After successful registration, login the user
+        const loginResult = await userSessionService.loginUser(verifiedPhoneNumber)
+        
+        if (loginResult.success && loginResult.user) {
+          showToast(`Welcome, ${loginResult.user.name}! Account created and logged in successfully.`, 'success')
+          handleClose()
+          window.location.reload() // Refresh to update UI
+        } else {
+          showToast('Account created successfully! Please sign in.', 'success')
+          signupForm.reset()
+          setAuthMode('signin')
+        }
+      } else {
+        // This is a login flow - authenticate user
+        const loginResult = await userSessionService.loginUser(verifiedPhoneNumber)
+        
+        if (!loginResult.success) {
+          showToast(loginResult.error || 'User not found. Please sign up first.', 'error')
+          setAuthMode('signup')
+          return
+        }
+
+        // User logged in successfully
+        showToast(`Welcome back, ${loginResult.user?.name}!`, 'success')
+        handleClose()
+        window.location.reload() // Refresh to update UI
+      }
+    } catch (error) {
+      logger.error('OTP verification error:', error)
+      showToast('An error occurred during verification. Please try again.', 'error')
     } finally {
       setIsLoading(false)
     }
@@ -156,11 +237,11 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
       {/* Modal */}
       <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-        <div className='w-full max-w-md rounded-lg bg-white p-6 shadow-xl'>
+        <div className='w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto'>
           {/* Header */}
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-xl font-semibold text-gray-900'>
-              {authMode === 'signin' ? 'Sign In' : 'Create Account'}
+              {authMode === 'signin' ? 'Sign In' : authMode === 'otp' ? 'Verify OTP' : 'Create Account'}
             </h2>
             <button
               onClick={handleClose}
@@ -173,25 +254,23 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           {/* Signin Form */}
           {authMode === 'signin' && (
             <>
-              <form onSubmit={signinForm.handleSubmit(onSigninSubmit)} className='space-y-4'>
+              <form onSubmit={signinForm.handleSubmit(onSigninSubmit)} className='space-y-3'>
                 <TextField
                   control={signinForm.control}
-                  name='email'
-                  label='Email'
-                  placeholder='Enter your email'
-                  rules={{ required: 'Email is required' }}
-                />
-                <TextField
-                  control={signinForm.control}
-                  name='password'
-                  label='Password'
-                  type='password'
-                  placeholder='Enter your password'
-                  rules={{ required: 'Password is required' }}
+                  name='phoneNumber'
+                  label='Phone Number'
+                  placeholder='Enter your phone number'
+                  rules={{
+                    required: 'Phone number is required',
+                    pattern: {
+                      value: /^[6-9]\d{9}$/,
+                      message: 'Please enter a valid 10-digit phone number',
+                    },
+                  }}
                 />
                 <Button
                   type='submit'
-                  label={isLoading ? 'Signing in...' : 'Sign In'}
+                  label={isLoading ? 'Sending OTP...' : 'Send OTP'}
                   disabled={isLoading}
                   className='w-full'
                 />
@@ -212,23 +291,14 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           {/* Signup Form */}
           {authMode === 'signup' && (
             <>
-              <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className='space-y-4'>
-                <div className='grid grid-cols-2 gap-4'>
-                  <TextField
-                    control={signupForm.control}
-                    name='firstName'
-                    label='First Name'
-                    placeholder='Enter first name'
-                    rules={{ required: 'First name is required' }}
-                  />
-                  <TextField
-                    control={signupForm.control}
-                    name='lastName'
-                    label='Last Name'
-                    placeholder='Enter last name'
-                    rules={{ required: 'Last name is required' }}
-                  />
-                </div>
+              <form onSubmit={signupForm.handleSubmit(onSignupSubmit)} className='space-y-3'>
+                <TextField
+                  control={signupForm.control}
+                  name='name'
+                  label='Full Name'
+                  placeholder='Enter your full name'
+                  rules={{ required: 'Full name is required' }}
+                />
 
                 <TextField
                   control={signupForm.control}
@@ -247,34 +317,59 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
                 <TextField
                   control={signupForm.control}
-                  name='password'
-                  label='Password'
-                  type='password'
-                  placeholder='Enter password'
+                  name='phoneNumber'
+                  label='Phone Number'
+                  placeholder='Enter your phone number'
                   rules={{
-                    required: 'Password is required',
-                    minLength: {
-                      value: 8,
-                      message: 'Password must be at least 8 characters',
+                    required: 'Phone number is required',
+                    pattern: {
+                      value: /^[6-9]\d{9}$/,
+                      message: 'Please enter a valid 10-digit phone number',
                     },
                   }}
                 />
 
-                <TextField
-                  control={signupForm.control}
-                  name='confirmPassword'
-                  label='Confirm Password'
-                  type='password'
-                  placeholder='Confirm password'
-                  rules={{
-                    required: 'Please confirm your password',
-                    validate: (value) => value === password || 'Passwords do not match',
-                  }}
-                />
+                {/* Address Section */}
+                <div className='space-y-3'>
+                  <h3 className='text-sm font-medium text-gray-700'>Address Information</h3>
+                  
+                  <TextField
+                    control={signupForm.control}
+                    name='street'
+                    label='Street Address'
+                    placeholder='Enter your street address'
+                    rules={{ required: 'Street address is required' }}
+                  />
+
+                  <div className='grid grid-cols-2 gap-3'>
+                    <TextField
+                      control={signupForm.control}
+                      name='city'
+                      label='City'
+                      placeholder='Enter your city'
+                      rules={{ required: 'City is required' }}
+                    />
+                    <TextField
+                      control={signupForm.control}
+                      name='state'
+                      label='State'
+                      placeholder='Enter your state'
+                      rules={{ required: 'State is required' }}
+                    />
+                  </div>
+
+                  <TextField
+                    control={signupForm.control}
+                    name='zipCode'
+                    label='ZIP Code'
+                    placeholder='Enter ZIP code'
+                    rules={{ required: 'ZIP code is required' }}
+                  />
+                </div>
 
                 <Button
                   type='submit'
-                  label={isLoading ? 'Creating Account...' : 'Create Account'}
+                  label={isLoading ? 'Sending OTP...' : 'Send OTP'}
                   disabled={isLoading}
                   className='w-full'
                 />
@@ -286,6 +381,31 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                   Already have an account?{' '}
                   <button onClick={switchToSignin} className='text-primary hover:underline'>
                     Sign In
+                  </button>
+                </p>
+              </div>
+            </>
+          )}
+
+          {/* OTP Verification Form */}
+          {authMode === 'otp' && (
+            <>
+              <div className='space-y-3'>
+                <OTPInput
+                  phoneNumber={phoneNumberForOTP}
+                  onVerificationSuccess={handleOTPVerificationSuccess}
+                  onResendOTP={() => {
+                    // This will be handled by the OTPInput component
+                  }}
+                  isLoading={isLoading}
+                />
+              </div>
+
+              {/* Footer */}
+              <div className='mt-6 text-center'>
+                <p className='text-sm text-gray-600'>
+                  <button onClick={() => setAuthMode('signup')} className='text-primary hover:underline'>
+                    ← Back to Signup
                   </button>
                 </p>
               </div>

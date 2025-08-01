@@ -4,20 +4,20 @@ import React, { useState } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
 
 import { SearchIcon } from '@/assets/icons'
 import LOGO from '@/assets/logos/logo.jpg'
 import { LoginPopup } from '@/components/Auth/LoginPopup'
 import { CartIcon } from '@/components/common/CartIcon'
 import { Icon } from '@/components/common/icon'
+import { useUser } from '@/contexts/UserContext'
 
 import { UserDropdown } from './UserDropdown'
 
 export const BuyerHeader: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false)
-  const { data: session } = useSession()
+  const { user, isAuthenticated } = useUser()
 
   return (
     <header className='sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm'>
@@ -56,7 +56,7 @@ export const BuyerHeader: React.FC = () => {
             {/* <CartIcon /> */}
 
             {/* User Menu */}
-            {session?.user ? (
+            {isAuthenticated && user ? (
               <UserDropdown />
             ) : (
               <div className='relative'>

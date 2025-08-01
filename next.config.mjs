@@ -45,6 +45,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'rikhh-9d30a.appspot.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'cdn.sanity.io',
         port: '',
         pathname: '/**',
@@ -62,10 +68,16 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // Allow unoptimized images for Firebase Storage URLs
+    // Allow unoptimized images for Firebase Storage URLs to avoid issues
     unoptimized: false,
     // Increase image quality
     // quality: 85,
+    // Add domains for better compatibility
+    domains: [
+      'firebasestorage.googleapis.com',
+      'rikhh-9d30a.firebasestorage.app',
+      'rikhh-9d30a.appspot.com'
+    ],
   },
 }
 

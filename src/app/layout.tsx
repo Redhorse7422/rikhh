@@ -13,9 +13,66 @@ import { BuyerLayout } from '@/components/Layouts/BuyerLayout/BuyerLayout'
 export const metadata: Metadata = {
   title: {
     template: '%s | Rikhh',
-    default: 'Rikhh',
+    default: 'Rikhh - Your Online Shopping Destination',
   },
-  description: 'Rikhh',
+  description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',
+  keywords: 'online shopping, ecommerce, fashion, electronics, home decor, India',
+  authors: [{ name: 'Rikhh Team' }],
+  creator: 'Rikhh',
+  publisher: 'Rikhh',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  
+  // Open Graph defaults
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com',
+    siteName: 'Rikhh',
+    title: 'Rikhh - Your Online Shopping Destination',
+    description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',
+    images: [
+      {
+        url: '/images/logo.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Rikhh - Online Shopping',
+      },
+    ],
+  },
+  
+  // Twitter Card defaults
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rikhh - Your Online Shopping Destination',
+    description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',
+    images: ['/images/logo.jpg'],
+    creator: '@rikhh',
+    site: '@rikhh',
+  },
+  
+  // Additional meta tags
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  
+  // Icons
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({ children }: PropsWithChildren) {

@@ -7,6 +7,7 @@ import { firebaseAuthService } from '@/services/firebase/auth.firebase'
 // import { cartFirebaseService } from '@/services/firebase/cart.firebase'
 import { categoryFirebaseService } from '@/services/firebase/category.firebase'
 import { productFirebaseService } from '@/services/firebase/products.firebase'
+import { userFirebaseService } from '@/services/firebase/users.firebase'
 
 // Firebase Product Hooks
 // export const useFirebaseProducts = (
@@ -198,3 +199,67 @@ export const useFirebaseHomeConfig = () => {
     error: error,
   }
 }
+
+// Firebase User Hooks
+export const useFirebaseUsers = (
+  params: {
+    search?: string
+    status?: string
+    provider?: string
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+    limit?: number
+  } = {},
+) => {
+  const { search, status, provider, sortBy = 'createdAt', sortOrder = 'desc', limit = 10 } = params
+
+  return useInfiniteQuery({
+    queryKey: ['firebase-users', params],
+    queryFn: async ({ pageParam = null }) =>
+      userFirebaseService.getAllUsers({
+        search,
+        status,
+        provider,
+        sortBy,
+        sortOrder,
+        limit,
+        lastVisible: pageParam,
+      }),
+    getNextPageParam: (lastPage: any) => {
+      return lastPage.hasNextPage ? lastPage.nextCursor : undefined
+    },
+    initialPageParam: null,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export const useFirebaseUser = (uid: string) =>
+  useQuery({
+    queryKey: ['firebase-user', uid],
+    queryFn: () => userFirebaseService.getUserByUid(uid),
+    enabled: !!uid,
+    staleTime: 5 * 60 * 1000,
+  })
+
+export const useFirebaseUserByPhone = (phone: string) =>
+  useQuery({
+    queryKey: ['firebase-user-phone', phone],
+    queryFn: () => userFirebaseService.getUserByPhone(phone),
+    enabled: !!phone,
+    staleTime: 5 * 60 * 1000,
+  })
+
+export const useFirebaseUserByEmail = (email: string) =>
+  useQuery({
+    queryKey: ['firebase-user-email', email],
+    queryFn: () => userFirebaseService.getUserByEmail(email),
+    enabled: !!email,
+    staleTime: 5 * 60 * 1000,
+  })
+
+export const useFirebaseUserStats = () =>
+  useQuery({
+    queryKey: ['firebase-user-stats'],
+    queryFn: () => userFirebaseService.getUserStats(),
+    staleTime: 10 * 60 * 1000,
+  })

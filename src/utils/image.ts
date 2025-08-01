@@ -10,6 +10,26 @@ export const isFirebaseStorageUrl = (url: string): boolean => {
 }
 
 /**
+ * Fix Firebase Storage URL to ensure it's accessible
+ */
+export const fixFirebaseStorageUrl = (url: string): string => {
+  if (!isFirebaseStorageUrl(url)) {
+    return url
+  }
+
+  // Remove any existing alt=media parameter to avoid duplicates
+  let cleanUrl = url.replace(/[?&]alt=media(&|$)/g, '')
+
+  // Add alt=media parameter if missing
+  if (!cleanUrl.includes('alt=media')) {
+    const separator = cleanUrl.includes('?') ? '&' : '?'
+    cleanUrl = `${cleanUrl}${separator}alt=media`
+  }
+
+  return cleanUrl
+}
+
+/**
  * Get a safe image URL with fallback
  */
 export const getSafeImageUrl = (url: string | null | undefined, fallback: string = '/images/no-image.png'): string => {
@@ -24,17 +44,13 @@ export const getSafeImageUrl = (url: string | null | undefined, fallback: string
 
   // For Firebase Storage URLs, ensure they have proper format
   if (isFirebaseStorageUrl(url)) {
-    // Check if the URL has the required parameters
-    if (!url.includes('alt=media')) {
-      // Try to add the alt=media parameter if missing
-      const separator = url.includes('?') ? '&' : '?'
-      url = `${url}${separator}alt=media`
-    }
+    // Fix the Firebase Storage URL
+    url = fixFirebaseStorageUrl(url)
 
-    // Add timestamp to prevent caching issues
-    const timestamp = Date.now()
-    const separator = url.includes('?') ? '&' : '?'
-    url = `${url}${separator}t=${timestamp}`
+    // Add timestamp to prevent caching issues (optional, can be removed if causing issues)
+    // const timestamp = Date.now()
+    // const separator = url.includes('?') ? '&' : '?'
+    // url = `${url}${separator}t=${timestamp}`
   }
 
   return url
@@ -76,7 +92,7 @@ export const getOptimizedImageUrl = (url: string, width: number = 300, height: n
   if (isFirebaseStorageUrl(url)) {
     // For Firebase Storage URLs, we might need to use unoptimized mode
     // or add specific parameters for optimization
-    return url
+    return getSafeImageUrl(url)
   }
 
   // For other URLs, return as is (Next.js will handle optimization)
@@ -86,18 +102,19 @@ export const getOptimizedImageUrl = (url: string, width: number = 300, height: n
 /**
  * Get image dimensions for proper sizing
  */
-export const getImageDimensions = (containerWidth: number, aspectRatio: number = 16/9) => {
-  return {
-    width: containerWidth,
-    height: Math.round(containerWidth / aspectRatio)
-  }
+export const getImageDimensions = (
+  containerWidth: number,
+  aspectRatio: number = 16 / 9,
+): { width: number; height: number } => {
+  const height = containerWidth / aspectRatio
+  return { width: containerWidth, height }
 }
 
 /**
- * Get responsive sizes for Next.js Image component
+ * Get responsive sizes for responsive images
  */
 export const getResponsiveSizes = (containerWidth: number): string => {
-  return `(max-width: 640px) ${containerWidth}px, (max-width: 768px) ${containerWidth * 0.8}px, (max-width: 1024px) ${containerWidth * 0.6}px, ${containerWidth * 0.4}px`
+  return `(max-width: ${containerWidth}px) 100vw, ${containerWidth * 0.6}px, ${containerWidth * 0.4}px`
 }
 
 /**
@@ -106,8 +123,22 @@ export const getResponsiveSizes = (containerWidth: number): string => {
 export const getProxyImageUrl = (url: string): string => {
   if (isFirebaseStorageUrl(url)) {
     // You can implement a proxy API route here if needed
-    // For now, return the original URL
-    return url
+    // For now, return the original URL with proper formatting
+    return getSafeImageUrl(url)
   }
   return url
+}
+
+/**
+ * Debug Firebase Storage URL issues
+ */
+export const debugFirebaseStorageUrl = (url: string): void => {
+  if (isFirebaseStorageUrl(url)) {
+    console.log('🔍 Firebase Storage URL Debug:', {
+      originalUrl: url,
+      hasAltMedia: url.includes('alt=media'),
+      fixedUrl: fixFirebaseStorageUrl(url),
+      isAccessible: validateImageUrl(url),
+    })
+  }
 }

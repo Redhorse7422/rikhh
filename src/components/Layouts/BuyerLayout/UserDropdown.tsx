@@ -3,20 +3,19 @@
 import { useState } from 'react'
 
 import Link from 'next/link'
-import { signOut, useSession } from 'next-auth/react'
 
 import { Icon } from '@/components/common/icon'
 import { Dropdown, DropdownContent, DropdownTrigger } from '@/components/ui/dropdown'
+import { useUser } from '@/contexts/UserContext'
 
 export const UserDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { data: session } = useSession()
+  const { user, isAuthenticated, logout } = useUser()
 
-  if (!session?.user) return null
+  if (!isAuthenticated || !user) return null
 
-  const userName =
-    `${session.user.firstName || ''} ${session.user.lastName || ''}`.trim() || session.user.email || 'User'
-  const userEmail = session.user.email || ''
+  const userName = user.name || user.email || 'User'
+  const userEmail = user.email || ''
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -71,7 +70,8 @@ export const UserDropdown: React.FC = () => {
           <button
             onClick={() => {
               setIsOpen(false)
-              signOut({ callbackUrl: '/' })
+              logout()
+              window.location.reload()
             }}
             className='flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50'
           >

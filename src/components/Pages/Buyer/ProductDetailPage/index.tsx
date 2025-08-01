@@ -135,26 +135,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
     }
   }
 
-  const handleAddToWishlist = () => {
-    // TODO: Implement add to wishlist logic
-    console.log('Adding to wishlist:', product.name)
-    showToast('Added to wishlist!', 'success')
-  }
 
-  const handleShare = () => {
-    // TODO: Implement share logic
-    if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        text: product.description,
-        url: window.location.href,
-      })
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
-      showToast('Link copied to clipboard!', 'success')
-    }
-  }
 
   if (isLoading) {
     return (
@@ -199,8 +180,6 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
             onQuantityChange={handleQuantityChange}
             onSizeChange={handleSizeChange}
             onAddToCart={handleAddToCart}
-            onAddToWishlist={handleAddToWishlist}
-            onShare={handleShare}
           />
         </div>
 

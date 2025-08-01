@@ -2,9 +2,10 @@
 
 import type { Product } from '@/types/common'
 
-import React, { useState } from 'react'
+import React from 'react'
 
 import { StarIcon, HeartIcon } from '@/assets/icons'
+import { ShareButton } from '@/components/common/ShareButton'
 import { Icon } from '@/components/common/icon'
 
 // Extended Product interface to match Firebase response
@@ -24,8 +25,6 @@ interface ProductInfoProps {
   onQuantityChange: (quantity: number) => void
   onSizeChange: (size: string) => void
   onAddToCart: () => void
-  onAddToWishlist: () => void
-  onShare: () => void
   isLoading?: boolean
 }
 
@@ -36,8 +35,6 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   onQuantityChange,
   onSizeChange,
   onAddToCart,
-  onAddToWishlist,
-  onShare,
   isLoading = false,
 }) => {
   const handleQuantityIncrement = () => {
@@ -142,8 +139,8 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
                 key={index}
                 type='button'
                 className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedSize === size 
-                    ? 'bg-blue-500 text-white shadow-md' 
+                  selectedSize === size
+                    ? 'bg-blue-500 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
                 onClick={() => handleSizeSelect(size)}
@@ -152,9 +149,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
               </button>
             ))}
           </div>
-          {isSizeRequired && (
-            <p className='text-sm text-red-600'>Please select a size</p>
-          )}
+          {isSizeRequired && <p className='text-sm text-red-600'>Please select a size</p>}
         </div>
       )}
 
@@ -198,25 +193,18 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           ) : isSizeRequired ? (
             'Select Size'
           ) : (
-            'Add to Cart'
+            'Book Now'
           )}
         </button>
 
         <div className='flex space-x-3'>
-          <button
-            onClick={onAddToWishlist}
-            className='flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50'
-          >
-            <HeartIcon className='mr-2 inline h-5 w-5' />
-            Wishlist
-          </button>
-
-          <button
-            onClick={onShare}
-            className='flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50'
-          >
-            Share
-          </button>
+          <ShareButton
+            url={`${process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'}/product/${product.id}`}
+            title={product.name}
+            description={product.description}
+            image={product.thumbnailImg || product.images?.[0]}
+            className='flex-1'
+          />
         </div>
       </div>
 

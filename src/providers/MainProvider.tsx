@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 
 import { FirebaseProvider } from '@/contexts/FirebaseContext'
+import { UserProvider } from '@/contexts/UserContext'
 
 import { FullScreenLoadingProvider } from './FullScreenLoadingProvider'
 import ToastProvider from './ToastProvider'
@@ -19,7 +20,9 @@ export function MainProviders({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <HydrationBoundary state={dehydrate(queryClient)}>
             <FirebaseProvider>
-              <FullScreenLoadingProvider>{children}</FullScreenLoadingProvider>
+              <UserProvider>
+                <FullScreenLoadingProvider>{children}</FullScreenLoadingProvider>
+              </UserProvider>
             </FirebaseProvider>
           </HydrationBoundary>
         </QueryClientProvider>
