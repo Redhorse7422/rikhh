@@ -15,37 +15,11 @@ import { CartMigrationPrompt } from './components/CartMigrationPrompt'
 export const CartPage: React.FC = () => {
   // const { cart, updateQuantity, removeItem, applyCoupon, removeCoupon } = useCart()
   // const { cart, updateQuantity, removeItem, clearCart, applyCoupon, removeCoupon } = useCart()
-  const router = useRouter()
   const [showMigrationPrompt, setShowMigrationPrompt] = useState(true)
-
-  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
-    // await updateQuantity(itemId, quantity)
-  }
-
-  const handleRemoveItem = async (itemId: string) => {
-    // await removeItem(itemId)
-  }
 
   // const handleClearCart = async () => {
   //   await clearCart()
   // }
-
-  const handleApplyCoupon = async (code: string) => {
-    // await applyCoupon(code)
-  }
-
-  const handleRemoveCoupon = () => {
-    // removeCoupon()
-  }
-
-  const handleProceedToCheckout = () => {
-    router.push('/checkout')
-  }
-
-  const handleContinueShopping = () => {
-    // TODO: Navigate to products page
-    console.log('Continuing shopping')
-  }
 
   // if (cart.isLoading) {
   //   return (

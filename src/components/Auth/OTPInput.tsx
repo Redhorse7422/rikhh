@@ -53,9 +53,6 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     try {
       setIsVerifying(true)
 
-      console.log('OTPInput - Verifying OTP for phone:', phoneNumber)
-      console.log('OTPInput - Entered OTP:', data.otp)
-
       // Verify OTP using OTP manager
       const isValid = otpManagerService.verifyOTP(phoneNumber, data.otp)
 
@@ -78,7 +75,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
     try {
       // Generate new OTP and send via Fast2SMS API
       const otp = otpManagerService.generateAndStoreOTP(phoneNumber)
-      
+
       const params = new URLSearchParams({
         authorization: '3qwMzdBoZIsUKvTA9Lm8CcaYpFnXt1gu0EWh467e5OSRxklDGNQxGhwdLZvP2FgXJyfnqWSVtA671aND',
         sender_id: 'WORCVZ',
@@ -87,7 +84,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({
         route: 'dlt',
         numbers: phoneNumber,
       })
-      
+
       const response = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params}`, {
         method: 'GET',
       })

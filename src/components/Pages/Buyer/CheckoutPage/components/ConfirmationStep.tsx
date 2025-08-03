@@ -12,7 +12,6 @@ export const ConfirmationStep: React.FC = () => {
   const { orderResponse } = useCheckout()
   // const { fetchCart } = useCart()
   const [showError, setShowError] = useState(false)
-  console.log('Order Response  ==> ', orderResponse)
   // Error state: missing or malformed orderResponse
   if (!orderResponse || !orderResponse.data || !orderResponse.data.order) {
     // If orderResponse exists but is malformed, show error

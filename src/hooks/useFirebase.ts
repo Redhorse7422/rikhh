@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tansta
 import { useFirebase } from '@/contexts/FirebaseContext'
 import { firebaseAuthService } from '@/services/firebase/auth.firebase'
 // import { cartFirebaseService } from '@/services/firebase/cart.firebase'
+import { bookingFirebaseService } from '@/services/firebase/bookings.firebase'
 import { categoryFirebaseService } from '@/services/firebase/category.firebase'
 import { productFirebaseService } from '@/services/firebase/products.firebase'
 import { userFirebaseService } from '@/services/firebase/users.firebase'
@@ -108,10 +109,38 @@ export const useFirebaseProductsByCategory = (category: string) => {
   })
 }
 
-export const useFirebaseSearchProducts = (query: string) => {
+export const useFirebaseSearchProducts = (
+  query: string,
+  params: {
+    limit?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+  } = {},
+) => {
+  const { limit = 16, sortBy = 'createdAt', sortOrder = 'desc' } = params
+  console.log('Called Search')
+  return useInfiniteQuery({
+    queryKey: ['firebase-search-products', query, params],
+    queryFn: async ({ pageParam = null }) =>
+      productFirebaseService.searchProducts(query, {
+        limit,
+        lastVisible: pageParam,
+        sortBy,
+        sortOrder,
+      }),
+    getNextPageParam: (lastPage: any) => {
+      return lastPage.hasNextPage ? lastPage.nextCursor : undefined
+    },
+    initialPageParam: null,
+    enabled: !!query && query.length > 2,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useFirebaseSearchCount = (query: string) => {
   return useQuery({
-    queryKey: ['firebase-search-products', query],
-    queryFn: () => productFirebaseService.searchProducts(query),
+    queryKey: ['firebase-search-count', query],
+    queryFn: () => productFirebaseService.getSearchCount(query),
     enabled: !!query && query.length > 2,
     staleTime: 2 * 60 * 1000, // 2 minutes
   })
@@ -263,3 +292,44 @@ export const useFirebaseUserStats = () =>
     queryFn: () => userFirebaseService.getUserStats(),
     staleTime: 10 * 60 * 1000,
   })
+
+// Booking Hooks
+export const useFirebaseBookings = (userId: string) => {
+  return useQuery({
+    queryKey: ['firebase-bookings', userId],
+    queryFn: () => bookingFirebaseService.getBookingsByUserId(userId),
+    enabled: !!userId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useFirebaseSellerBookings = (sellerId: string) => {
+  return useQuery({
+    queryKey: ['firebase-seller-bookings', sellerId],
+    queryFn: () => bookingFirebaseService.getBookingsBySellerId(sellerId),
+    enabled: !!sellerId,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useFirebaseRecentBookings = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ['firebase-recent-bookings', limit],
+    queryFn: () => bookingFirebaseService.getRecentBookings(limit),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
+}
+
+export const useFirebaseCreateBooking = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (bookingData: any) => bookingFirebaseService.createBooking(bookingData),
+    onSuccess: () => {
+      // Invalidate and refetch bookings
+      queryClient.invalidateQueries({ queryKey: ['firebase-bookings'] })
+      queryClient.invalidateQueries({ queryKey: ['firebase-seller-bookings'] })
+      queryClient.invalidateQueries({ queryKey: ['firebase-recent-bookings'] })
+    },
+  })
+}

@@ -26,9 +26,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const thumbnail = imageError ? '/images/no-image.png' : getSafeImageUrl(product.thumbnailImg)
 
   // Debug Firebase Storage URLs in development
-  if (process.env.NODE_ENV === 'development' && isFirebaseStorageUrl(product.thumbnailImg)) {
-    debugFirebaseStorageUrl(product.thumbnailImg)
-  }
+  // if (process.env.NODE_ENV === 'development' && isFirebaseStorageUrl(product.thumbnailImg)) {
+  //   debugFirebaseStorageUrl(product.thumbnailImg)
+  // }
 
   const handleImageError = () => {
     console.error(`❌ Image failed to load: ${product.thumbnailImg}`)

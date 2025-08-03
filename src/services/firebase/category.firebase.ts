@@ -53,13 +53,13 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
     const { page = 1, limit: itemsPerPage = 10, search, category, minPrice, maxPrice, sortBy, sortOrder } = params
 
     try {
-      console.log('🔍 Fetching products with Collection Group Query...')
+      // console.log('🔍 Fetching products with Collection Group Query...')
 
       // Use Collection Group Query to get all products from all sellers
       const productsQuery = collectionGroup(db, 'categories')
       const productsSnapshot = await getDocs(productsQuery)
 
-      console.log(`✅ Found ${productsSnapshot.docs.length} categories total`)
+      // console.log(`✅ Found ${productsSnapshot.docs.length} categories total`)
 
       const allProducts = productsSnapshot.docs.map((doc) => {
         const data = doc.data() as any
@@ -74,18 +74,19 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
         } as any
 
         // Debug: Log the first product's raw data
-        if (doc.id === productsSnapshot.docs[0]?.id) {
-          console.log('🔍 Raw category data from Firestore:', {
-            id: product.id,
-            productName: product.productName,
-            name: product.name,
-            images: product.images,
-            imageUrls: product.imageUrls,
-            thumbnail: product.thumbnail,
-            thumbnailImg: product.thumbnailImg,
-            allKeys: Object.keys(product),
-          })
-        }
+        // if (doc.id === productsSnapshot.docs[0]?.id) {
+        //   console.log('🔍 Raw category data from Firestore:', {
+        //     id: product.id,
+        //     productName: product.productName,
+        //     name: product.name,
+        //     images: product.images,
+        //     imageUrls: product.imageUrls,
+        //     thumbnail: product.thumbnail,
+        //     thumbnailImg: product.thumbnailImg,
+        //     allKeys: Object.keys(product),
+        //   }
+        // )
+        // }
 
         return product
       })
@@ -95,17 +96,17 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
 
       if (category) {
         filteredProducts = filteredProducts.filter((product) => product.category === category)
-        console.log(`📂 Filtered by category "${category}": ${filteredProducts.length} products`)
+        // console.log(`📂 Filtered by category "${category}": ${filteredProducts.length} products`)
       }
 
       if (minPrice !== undefined) {
         filteredProducts = filteredProducts.filter((product) => product.price >= minPrice)
-        console.log(`💰 Filtered by min price ${minPrice}: ${filteredProducts.length} products`)
+        // console.log(`💰 Filtered by min price ${minPrice}: ${filteredProducts.length} products`)
       }
 
       if (maxPrice !== undefined) {
         filteredProducts = filteredProducts.filter((product) => product.price <= maxPrice)
-        console.log(`💰 Filtered by max price ${maxPrice}: ${filteredProducts.length} products`)
+        // console.log(`💰 Filtered by max price ${maxPrice}: ${filteredProducts.length} products`)
       }
 
       if (search) {
@@ -114,7 +115,7 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
             product.productName?.toLowerCase().includes(search.toLowerCase()) ||
             product.description?.toLowerCase().includes(search.toLowerCase()),
         )
-        console.log(`🔍 Filtered by search "${search}": ${filteredProducts.length} products`)
+        // console.log(`🔍 Filtered by search "${search}": ${filteredProducts.length} products`)
       }
 
       // Sort products
@@ -133,7 +134,7 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
       const endIndex = startIndex + itemsPerPage
       const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
 
-      console.log(`📄 Returning ${paginatedProducts.length} products for page ${page}`)
+      // console.log(`📄 Returning ${paginatedProducts.length} products for page ${page}`)
 
       return {
         data: paginatedProducts.map((product) => {
@@ -156,15 +157,15 @@ class CategoryFirebaseService extends FirestoreService<FirebaseCategory> {
           } as FirebaseCategory
 
           // Debug: Log the first mapped product
-          if (product.id === paginatedProducts[0]?.id) {
-            console.log('🔄 Mapped product data:', {
-              originalImages: product.images,
-              // mappedThumbnailImg: mappedProduct.thumbnailImg,
-              mappedImages: mappedProduct.images,
-              hasImages: !!product.images,
-              imagesLength: product.images?.length || 0,
-            })
-          }
+          // if (product.id === paginatedProducts[0]?.id) {
+          //   console.log('🔄 Mapped product data:', {
+          //     originalImages: product.images,
+          //     // mappedThumbnailImg: mappedProduct.thumbnailImg,
+          //     mappedImages: mappedProduct.images,
+          //     hasImages: !!product.images,
+          //     imagesLength: product.images?.length || 0,
+          //   })
+          // }
 
           return mappedProduct
         }) as FirebaseCategory[],

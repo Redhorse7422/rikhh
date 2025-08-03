@@ -19,6 +19,7 @@ import { registerUser } from '@/services/user.services'
 interface LoginPopupProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
 }
 
 interface SigninForm {
@@ -38,7 +39,7 @@ interface SignupForm {
 
 type AuthMode = 'signin' | 'signup' | 'otp'
 
-export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
+export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose, onSuccess }) => {
   const [authMode, setAuthMode] = useState<AuthMode>('signin')
   const [isLoading, setIsLoading] = useState(false)
   const { showToast } = useToast()
@@ -69,9 +70,8 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       setIsLoading(true)
 
       // Generate OTP and send for login via Fast2SMS API
-      console.log('Login - Original phone number:', data.phoneNumber)
       const otp = otpManagerService.generateAndStoreOTP(data.phoneNumber)
-      
+
       const params = new URLSearchParams({
         authorization: '3qwMzdBoZIsUKvTA9Lm8CcaYpFnXt1gu0EWh467e5OSRxklDGNQxGhwdLZvP2FgXJyfnqWSVtA671aND',
         sender_id: 'WORCVZ',
@@ -80,7 +80,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         route: 'dlt',
         numbers: data.phoneNumber,
       })
-      
+
       const response = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params}`, {
         method: 'GET',
       })
@@ -111,9 +111,9 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       setIsLoading(true)
 
       // Generate OTP and send via Fast2SMS API
-      console.log('Signup - Original phone number:', data.phoneNumber)
+
       const otp = otpManagerService.generateAndStoreOTP(data.phoneNumber)
-      
+
       const params = new URLSearchParams({
         authorization: '3qwMzdBoZIsUKvTA9Lm8CcaYpFnXt1gu0EWh467e5OSRxklDGNQxGhwdLZvP2FgXJyfnqWSVtA671aND',
         sender_id: 'WORCVZ',
@@ -122,7 +122,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
         route: 'dlt',
         numbers: data.phoneNumber,
       })
-      
+
       const response = await fetch(`https://www.fast2sms.com/dev/bulkV2?${params}`, {
         method: 'GET',
       })
@@ -175,9 +175,10 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
         // After successful registration, login the user
         const loginResult = await userSessionService.loginUser(verifiedPhoneNumber)
-        
+
         if (loginResult.success && loginResult.user) {
           showToast(`Welcome, ${loginResult.user.name}! Account created and logged in successfully.`, 'success')
+          onSuccess?.() // Call onSuccess callback if provided
           handleClose()
           window.location.reload() // Refresh to update UI
         } else {
@@ -188,7 +189,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       } else {
         // This is a login flow - authenticate user
         const loginResult = await userSessionService.loginUser(verifiedPhoneNumber)
-        
+
         if (!loginResult.success) {
           showToast(loginResult.error || 'User not found. Please sign up first.', 'error')
           setAuthMode('signup')
@@ -197,6 +198,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
         // User logged in successfully
         showToast(`Welcome back, ${loginResult.user?.name}!`, 'success')
+        onSuccess?.() // Call onSuccess callback if provided
         handleClose()
         window.location.reload() // Refresh to update UI
       }
@@ -237,7 +239,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
       {/* Modal */}
       <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-        <div className='w-full max-w-md rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto'>
+        <div className='max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white p-6 shadow-xl'>
           {/* Header */}
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-xl font-semibold text-gray-900'>
@@ -332,7 +334,7 @@ export const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                 {/* Address Section */}
                 <div className='space-y-3'>
                   <h3 className='text-sm font-medium text-gray-700'>Address Information</h3>
-                  
+
                   <TextField
                     control={signupForm.control}
                     name='street'

@@ -26,9 +26,9 @@ export const ProductGallery: React.FC<ProductGalleryProps> = ({ images, mainImag
         )}
 
         {/* Zoom indicator */}
-        <div className='absolute bottom-4 right-4 rounded-full bg-white/80 p-2 backdrop-blur-sm'>
+        {/* <div className='absolute bottom-4 right-4 rounded-full bg-white/80 p-2 backdrop-blur-sm'>
           <SearchIcon className='h-5 w-5 text-gray-600' />
-        </div>
+        </div> */}
 
         {/* Sale badge - only show if there's a discount */}
         {/* <div className='absolute left-4 top-4 rounded-full bg-red-500 px-3 py-1 text-sm font-semibold text-white'>

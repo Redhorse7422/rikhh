@@ -73,11 +73,6 @@ const nextConfig = {
     // Increase image quality
     // quality: 85,
     // Add domains for better compatibility
-    domains: [
-      'firebasestorage.googleapis.com',
-      'rikhh-9d30a.firebasestorage.app',
-      'rikhh-9d30a.appspot.com'
-    ],
   },
 }
 

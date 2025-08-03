@@ -25,6 +25,7 @@ interface ProductInfoProps {
   onQuantityChange: (quantity: number) => void
   onSizeChange: (size: string) => void
   onAddToCart: () => void
+  onBookNow: () => void
   isLoading?: boolean
 }
 
@@ -35,6 +36,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   onQuantityChange,
   onSizeChange,
   onAddToCart,
+  onBookNow,
   isLoading = false,
 }) => {
   const handleQuantityIncrement = () => {
@@ -154,7 +156,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
       )}
 
       {/* Quantity Selector */}
-      <div className='space-y-3'>
+      {/* <div className='space-y-3'>
         <h3 className='text-sm font-medium text-gray-900'>Quantity</h3>
         <div className='flex items-center space-x-3'>
           <button
@@ -172,30 +174,39 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           >
             <Icon name='AiOutlinePlus' className='h-4 w-4' />
           </button>
-          {/* <span className='text-sm text-gray-500'>Max 99</span> */}
         </div>
-      </div>
+      </div> */}
 
       {/* Action Buttons */}
       <div className='space-y-3'>
-        <button
-          onClick={onAddToCart}
-          disabled={isOutOfStock() || isLoading || isSizeRequired}
-          className='w-full rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50'
-        >
-          {isLoading ? (
-            <div className='flex items-center justify-center'>
-              <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
-              Adding...
-            </div>
-          ) : isOutOfStock() ? (
-            'Out of Stock'
-          ) : isSizeRequired ? (
-            'Select Size'
-          ) : (
-            'Book Now'
-          )}
-        </button>
+        <div className='flex space-x-3'>
+          {/* <button
+            onClick={onAddToCart}
+            disabled={isOutOfStock() || isLoading || isSizeRequired}
+            className='flex-1 rounded-lg bg-primary px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50'
+          >
+            {isLoading ? (
+              <div className='flex items-center justify-center'>
+                <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+                Adding...
+              </div>
+            ) : isOutOfStock() ? (
+              'Out of Stock'
+            ) : isSizeRequired ? (
+              'Select Size'
+            ) : (
+              'Add to Cart'
+            )}
+          </button> */}
+
+          <button
+            onClick={onBookNow}
+            disabled={isOutOfStock() || isLoading}
+            className='flex-1 rounded-lg bg-green-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50'
+          >
+            Book Now
+          </button>
+        </div>
 
         <div className='flex space-x-3'>
           <ShareButton

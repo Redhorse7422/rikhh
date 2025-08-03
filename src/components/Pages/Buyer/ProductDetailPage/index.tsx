@@ -5,9 +5,13 @@ import type { Product } from '@/types/common'
 
 import React, { useState, useEffect } from 'react'
 
+import { LoginPopup } from '@/components/Auth/LoginPopup'
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb'
+import { useUser } from '@/contexts/UserContext'
 import useToast from '@/hooks/useToast'
 
+import BookingConfirmation from './components/BookingConfirmation'
+import BookingForm from './components/BookingForm'
 import { ProductGallery } from './components/ProductGallery'
 import { ProductInfo } from './components/ProductInfo'
 import { ProductTabs } from './components/ProductTabs'
@@ -30,12 +34,20 @@ interface ProductDetailPageProps {
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, isLoading = false }) => {
   const { showToast } = useToast()
-  console.log('Product ===> ', product)
+  const { user, isAuthenticated } = useUser()
 
   const [selectedQuantity, setSelectedQuantity] = useState(1)
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [mainImage, setMainImage] = useState(product.thumbnailImg || product.images?.[0] || '')
   const [activeTab, setActiveTab] = useState('description')
+
+  // Booking state
+  const [showBookingForm, setShowBookingForm] = useState(false)
+  const [showBookingConfirmation, setShowBookingConfirmation] = useState(false)
+  const [bookingId, setBookingId] = useState('')
+
+  // Authentication state
+  const [showLoginPopup, setShowLoginPopup] = useState(false)
 
   // Reset selected size when product changes
   useEffect(() => {
@@ -135,7 +147,37 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
     }
   }
 
+  // Booking handlers
+  const handleBookNow = () => {
+    if (!isAuthenticated) {
+      setShowLoginPopup(true)
+      showToast('Please sign in to book this product', 'error')
+      return
+    }
 
+    setShowBookingForm(true)
+  }
+
+  const handleBookingClose = () => {
+    setShowBookingForm(false)
+  }
+
+  const handleBookingSuccess = (newBookingId: string) => {
+    setBookingId(newBookingId)
+    setShowBookingForm(false)
+    setShowBookingConfirmation(true)
+  }
+
+  const handleConfirmationClose = () => {
+    setShowBookingConfirmation(false)
+    setBookingId('')
+  }
+
+  const handleLoginSuccess = () => {
+    setShowLoginPopup(false)
+    // After successful login, automatically open booking form
+    setShowBookingForm(true)
+  }
 
   if (isLoading) {
     return (
@@ -180,6 +222,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
             onQuantityChange={handleQuantityChange}
             onSizeChange={handleSizeChange}
             onAddToCart={handleAddToCart}
+            onBookNow={handleBookNow}
           />
         </div>
 
@@ -188,6 +231,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, i
           <ProductTabs product={product} activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
+
+      {/* Booking Form Modal */}
+      {showBookingForm && (
+        <BookingForm
+          product={product}
+          onClose={handleBookingClose}
+          onSuccess={handleBookingSuccess}
+          userId={user?.uid}
+        />
+      )}
+
+      {/* Booking Confirmation Modal */}
+      {showBookingConfirmation && (
+        <BookingConfirmation product={product} bookingId={bookingId} onClose={handleConfirmationClose} />
+      )}
+
+      {/* Login Popup */}
+      {showLoginPopup && (
+        <LoginPopup isOpen={showLoginPopup} onClose={() => setShowLoginPopup(false)} onSuccess={handleLoginSuccess} />
+      )}
     </div>
   )
 }

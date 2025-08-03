@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -8,16 +8,24 @@ import Link from 'next/link'
 import { SearchIcon } from '@/assets/icons'
 import LOGO from '@/assets/logos/logo.jpg'
 import { LoginPopup } from '@/components/Auth/LoginPopup'
-import { CartIcon } from '@/components/common/CartIcon'
 import { Icon } from '@/components/common/icon'
 import { useUser } from '@/contexts/UserContext'
 
+import { SearchDropdown } from './SearchDropdown'
 import { UserDropdown } from './UserDropdown'
 
 export const BuyerHeader: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false)
   const { user, isAuthenticated } = useUser()
+
+  // Close search dropdown when search query is empty
+  useEffect(() => {
+    if (searchQuery.length === 0) {
+      setIsSearchOpen(false)
+    }
+  }, [searchQuery])
 
   return (
     <header className='sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm'>
@@ -37,10 +45,46 @@ export const BuyerHeader: React.FC = () => {
                 type='text'
                 placeholder='Search products, categories...'
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className='w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-primary'
+                onChange={(e) => {
+                  setSearchQuery(e.target.value)
+                  if (e.target.value.length > 0) {
+                    setIsSearchOpen(true)
+                  }
+                }}
+                onFocus={() => {
+                  if (searchQuery.length > 0) {
+                    setIsSearchOpen(true)
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`
+                  }
+                }}
+                className='w-full rounded-lg border border-gray-300 py-2 pl-10 pr-12 focus:border-transparent focus:ring-2 focus:ring-primary'
               />
-              <SearchIcon className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform' />
+              <SearchIcon className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+
+              {/* Search Button */}
+              <button
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    window.location.href = `/shop?search=${encodeURIComponent(searchQuery.trim())}`
+                  }
+                }}
+                className='absolute right-2 top-1/2 -translate-y-1/2 transform rounded-md bg-primary p-1.5 text-white hover:bg-primary/90'
+                title='Search'
+              >
+                <SearchIcon className='h-4 w-4' />
+              </button>
+
+              {/* Search Dropdown */}
+              <SearchDropdown
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
             </div>
           </div>
 
