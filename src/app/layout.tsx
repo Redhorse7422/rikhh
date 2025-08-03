@@ -36,10 +36,11 @@ export const metadata: Metadata = {
     description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',
     images: [
       {
-        url: '/images/logo.jpg',
+        url: '/images/best-value-banner.png',
         width: 1200,
         height: 630,
         alt: 'Rikhh - Online Shopping',
+        type: 'image/png',
       },
     ],
   },
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Rikhh - Your Online Shopping Destination',
     description: 'Discover amazing products at great prices on Rikhh. Shop the latest trends in fashion, electronics, home & living, and more.',
-    images: ['/images/logo.jpg'],
+    images: ['/images/best-value-banner.png'],
     creator: '@rikhh',
     site: '@rikhh',
   },
@@ -78,6 +79,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang='en' suppressHydrationWarning>
+      <head>
+        {/* Only keep essential meta tags that don't conflict with page-specific ones */}
+        <meta property="og:site_name" content="Rikhh" />
+        <meta property="og:locale" content="en_US" />
+        <meta name="twitter:site" content="@rikhh" />
+        <meta name="twitter:creator" content="@rikhh" />
+      </head>
       <body>
         <MainProviders>
           <NextTopLoader color='#22AD5C' showSpinner={false} />

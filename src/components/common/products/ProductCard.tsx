@@ -85,7 +85,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     : 'text-lg font-bold text-gray-900'
                 }`}
               >
-                ${product.regularPrice}
+                ₹{product.regularPrice}
               </span>
             </div>
           </div>

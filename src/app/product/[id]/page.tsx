@@ -17,17 +17,29 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     }
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'
   const productTitle = `${product.name} | Rikhh`
-  const productDescription = product.description || `Check out ${product.name} on Rikhh. Best prices and quality guaranteed.`
-  const productImage = product.thumbnailImg || product.images?.[0] || '/images/no-image.png'
-  const productUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://rikhh.com'}/product/${product.id}`
+  const productDescription =
+    product.description || `Check out ${product.name} on Rikhh. Best prices and quality guaranteed.`
+
+  // Ensure image URL is absolute and use proxy for Firebase Storage images
+  let productImage = product.thumbnailImg || product.images?.[0] || '/images/no-image.png'
+  if (productImage && !productImage.startsWith('http')) {
+    productImage = `${baseUrl}${productImage}`
+  } else if (productImage && productImage.includes('firebasestorage.googleapis.com')) {
+    // Use image proxy for Firebase Storage images to ensure WhatsApp compatibility
+    const encodedUrl = encodeURIComponent(productImage)
+    productImage = `${baseUrl}/api/image-proxy?url=${encodedUrl}`
+  }
+
+  const productUrl = `${baseUrl}/product/${product.id}`
   const productPrice = product.salePrice || product.regularPrice
 
   return {
     title: productTitle,
     description: productDescription,
     keywords: product.tags?.join(', ') || product.category || 'product, shopping, online store',
-    
+
     // Open Graph meta tags for Facebook, WhatsApp, etc.
     openGraph: {
       title: productTitle,
@@ -35,16 +47,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       type: 'website',
       url: productUrl,
       siteName: 'Rikhh',
+      locale: 'en_US',
       images: [
         {
           url: productImage,
           width: 1200,
           height: 630,
           alt: product.name,
+          type: 'image/jpeg',
         },
       ],
     },
-    
+
     // Twitter Card meta tags
     twitter: {
       card: 'summary_large_image',
@@ -54,13 +68,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       creator: '@rikhh',
       site: '@rikhh',
     },
-    
+
     // Additional meta tags for better sharing
     alternates: {
       canonical: productUrl,
     },
-    
-    // Structured data for rich snippets
+
+    // Product-specific meta tags
     other: {
       'product:price:amount': productPrice.toString(),
       'product:price:currency': 'INR',

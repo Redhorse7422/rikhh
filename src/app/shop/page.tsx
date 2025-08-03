@@ -114,7 +114,7 @@ const ShopPageContent: React.FC = () => {
         )}
         <div className='flex flex-col gap-8 lg:flex-row'>
           {/* Sidebar - Always show */}
-          <aside className='hidden w-full max-w-xs flex-shrink-0 lg:block'>
+          {/* <aside className='hidden w-full max-w-xs flex-shrink-0 lg:block'>
             <div className='mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm'>
               <h2 className='mb-4 text-lg font-semibold text-gray-900'>Categories</h2>
               <ul className='space-y-2'>
@@ -137,19 +137,8 @@ const ShopPageContent: React.FC = () => {
                       >
                         {cat.name}
                       </button>
-                      {/* {cat.subcategories?.length > 0 && (
-                        <button
-                          className='ml-2 p-1 text-gray-400 hover:text-primary'
-                          onClick={() => handleToggleExpand(cat.id)}
-                          aria-label={expandedCategories[cat.id] ? 'Collapse' : 'Expand'}
-                        >
-                          <ChevronUpIcon
-                            className={`h-4 w-4 transition-transform ${expandedCategories[cat.id] ? 'rotate-180' : ''}`}
-                          />
-                        </button>
-                      )} */}
-                    </div>
-                    {/* {cat.subcategories?.length > 0 && expandedCategories[cat.id] && (
+                    </div> */}
+          {/* {cat.subcategories?.length > 0 && expandedCategories[cat.id] && (
                       <ul className='ml-4 mt-2 space-y-1 border-l border-gray-100 pl-3'>
                         {cat.subcategories.map((sub) => (
                           <li key={sub.id}>
@@ -163,16 +152,16 @@ const ShopPageContent: React.FC = () => {
                         ))}
                       </ul>
                     )} */}
-                  </li>
-                ))}
-              </ul>
+          {/* </li> */}
+          {/* ))} */}
+          {/* </ul>
             </div>
             <FilterSidebar
               selectedFilters={selectedFilters}
               onFilterChange={handleFilterChange}
               onClearFilters={clearFilters}
             />
-          </aside>
+          </aside> */}
 
           {/* Main Section */}
           <main className='flex-1'>

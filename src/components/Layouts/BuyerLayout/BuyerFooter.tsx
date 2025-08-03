@@ -120,13 +120,13 @@ export const BuyerFooter: React.FC = () => {
             <h3 className='mb-4 text-sm font-bold uppercase text-white'>My Account</h3>
             <ul className='space-y-2'>
               <li>
-                <a href='/track-order' className='text-sm text-gray-300 transition-colors hover:text-white'>
-                  Track My Order
+                <a href='/rikhh-account-delete' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Rikhh Account Delete
                 </a>
               </li>
               <li>
-                <a href='/cart' className='text-sm text-gray-300 transition-colors hover:text-white'>
-                  View Cart
+                <a href='/rikhh-seller-account-delete' className='text-sm text-gray-300 transition-colors hover:text-white'>
+                  Rikhh Seller Account Delete
                 </a>
               </li>
               <li>

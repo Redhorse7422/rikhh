@@ -15,7 +15,7 @@ export const ProductsSection: React.FC<CartItemsProps> = ({ products, sectionTit
   return isLoading ? (
     <section className='py-16'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-        <div className='grid grid-cols-1 gap-6 py-16 md:grid-cols-2 lg:grid-cols-4'>
+        <div className='grid grid-cols-2 gap-4 py-16 sm:gap-6 md:grid-cols-2 lg:grid-cols-4'>
           {[...Array(8)].map((_, index) => (
             <div key={index} className='animate-pulse'>
               <div className='mb-4 h-64 rounded-lg bg-gray-200'></div>
@@ -39,7 +39,7 @@ export const ProductsSection: React.FC<CartItemsProps> = ({ products, sectionTit
             <ArrowRightIcon className='ml-1 h-4 w-4' />
           </Link>
         </div>
-        <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
+        <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4'>
           {products.map((product: FirebaseProduct) => (
             <ProductCard key={product.id} product={product} />
           ))}

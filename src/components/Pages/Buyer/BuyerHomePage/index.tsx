@@ -29,7 +29,6 @@ export const BuyerHomePage: React.FC = () => {
   // Fetch data
   const { data: homeConfig, isLoading: configLoad, error: configError } = useHomeConfig()
 
-
   if (configError) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
@@ -77,7 +76,7 @@ export const BuyerHomePage: React.FC = () => {
                 </Link> */}
               </div>
             </div>
-            <div className='relative'>
+            <div className='relative hidden md:block'>
               <Image
                 src='/images/cover/cover-01.png'
                 alt='Hero Image'

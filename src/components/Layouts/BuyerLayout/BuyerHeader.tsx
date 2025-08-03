@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { SearchIcon } from '@/assets/icons'
+import { SearchIcon, XIcon } from '@/assets/icons'
 import LOGO from '@/assets/logos/logo.jpg'
 import { LoginPopup } from '@/components/Auth/LoginPopup'
 import { Icon } from '@/components/common/icon'
@@ -29,17 +29,17 @@ export const BuyerHeader: React.FC = () => {
 
   return (
     <header className='sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm'>
-      <div className='mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8'>
-        <div className='flex h-16 items-center justify-between'>
+      <div className='mx-auto max-w-7xl px-3 py-2 sm:px-4 lg:px-8'>
+        <div className='flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4'>
           {/* Logo */}
           <div className='flex items-center'>
             <Link href='/' className='flex items-center space-x-2'>
-              <Image src={LOGO} alt='Aura Well USA' width={120} height={64} className='h-15 w-auto' />
+              <Image src={LOGO} alt='Aura Well USA' width={100} height={64} className='h-6 w-auto sm:h-10' />
             </Link>
           </div>
 
           {/* Search Bar */}
-          <div className='mx-8 max-w-2xl flex-1'>
+          <div className=' max-w-2xl flex-1'>
             <div className='relative'>
               <input
                 type='text'
@@ -64,6 +64,20 @@ export const BuyerHeader: React.FC = () => {
                 className='w-full rounded-lg border border-gray-300 py-2 pl-10 pr-12 focus:border-transparent focus:ring-2 focus:ring-primary'
               />
               <SearchIcon className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+
+              {/* Clear Button */}
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('')
+                    setIsSearchOpen(false)
+                  }}
+                  className='absolute right-12 top-1/2 -translate-y-1/2 transform rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                  title='Clear search'
+                >
+                  <XIcon className='h-4 w-4' />
+                </button>
+              )}
 
               {/* Search Button */}
               <button

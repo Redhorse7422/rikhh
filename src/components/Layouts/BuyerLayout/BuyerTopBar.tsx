@@ -15,7 +15,7 @@ const socialLinks = [
 
 export const BuyerTopBar: React.FC = () => {
   return (
-    <div className='bg-gray-900 py-2 text-sm text-white'>
+    <div className='hidden bg-gray-900 py-2 text-sm text-white md:block'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <div className='flex items-center justify-between'>
           {/* Left Side - Contact Info & Promotional */}

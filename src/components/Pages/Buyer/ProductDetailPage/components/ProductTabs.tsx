@@ -64,7 +64,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, activeTab, on
 
                     <tr className='bg-white'>
                       <td className='border-r border-gray-200 px-6 py-4 text-sm font-medium text-gray-900'>Price</td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>${product.regularPrice}</td>
+                      <td className='px-6 py-4 text-sm text-gray-600'>₹{product.regularPrice}</td>
                     </tr>
                   </tbody>
                 </table>
